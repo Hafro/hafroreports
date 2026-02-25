@@ -1,0 +1,4 @@
+importFrom("stats", "median", "quantile", "sd")
+importFrom("utils", "head")
+
+exportPattern("^hr_")
