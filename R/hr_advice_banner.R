@@ -4,7 +4,7 @@
 #' @param tac_last_year last years tac
 #' @param lang language, only 'is' and 'en' supported
 #' @param note banner note, if needed
-#' @param publication_date character with the publication date
+#' @param publication_date ``BigD::fdt()``-parsable date string with the publication date
 #' @param period Advisory period. Default is 'fishing_year', other options: 'annual', '2year', '3year', '5year'
 #' @param publication_note publication note, if needed
 #' @export
@@ -69,6 +69,12 @@ hr_advice_banner <- function(
   if (!(lang %in% c('is', 'en'))) {
     stop(sprintf('valid lang options are "is" and "en", %s was supplied', lang))
   }
+
+  formatted_publication_date <- bigD::fdt(
+    publication_date,
+    format = "d. MMMM YYYY.",
+    locale = lang
+  )
 
   tac <-
     if (is.character(tac)) {
@@ -170,7 +176,7 @@ hr_advice_banner <- function(
       glue::glue(
         "
 ::: {{style=\"font-size: 11pt;color: #767676;line-height: normal;margin-bottom: -2%;\"}}
-<p><span>{publication}: {publication_date}</span>   <span>{publisher}</span></p><br />
+<p><span>{publication}: {formatted_publication_date}</span>   <span>{publisher}</span></p><br />
 :::
 ",
         publication = dict['publication', lang],
