@@ -80,14 +80,14 @@ hr_advice_banner <- function(
     if (is.character(tac)) {
       tac
     } else {
-      red_dot_number(tac)
+      prettyNum(tac, big.mark = " ")
     }
 
   tac_last_year <-
     if (is.character(tac_last_year)) {
       tac
     } else {
-      red_dot_number(tac_last_year)
+      prettyNum(tac_last_year, big.mark = " ")
     }
 
   if (period == 'fishing_year') {
