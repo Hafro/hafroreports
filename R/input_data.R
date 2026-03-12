@@ -83,6 +83,7 @@ hr_input_data_si_index <- function(
   maturity_key = NULL,
   strata_name = NULL,
   sampling_type = 30,
+  sam_use_10_11_first_2_years = FALSE,
   tow_number = 0:35,
   tgroup = NULL,
   regions = list(all = 101:115),
@@ -107,9 +108,20 @@ hr_input_data_si_index <- function(
     ldist <- pax::pax_ldist_add_weight(ldist)
   }
 
-  alk <- dplyr::tbl(pcon, "station") |>
+  alk <- dplyr::tbl(pcon, "station")
+
+  if (isTRUE(sam_use_10_11_first_2_years)) {
+    # NB: SAM is sensitive to the first 2 years in age 1, use sampling_types 10 & 11 to increase reported data
+    start_year <- dplyr::tbl(pcon, "station") |>
+      summarise(year = min(year, na.rm = TRUE)) |>
+      dplyr::pull(year)
+    alk <- dplyr::filter(alk, sampling_type %in% local(sampling_type) | (year < local(start_year + 2) & (sampling_type %in% 10:11)))
+  } else {
+    alk <- dplyr::filter(alk, sampling_type %in% local(sampling_type))
+  }
+
+  alk <- alk |>
     dplyr::filter(
-      sampling_type %in% local(sampling_type),
       coalesce(tow_number, 0) %in% local(tow_number),
       local(is.null(gear_id_filter)) | (gear_id %in% local(gear_id_filter))
     ) |>
