@@ -115,7 +115,12 @@ hr_input_data_si_index <- function(
     start_year <- dplyr::tbl(pcon, "station") |>
       summarise(year = min(year, na.rm = TRUE)) |>
       dplyr::pull(year)
-    alk <- dplyr::filter(alk, sampling_type %in% local(sampling_type) | (year < local(start_year + 2) & (sampling_type %in% 10:11)))
+    alk <- dplyr::filter(
+      alk,
+      sampling_type %in%
+        local(sampling_type) |
+        (year < local(start_year + 2) & (sampling_type %in% 10:11))
+    )
   } else {
     alk <- dplyr::filter(alk, sampling_type %in% local(sampling_type))
   }
