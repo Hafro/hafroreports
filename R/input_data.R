@@ -5,7 +5,17 @@ hr_input_data_lw <- function(
 ) {
   lw_dat <- dplyr::tbl(pcon, "station") |>
     dplyr::filter(sampling_type %in% local(sampling_type)) |>
-    dplyr::left_join(dplyr::tbl(pcon, "aldist"), by = c('sample_id')) |>
+    dplyr::left_join(
+      # NB: We really need unaggregated length/weight here, not aggregated by age.
+      #     https://github.com/Hafro/pax/issues/17
+      pax::pax_temptbl(
+        pcon,
+        dplyr::tbl(pcon, "aldist") |>
+          dplyr::collect() |>
+          tidyr::uncount(weights = count)
+      ),
+      by = c('sample_id')
+    ) |>
     dplyr::filter(!is.na(length), weight > 0) |>
     dplyr::select(species, length, weight) |>
     dplyr::collect(n = Inf)
