@@ -21,6 +21,8 @@ hr_input_data_lw <- function(
     dplyr::collect(n = Inf)
 
   if (!is.null(prediction_length_range)) {
+    # NB: Using gam::s inside the formula results in inflated predictions
+    s <- gam::s
     lw_dat <-
       modelr::add_predictions(
         tibble::tibble(
@@ -28,7 +30,7 @@ hr_input_data_lw <- function(
           length = prediction_length_range
         ),
         gam::gam(
-          weight ~ gam::s(log(length), df = 8),
+          weight ~ s(log(length), df = 8),
           family = Gamma(link = log),
           data = lw_dat
         ),
