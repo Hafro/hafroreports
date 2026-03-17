@@ -76,7 +76,7 @@ hr_input_data_maturity_key <- function(
 
   mat_filler <- expand.grid(
     lgroup = lgroups,
-    region = (if (is.null(regions)) 'all' else names(regions))
+    region = (if (is.null(regions)) 'all' else unique(names(regions)))
   ) |>
     dplyr::filter(lgroup > 0) |>
     modelr::add_predictions(mat_model, type = 'response', var = 'mat_p')
