@@ -60,12 +60,13 @@ hr_input_data_maturity_key <- function(
         dplyr::mutate(mat = ifelse(maturity_stage == 1, 0, 1))
     ) |>
     pax::pax_add_lgroups(lgroups = lgroups) |>
-    pax::pax_add_regions(regions = regions) |>
-    dplyr::group_by(year, lgroup, age, region) |>
-    dplyr::summarise(mat_p = mean(mat))
+    pax::pax_add_regions(regions = regions)
 
   mat_model <-
     mat_length |>
+    dplyr::group_by(year, lgroup, region) |>
+    dplyr::summarise(mat_p = mean(mat)) |>
+    dplyr::collect(n = Inf) |>
     na.omit() |>
     dplyr::filter(!(year %in% local(ignore_years))) |>
     glm(
@@ -83,7 +84,10 @@ hr_input_data_maturity_key <- function(
 
   # Combine measurements & estimates, with year/age = NA signifying the estimates
   return(dplyr::union_all(
-    mat_length |> dplyr::collect(),
+    mat_length |>
+      dplyr::group_by(year, lgroup, age, region) |>
+      dplyr::summarise(mat_p = mean(mat)) |>
+      dplyr::collect(),
     mat_filler |> dplyr::mutate(year = NA, age = NA)
   ))
 }
