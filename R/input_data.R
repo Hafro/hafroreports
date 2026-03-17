@@ -125,7 +125,7 @@ hr_input_data_si_index <- function(
   if (isTRUE(sam_use_10_11_first_2_years)) {
     # NB: SAM is sensitive to the first 2 years in age 1, use sampling_types 10 & 11 to increase reported data
     start_year <- dplyr::tbl(pcon, "station") |>
-      summarise(year = min(year, na.rm = TRUE)) |>
+      dplyr::summarise(year = min(year, na.rm = TRUE)) |>
       dplyr::pull(year)
     alk <- dplyr::filter(
       alk,
