@@ -36,8 +36,7 @@ hr_catch_dist_plot <- function(
   out <- pax::pax_map_base() |>
     pax::pax_map_layer_depth(dplyr::tbl(pcon, "ocean_depth")) |>
     pax::pax_map_layer_catch(
-      hr_catch_by_location(pcon, year_start) |>
-        dplyr::collect(n = Inf),
+      hr_catch_by_location(pcon, year_start),
       alpha = 1,
       na.fill = -50,
       breaks = c(0, 1, 2, seq(3, 20, by = 3), 40, 60)
@@ -58,8 +57,7 @@ hr_techreport_fig_catchdistplot <- function(
     pax::pax_map_layer_depth(dplyr::tbl(pcon, "ocean_depth")) |>
     pax::pax_map_layer_catch(
       hr_catch_by_location(pcon, min(years)) |>
-        dplyr::filter(year %in% local(years)) |>
-        dplyr::collect(n = Inf),
+        dplyr::filter(year %in% local(years)),
       alpha = 1,
       na.fill = -50,
       breaks = c(0, 1, 2, seq(3, 20, by = 3), 40, 60)
