@@ -30,9 +30,10 @@ hr_catch_by_location <- function(
 
 hr_catch_dist_plot <- function(
   pcon,
-  year_start = max(year_start, year_end - 22),
-  lang = "en"
+  year_start = max(year_start, year_end - 22)
 ) {
+  lang <- getOption("hr.lang", "en")
+
   out <- pax::pax_map_base() |>
     pax::pax_map_layer_depth(dplyr::tbl(pcon, "ocean_depth")) |>
     pax::pax_map_layer_catch(
@@ -50,9 +51,10 @@ hr_catch_dist_plot <- function(
 hr_techreport_fig_catchdistplot <- function(
   pcon,
   years,
-  low_res = TRUE,
-  lang = "en"
+  low_res = TRUE
 ) {
+  lang <- getOption("hr.lang", "en")
+
   out <- pax::pax_map_base(low_res = low_res) |>
     pax::pax_map_layer_depth(dplyr::tbl(pcon, "ocean_depth")) |>
     pax::pax_map_layer_catch(

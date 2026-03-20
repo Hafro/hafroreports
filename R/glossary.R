@@ -4,9 +4,11 @@
 #' #| echo: false
 #' #| output: asis
 #'
-#' hr_glossary_section(lang)
+#' hr_glossary_section()
 #' ```
-hr_glossary_section <- function(lang = "en") {
+hr_glossary_section <- function() {
+  lang <- getOption("hr.lang", "en")
+
   header_text = list(
     en = "Glossary",
     is = "Orðalisti"

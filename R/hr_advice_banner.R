@@ -2,7 +2,6 @@
 #' @param tyr the assessment year
 #' @param tac TAC
 #' @param tac_last_year last years tac
-#' @param lang language, only 'is' and 'en' supported
 #' @param note banner note, if needed
 #' @param publication_date ``BigD::fdt()``-parsable date string with the publication date
 #' @param period Advisory period. Default is 'fishing_year', other options: 'annual', '2year', '3year', '5year'
@@ -13,12 +12,13 @@ hr_advice_banner <- function(
   year_end,
   tac,
   tac_last_year,
-  lang = 'is',
   note = '',
   publication_date,
   period = 'fishing_year',
   publication_note = ''
 ) {
+  lang <- getOption("hr.lang", "en")
+
   dict <-
     array(
       c(

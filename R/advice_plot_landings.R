@@ -1,7 +1,6 @@
 hr_advice_plot_landings <- function(
   advice_table_landings,
-  year_end,
-  lang = "en"
+  year_end
 ) {
   tonnes_y_title <- expression(bold(
     if (lang == 'is') "Þús. tonn" else "Thous. tonnes"
