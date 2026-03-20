@@ -38,7 +38,7 @@ hr_muppet_run <- function(
   }
 
   read_output <- function(path) {
-    readr::read_table2(path) |>
+    readr::read_table(path) |>
       dplyr::mutate_all(function(x) ifelse(x == -1, NA, x)) |>
       dplyr::mutate(model = local(model_name))
   }
