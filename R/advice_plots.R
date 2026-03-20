@@ -3,6 +3,11 @@ hr_advice_plot_landings <- function(
   year_end,
   lang = "en"
 ) {
+  tonnes_y_title <- expression(bold(
+    if (lang == 'is') "Þús. tonn" else "Thous. tonnes"
+  ))
+  catch_title <- expression(bold(if (lang == 'is') "Afli" else "Catches"))
+
   gear.land <-
     advice_table_landings |>
     dplyr::mutate(gear = ifelse(is.na(gear), 'Other', gear)) |>
@@ -67,8 +72,8 @@ hr_advice_plot_landings <- function(
       guide = ggplot2::guide_legend(label.position = 'right')
     ) +
     ggplot2::labs(
-      y = tidypax::tonnes_y_title(lang),
-      title = tidypax::catch_title(lang)
+      y = tonnes_y_title(lang),
+      title = catch_title(lang)
     ) +
     ggplot2::scale_y_continuous(
       breaks = seq(0, 160, 20),
