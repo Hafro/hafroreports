@@ -1,0 +1,36 @@
+key		en			is
+year		Year			Ár
+ssb		SSB			Hrygningarstofn
+ref_biomass	"Reference biomass"	Viðmiðunarstofn
+HRmsy		HR[MSY]			HR[MSY]
+HRmgt		HR[MGT]			HR[MGT]
+HRlim		HR[lim]			HR[lim]
+HRpa		HR[pa]			HR[pa]
+Fmsy		F[MSY]			F[MSY]
+Fmgt		F[MGT]			F[MGT]
+Blim		B[lim]			B[lim]
+Btrigger	B[trigger]		B[trigger]
+MGTBtrigger	MGT~B[trigger]		MGT~B[trigger]
+MGTBtrigger2	MGT~B[trigger];		MGT~B[trigger];
+MSYBtrigger	MSY~B[trigger]		MSY~B[trigger]
+Bpa		B[pa]			B[pa]
+Upa		U[pa]			U[pa]
+Fproxy_target	target~F[proxy]		target~F[proxy]
+Flim		F[lim]			F[lim]
+Fpa		F[pa]			F[pa]
+Ftarget		F[target]		F[target]
+Ilim		I[lim]			I[lim]
+Itrigger	I[trigger]		I[trigger]
+biomass		Biomass			Lífmassi
+fproxy		"Fishing pressure proxy"	"Vísitala veiðihlutfalls"
+fbar		"Fishing mortality"	Veiðidánartala
+harvest_rate	"Harvest rate"		Veiðihlufall
+recindex	Juvenile~index		Nýliðunarvísitala
+catches		Catches			Afli
+biomass_index_?	"Biomass index"		Lífmassavísitala
+biomass_index	"Biomass index"		Vísitala
+abundance_index	"Abundance index"	Fjöldavísitala
+thousand_tonnes	"Thous. tonnes"		"Þús. tonn"
+million_tonnes	"Million tonnes"	"Milljón tonn"
+millions	Millions		Milljónir
+billions	Billions		Milljarðar

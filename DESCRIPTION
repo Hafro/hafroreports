@@ -37,6 +37,7 @@ Imports:
 Suggests:
     unittest (>= 1.4)
 License: GPL-2
+LazyData: true
 Remotes:
     github::hafro/SAMutils,
     github::fishfollower/SAM/stockassessment
