@@ -80,6 +80,6 @@ hr_advice_plot_landings <- function(
       expand = c(0, 0),
       limits = c(0, 120)
     ) +
-    tidypax::astand.theme(legend.position = c(0.35, 0.85)) +
-    tidypax::astand.x.scale(5, 0, limits = c(1978, year_end - 0.5))
+    hr_astand_theme(legend.position = c(0.35, 0.85)) +
+    hr_astand_x_scale(5, 0, limits = c(1978, year_end - 0.5))
 }

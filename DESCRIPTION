@@ -32,7 +32,6 @@ Imports:
     stockassessment,
     SAMutils,
     tibble,
-    tidypax,
     tidyr,
     withr
 Suggests:
