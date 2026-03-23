@@ -27,6 +27,7 @@ Imports:
     mgcv,
     modelr,
     icesSAG,
+    officer,
     pax,
     readr,
     rmuppet,

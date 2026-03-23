@@ -1,0 +1,70 @@
+hr_advice_prog_input <- function(prog_input_table, assessment_year) {
+  lang <- getOption("hr.lang", "en")
+
+  prog_input_table |>
+    dplyr::filter(assessment_year == .env$assessment_year) |>
+    dplyr::select(
+      variable = as.symbol(paste0('variable.', lang)),
+      value,
+      notes = as.symbol(paste0('notes.', lang))
+    ) |>
+    dplyr::mutate(
+      value = ifelse(
+        value < 1,
+        round(value, 2),
+        hr_red_dot_number(round(value))
+      )
+    ) |>
+    dplyr::slice(5, 3, 2, 4, 6, 1) |>
+    flextable::flextable() |>
+    flextable::mk_par(
+      j = "variable",
+      part = "header",
+      value = flextable::as_paragraph(
+        if (lang == 'is') "Breyta" else 'Variable'
+      )
+    ) |>
+    flextable::mk_par(
+      j = "value",
+      part = "header",
+      value = flextable::as_paragraph(
+        if (lang == 'is') "Gildi" else 'Value'
+      )
+    ) |>
+    flextable::mk_par(
+      j = "notes",
+      part = "header",
+      value = flextable::as_paragraph(
+        if (lang == 'is') "Athugasemdir" else 'Notes'
+      )
+    ) |>
+    ftExtra::colformat_md() |>
+    flextable::colformat_num(
+      i = c(2, 5),
+      j = 2,
+      big.mark = "  ",
+      decimal.mark = ".",
+      na_str = "",
+      suffix = " t"
+    ) |>
+    flextable::colformat_num(
+      i = c(3, 4),
+      j = 2,
+      big.mark = "  ",
+      decimal.mark = ".",
+      na_str = ""
+    ) |>
+    flextable::valign(j = 1:3, valign = "top", part = "body") |>
+    flextable::bg(j = 1:3, bg = "#DEEAF6", part = "header") |>
+    ### Total width of table in advice sheet is 9
+    flextable::width(j = 1, width = 2.5) |>
+    flextable::width(j = 2, width = 1.25) |>
+    flextable::width(j = 3, width = 6) |>
+    flextable::line_spacing(space = 1.1, part = "all") |>
+    flextable::padding(padding = 2, part = "body") |>
+    flextable::align(j = 2, align = "center", part = "all") |>
+    flextable::border_remove() |>
+    flextable::border(part = "all", border = officer::fp_border()) |>
+    flextable::fontsize(size = 9, part = "body") |>
+    flextable::fontsize(size = 9, part = "header")
+}
