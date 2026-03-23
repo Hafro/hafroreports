@@ -1,84 +1,63 @@
 hr_advice_plot_landings <- function(
   advice_table_landings,
-  year_end
+  assessment_year
 ) {
-  tonnes_y_title <- expression(bold(
-    if (lang == 'is') "Þús. tonn" else "Thous. tonnes"
-  ))
-  catch_title <- expression(bold(if (lang == 'is') "Afli" else "Catches"))
+  lang <- getOption("hr.lang", "en")
 
-  gear.land <-
-    advice_table_landings |>
-    dplyr::mutate(gear = ifelse(is.na(gear), 'Other', gear)) |>
-    dplyr::group_by(year, gear) |>
-    dplyr::summarise(tonnes = sum(landings) / 1e6) |>
-    dplyr::ungroup() |>
+  stacked <- advice_table_landings |>
+    dplyr::mutate(fill = !!as.symbol(paste0("gear.", lang))) |>
+    dplyr::arrange(year, fill) |>
+    dplyr::group_by(year) |>
     dplyr::mutate(
-      gear.is = ordered(
-        forcats::fct_recode(
-          gear,
-          'Lína' = 'LLN',
-          'Botnvarpa' = 'BMT',
-          'Dragnót' = 'DSE',
-          'Annað~og~óskilgreint' = 'Other'
-        ),
-        levels = c('Annað~og~óskilgreint', 'Dragnót', 'Lína', 'Botnvarpa')
-      ),
-      gear.en = ordered(
-        gear.is,
-        labels = c(
-          'Other~and~undefined~gear',
-          'Demersal~seine',
-          'Longline',
-          'Bottom~trawl'
-        )
-      ),
-      gear = ordered(
-        gear.is,
-        labels = sprintf("%s~italic('%s')", levels(gear.is), levels(gear.en))
-      )
-    ) |>
-    dplyr::arrange(desc(gear.is))
+      ymin = cumsum(lag(tonnes, default = 0)),
+      ymax = ymin + tonnes
+    )
 
-  gear.land |>
-    ggplot2::ggplot(ggplot2::aes(
-      year,
-      tonnes,
-      fill = sprintf(
-        'bold(%s)',
-        eval(ggplot2::sym(paste('gear', lang, sep = '.')))
-      )
-    )) +
-    ggiraph::geom_bar_interactive(
-      stat = 'identity',
+  ggplot2::ggplot(stacked, ggplot2::aes(x = year, fill = fill)) +
+    ggiraph::geom_rect_interactive(
       ggplot2::aes(
-        tooltip = paste(
-          eval(ggplot2::sym(paste('gear', lang, sep = '.'))),
-          ':',
-          round(1e3 * tonnes),
-          't',
+        xmin = year - 0.4,
+        xmax = year + 0.4,
+        ymin = ymin,
+        ymax = ymax,
+        tooltip = paste0(
+          fill,
+          ": ",
+          round(tonnes * 1e3),
+          " t",
           '\n',
           if (lang == 'is') 'Ár' else 'Year',
-          ':',
+          ': ',
           year
         ),
-        data_id = gear.is
+        data_id = interaction(year, fill)
       )
     ) +
     ggplot2::scale_fill_manual(
-      values = c('black', 'steelblue3', "navajowhite3", 'tomato3'),
-      labels = scales::parse_format(),
-      guide = ggplot2::guide_legend(label.position = 'right')
+      # TODO: The original 4 is expecting only 3 gears + other
+      values = c(
+        "tomato3",
+        "navajowhite3",
+        "steelblue3",
+        "black",
+        rep("black", 9)
+      ),
+      guide = ggplot2::guide_legend(reverse = TRUE, label.position = "right")
     ) +
     ggplot2::labs(
-      y = tonnes_y_title(lang),
-      title = catch_title(lang)
+      y = hr_label("thousand_tonnes", bold = TRUE),
+      title = hr_label("catch", 1, bold = TRUE)
     ) +
+    hr_astand_theme(legend.position = c(0.35, 0.85)) +
+    hr_astand_x_scale(5, 0, limits = c(1978, assessment_year - 0.5)) +
     ggplot2::scale_y_continuous(
       breaks = seq(0, 160, 20),
       expand = c(0, 0),
       limits = c(0, 120)
     ) +
-    hr_astand_theme(legend.position = c(0.35, 0.85)) +
-    hr_astand_x_scale(5, 0, limits = c(1978, year_end - 0.5))
+    ggplot2::theme(
+      strip.text = ggplot2::element_text(face = "bold"), # Facet titles
+      axis.title.y = ggplot2::element_text(face = "bold"), # Y-axis title
+      plot.title = ggplot2::element_text(face = "bold")
+    )
 }
