@@ -19,6 +19,8 @@ Imports:
     digest,
     dplyr,
     forcats,
+    flextable,
+    ftExtra,
     gam,
     ggiraph,
     ggplot2,
