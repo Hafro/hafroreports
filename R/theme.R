@@ -47,3 +47,10 @@ hr_astand_x_scale <- function(x, tyr = lubridate::year(Sys.Date()), ...) {
     )
   }
 }
+
+#' @title Print number with a thousand separator
+#' @name red_dot_number
+#' @param number the number you want to convert
+hr_red_dot_number <- function(number) {
+  prettyNum(number, big.mark = " ", digits = 20)
+}
