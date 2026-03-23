@@ -36,4 +36,49 @@ hr_advice_table_landings <- function(pcon) {
         )
     )
 }
+
+hr_advice_table_assessment <- function(assessment) {
+  assessment |>
+    tidyr::gather(key, value, -c(year, species, assessment_year)) |>
+    dplyr::filter(key != 'landings') |>
+    tidyr::separate(key, c('stat', 'key')) |>
+    tidyr::spread(stat, value) |>
+    dplyr::mutate(
+      label.is = ordered(
+        forcats::fct_recode(
+          key,
+          'Nýliðun' = 'recruitment',
+          'Hrygningarstofn' = 'SSB',
+          'Viðmiðunarstofn' = 'refbio',
+          'Veiðihlutfall' = 'HR',
+          #'Landaður afli' = 'landings',
+          'Veiðidánartala' = 'F'
+        ),
+        levels = c(
+          'Nýliðun',
+          'Hrygningarstofn',
+          'Viðmiðunarstofn',
+          'Veiðihlutfall',
+          'Veiðidánartala'
+        )
+      ),
+      label.en = ordered(
+        forcats::fct_recode(
+          key,
+          'Recruitment' = 'recruitment',
+          'SSB' = 'SSB',
+          'Reference biomass' = 'refbio',
+          'Harvest rate' = 'HR',
+          #'Landaður afli' = 'landings',
+          'Fishing mortality' = 'F'
+        ),
+        levels = c(
+          'Recruitment',
+          'SSB',
+          'Reference biomass',
+          'Harvest rate',
+          'Fishing mortality'
+        )
+      )
+    )
 }
