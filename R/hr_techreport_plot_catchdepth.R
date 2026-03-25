@@ -4,10 +4,19 @@ hr_techreport_plot_catchdepth <- function(
 ) {
   lang <- getOption("hr.lang", "en")
 
+  catch_by_location <- dplyr::tbl(pcon, "logbook") |>
+    dplyr::filter(year <= year_start) |>
+    dplyr::group_by(year, lat = round(lat, 1), lon = round(lon, 1)) |>
+    dplyr::summarise(
+      catch = sum(1e-3 * catch / tow_area, na.rm = TRUE),
+      tow_time = sum(tow_time / tow_area, na.rm = TRUE)
+    ) |>
+    dplyr::ungroup()
+
   out <- pax::pax_map_base() |>
     pax::pax_map_layer_depth(dplyr::tbl(pcon, "ocean_depth")) |>
     pax::pax_map_layer_catch(
-      hr_catch_by_location(pcon, year_start),
+      catch_by_location,
       alpha = 1,
       na.fill = -50,
       breaks = c(0, 1, 2, seq(3, 20, by = 3), 40, 60)

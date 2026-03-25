@@ -5,7 +5,7 @@ hr_techreport_plot_catchspatial <- function(
 ) {
   lang <- getOption("hr.lang", "en")
 
-  dplyr::tbl(pcon, "logbook") |>
+  catch_by_location <- dplyr::tbl(pcon, "logbook") |>
     dplyr::filter(year %in% years) |>
     dplyr::group_by(year, lat = round(lat, 1), lon = round(lon, 1)) |>
     dplyr::summarise(
@@ -17,8 +17,7 @@ hr_techreport_plot_catchspatial <- function(
   out <- pax::pax_map_base(low_res = low_res) |>
     pax::pax_map_layer_depth(dplyr::tbl(pcon, "ocean_depth")) |>
     pax::pax_map_layer_catch(
-      hr_catch_by_location(pcon, min(years)) |>
-        dplyr::filter(year %in% local(years)),
+      catch_by_location,
       alpha = 1,
       na.fill = -50,
       breaks = c(0, 1, 2, seq(3, 20, by = 3), 40, 60)
