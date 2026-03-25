@@ -34,3 +34,4 @@ thousand_tonnes	"Thous. tonnes"		"Þús. tonn"
 million_tonnes	"Million tonnes"	"Milljón tonn"
 millions	Millions		Milljónir
 billions	Billions		Milljarðar
+prop_of_measure	"Proportion (of %s)"	"Hlutfall (of %s)"
