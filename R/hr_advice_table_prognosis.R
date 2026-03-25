@@ -1,3 +1,37 @@
+hr_advice_data_prognosis <- function(
+  basis_table,
+  tac_hist,
+  ref_points,
+  stock_dev,
+  assessment_year
+) {
+  tibble(
+    assessment_year = assessment_year,
+    basis.is = basis_table[1, "desc.is"],
+    basis.en = basis_table[1, "desc.en"],
+    HR = ref_points$HR_mgt,
+    catch = tac_hist[tac_hist$assessment_year == assessment_year, "tac"],
+    ssb = stock_dev[
+      stock_dev$year == assessment_year + 2 & stock_dev$name == "ssb",
+      "value"
+    ],
+    ssb_change = (stock_dev[
+      stock_dev$year == assessment_year + 2 & stock_dev$name == "ssb_ratio",
+      "value"
+    ] -
+      1) *
+      100,
+    tac_current = tac_hist[
+      tac_hist$assessment_year == assessment_year,
+      "tac"
+    ],
+    tac_previous = tac_hist[
+      tac_hist$assessment_year == assessment_year - 1,
+      "tac"
+    ]
+  )
+}
+
 hr_advice_table_prognosis <- function(data_prognosis, assessment_year) {
   lang <- getOption("hr.lang", "en")
 
