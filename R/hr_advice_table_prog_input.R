@@ -1,7 +1,7 @@
-hr_advice_prog_input <- function(prog_input_table, assessment_year) {
+hr_advice_table_prog_input <- function(data_prog_input, assessment_year) {
   lang <- getOption("hr.lang", "en")
 
-  prog_input_table |>
+  data_prog_input |>
     dplyr::filter(assessment_year == .env$assessment_year) |>
     dplyr::select(
       variable = as.symbol(paste0('variable.', lang)),
