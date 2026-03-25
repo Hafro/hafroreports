@@ -2,7 +2,22 @@ hr_advice_table_prog_input <- function(data_prog_input, assessment_year) {
   lang <- getOption("hr.lang", "en")
 
   data_prog_input |>
-    dplyr::filter(assessment_year == .env$assessment_year) |>
+    dplyr::mutate(
+      variable.is = dplyr::case_when(
+        name == 'ssb' ~ sprintf('Hrygningarstofn (%s)', year),
+        name == 'rec' ~ sprintf('Nýliðun 1 árs (%s)', year),
+        name == 'catch' ~ sprintf('Afli (%s)', year),
+        name == 'HR' ~ sprintf('Veiðihlutfall (%s)', year),
+        name == 'refbio' ~ sprintf('Viðmiðunarstofn (%s)', year)
+      ),
+      variable.en = dplyr::case_when(
+        name == 'ssb' ~ sprintf('SSB (%s)', year),
+        name == 'rec' ~ sprintf('Recruitment age 1 (%s)', year),
+        name == 'catch' ~ sprintf('Catch (%s)', year),
+        name == 'HR' ~ sprintf('Harvest rate (%s)', year),
+        name == 'refbio' ~ sprintf('Viðmiðunarstofn (%s)', year)
+      ),
+    ) |>
     dplyr::select(
       variable = as.symbol(paste0('variable.', lang)),
       value,
