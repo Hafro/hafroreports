@@ -1,14 +1,13 @@
-hr_advice_table_landings <- function(pcon) {
-  # i.e. advice/tables/landings.csv
-  dplyr::tbl(pcon, "landings") |>
-    dplyr::mutate(mfdb_gear_code = coalesce(mfdb_gear_code, "Other")) |>
-    dplyr::group_by(year, mfdb_gear_code) |>
+hr_advice_table_landings <- function(landings_by_gear) {
+  # Was advice/tables/landings.csv
+  landings_by_gear |>
+    dplyr::group_by(year, gear_name) |>
     dplyr::summarise(tonnes = sum(catch) / 1e6, .groups = "drop") |>
     # TODO: pax::pax_describe_mfdb_gear_code? We'd need icelandic
     dplyr::collect() |>
     dplyr::mutate(
       gear.is = forcats::fct_recode(
-        mfdb_gear_code,
+        gear_name,
         "Lína" = "LLN",
         "Dragnót" = "DSE",
         "Botnvarpa" = "BMT",
@@ -22,7 +21,7 @@ hr_advice_table_landings <- function(pcon) {
         ),
 
       gear.en = forcats::fct_recode(
-        mfdb_gear_code,
+        gear_name,
         "Longline" = "LLN",
         "Demersal seine" = "DSE",
         "Bottom trawl" = "BMT",
