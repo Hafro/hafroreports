@@ -31,7 +31,7 @@ hr_input_data_lw <- function(
         ),
         gam::gam(
           weight ~ s(log(length), df = 8),
-          family = Gamma(link = log),
+          family = stats::Gamma(link = log),
           data = lw_dat
         ),
         var = 'weight'
@@ -69,10 +69,10 @@ hr_input_data_maturity_key <- function(
     dplyr::collect(n = Inf) |>
     na.omit() |>
     dplyr::filter(!(year %in% local(ignore_years))) |>
-    glm(
+    stats::glm(
       mat_p ~ log(lgroup) * region,
       data = _,
-      family = quasi(variance = "mu(1-mu)", link = "logit")
+      family = stats::quasi(variance = "mu(1-mu)", link = "logit")
     )
 
   mat_filler <- expand.grid(

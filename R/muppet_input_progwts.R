@@ -16,7 +16,7 @@ hr_muppet_input_progwts <- function(assessment_input_data, year_end) {
       (year > 1984 & age < 8) | (year > 2013 & age < 10)
     ) |>
     na.omit() |>
-    lm(log(stock_weight / w1) ~ log(w1) + as.factor(year - 1), data = _)
+    stats::lm(log(stock_weight / w1) ~ log(w1) + as.factor(year - 1), data = _)
   #mgcv::gam(log(stock_weight/w1) ~ s(log(w1),bs='cr') + as.factor(year-1),data = _)
 
   weight_model <-
@@ -37,7 +37,7 @@ hr_muppet_input_progwts <- function(assessment_input_data, year_end) {
         ifelse(year > 2012, '2013-2018', '2000-2012')
       )
     ) |>
-    lm(log(catch_weight) ~ log(stock_weight), data = _) |>
+    stats::lm(log(catch_weight) ~ log(stock_weight), data = _) |>
     broom::tidy(conf.int = TRUE) |>
     dplyr::mutate(source = 'Catch weights') |>
     dplyr::select(source, term, estimate) |>
@@ -86,10 +86,10 @@ hr_muppet_input_progwts <- function(assessment_input_data, year_end) {
         ifelse(year > 2012, '2013-2018', '2000-2012')
       )
     ) |>
-    glm(
+    stats::glm(
       maturity ~ log(stock_weight),
       data = _,
-      family = quasi(variance = "mu(1-mu)", link = "logit")
+      family = stats::quasi(variance = "mu(1-mu)", link = "logit")
     )
 
   pred_dat <-

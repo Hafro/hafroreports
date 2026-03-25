@@ -5,7 +5,7 @@ hr_advice_data_prognosis <- function(
   stock_dev,
   assessment_year
 ) {
-  tibble(
+  tibble::tibble(
     assessment_year = assessment_year,
     basis.is = basis_table[1, "desc.is"],
     basis.en = basis_table[1, "desc.en"],

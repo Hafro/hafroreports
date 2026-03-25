@@ -1,4 +1,5 @@
-importFrom("stats", "median", "quantile", "sd")
+importFrom("stats", "median", "na.omit", "lag", "quantile", "sd", "setNames")
 importFrom("utils", "head")
+importFrom("rlang", ".env")
 
 exportPattern("^hr_")
