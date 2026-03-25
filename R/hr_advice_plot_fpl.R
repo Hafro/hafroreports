@@ -1,10 +1,10 @@
 hr_advice_plot_fpl <- function(
-  assessment_results,
+  data_assessment,
   assessment_year,
   ref_points
 ) {
   lang <- getOption("hr.lang", "en")
-  assessment_results |>
+  data_assessment |>
     dplyr::filter(key %in% c('HR'), assessment_year == assessment_year) |>
     ggplot2::ggplot(ggplot2::aes(x = year, y = median)) +
     ggiraph::geom_point_interactive(

@@ -1,10 +1,48 @@
+hr_advice_data_landings <- function(landings_by_gear) {
+  # Was advice/tables/landings.csv
+  landings_by_gear |>
+    dplyr::group_by(year, gear_name) |>
+    dplyr::summarise(tonnes = sum(catch) / 1e6, .groups = "drop") |>
+    # TODO: pax::pax_describe_mfdb_gear_code? We'd need icelandic
+    dplyr::collect() |>
+    dplyr::mutate(
+      gear.is = forcats::fct_recode(
+        gear_name,
+        "Lína" = "LLN",
+        "Dragnót" = "DSE",
+        "Botnvarpa" = "BMT",
+        "Annað og óskilgreint" = "Other"
+      ) |>
+        forcats::fct_relevel(
+          "Lína",
+          "Dragnót",
+          "Botnvarpa",
+          "Annað og óskilgreint"
+        ),
+
+      gear.en = forcats::fct_recode(
+        gear_name,
+        "Longline" = "LLN",
+        "Demersal seine" = "DSE",
+        "Bottom trawl" = "BMT",
+        "Other and undefined gear" = "Other"
+      ) |>
+        forcats::fct_relevel(
+          "Longline",
+          "Demersal seine",
+          "Bottom trawl",
+          "Other and undefined gear"
+        )
+    )
+}
+
 hr_advice_plot_landings <- function(
-  advice_table_landings,
+  landings_data,
   assessment_year
 ) {
   lang <- getOption("hr.lang", "en")
 
-  stacked <- advice_table_landings |>
+  stacked <- landings_data |>
     dplyr::mutate(fill = !!as.symbol(paste0("gear.", lang))) |>
     dplyr::arrange(year, fill) |>
     dplyr::group_by(year) |>

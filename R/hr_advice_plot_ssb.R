@@ -1,5 +1,5 @@
 hr_advice_plot_ssb <- function(
-  assessment_results,
+  data_assessment,
   assessment_year,
   ref_points
 ) {
@@ -11,7 +11,7 @@ hr_advice_plot_ssb <- function(
     c(hr_label("ssb"), hr_label("ref biomass"))
   )
 
-  assessment_results |>
+  data_assessment |>
     dplyr::filter(
       key %in% c('SSB', 'refbio'),
       assessment_year == assessment_year
