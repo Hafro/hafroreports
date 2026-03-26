@@ -1,7 +1,10 @@
 hr_techreport_plot_numboats <- function(
-  pcon
+  pcon,
+  year_start = 1000,
+  year_end = 9999
 ) {
   tbl <- dplyr::tbl(pcon, "landings") |>
+    dplyr::filter(year >= year_start, year <= year_end) |>
     pax::pax_landings_significantboats_summary()
 
   limits <- tbl |>
