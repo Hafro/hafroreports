@@ -2,9 +2,12 @@ hr_techreport_plot_landings_country <- function(
   pcon,
   ylab = 'Landings (in kt)',
   xlab = 'Year',
-  breaks = seq(0, 1e5, by = 10)
+  breaks = seq(0, 1e5, by = 10),
+  year_start = 1000,
+  year_end = 9999
 ) {
   dplyr::tbl(pcon, "landings") |>
+    dplyr::filter(year >= year_start, year <= year_end) |>
     dplyr::mutate(country = ifelse(country != 'Iceland', 'Other', 'Iceland')) |>
     dplyr::group_by(year, country) |>
     dplyr::summarize(catch = sum(catch, na.rm = TRUE) / 1e3) |>
