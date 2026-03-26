@@ -2,7 +2,10 @@
 #  tidypax:::sampling_overview_plot(mar, species_nr = species_code, tyr = tyr)
 hr_techreport_plot_sampling_overview <- function(
   pcon,
-  assessment_year
+  mfdb_gear_codes = c('LLN', 'DSE', 'BMT'),
+  sampling_types = c(1, 2, 3, 4, 8),
+  year_start = 1000,
+  year_end = 9999
 ) {
   # NSE variables
   year <- NULL
@@ -26,6 +29,12 @@ hr_techreport_plot_sampling_overview <- function(
   mfdb_gear_code <- NULL
 
   dplyr::tbl(pcon, "station") |>
+    dplyr::filter(
+      year >= year_start,
+      year <= year_end,
+      mfdb_gear_code %in% mfdb_gear_codes,
+      sampling_type %in% sampling_types
+    ) |>
     dplyr::group_by(year, month, mfdb_gear_code, sampling_type) |>
     dplyr::summarise(n = dplyr::n_distinct(sample_id, na.rm = TRUE)) |>
     dplyr::group_by(mfdb_gear_code, year) |>
@@ -35,6 +44,11 @@ hr_techreport_plot_sampling_overview <- function(
     dplyr::mutate(n = sum(n), pp = sum(p)) |>
     dplyr::full_join(
       dplyr::tbl(pcon, "landings") |>
+        dplyr::filter(
+          year >= year_start,
+          year <= year_end,
+          mfdb_gear_code %in% mfdb_gear_codes
+        ) |>
         # Landings by gear
         dplyr::group_by(species, year, month, mfdb_gear_code) |>
         dplyr::summarise(lnd = sum(catch, na.rm = TRUE)) |>
@@ -54,7 +68,7 @@ hr_techreport_plot_sampling_overview <- function(
       ggplot2::aes(y = p, fill = sampling_type_desc),
       stat = 'identity'
     ) +
-    ggplot2::geom_text(ggplot2::aes(y = pp + 0.05, label = lnd)) +
+    ggplot2::geom_text(ggplot2::aes(y = pp + 0.05, label = n)) +
     ggplot2::geom_line() +
     ggplot2::facet_grid(year ~ mfdb_gear_code_desc) +
     pax::pax_scale_fill_crayola() +
