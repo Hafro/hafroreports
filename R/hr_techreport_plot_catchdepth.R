@@ -1,28 +1,26 @@
+# Was depth_plot
 hr_techreport_plot_catchdepth <- function(
   pcon,
-  year_start = max(year_start, year_end - 22)
+  mfdb_gear_codes = c('LLN', 'DSE', 'BMT'),
+  year_start = 1000,
+  year_end = 9999
 ) {
   lang <- getOption("hr.lang", "en")
 
-  catch_by_location <- dplyr::tbl(pcon, "logbook") |>
-    dplyr::filter(year <= year_start) |>
-    dplyr::group_by(year, lat = round(lat, 1), lon = round(lon, 1)) |>
-    dplyr::summarise(
-      catch = sum(1e-3 * catch / tow_area, na.rm = TRUE),
-      tow_time = sum(tow_time / tow_area, na.rm = TRUE)
+  dplyr::tbl(pcon, "logbook") |>
+    dplyr::filter(
+      year >= year_start,
+      year <= year_end,
+      mfdb_gear_code %in% local(mfdb_gear_codes)
     ) |>
-    dplyr::ungroup()
-
-  out <- pax::pax_map_base() |>
-    pax::pax_map_layer_depth(dplyr::tbl(pcon, "ocean_depth")) |>
-    pax::pax_map_layer_catch(
-      catch_by_location,
-      alpha = 1,
-      na.fill = -50,
-      breaks = c(0, 1, 2, seq(3, 20, by = 3), 40, 60)
+    pax::pax_add_ocean_depth_class(breaks = c(0, 100, 200, 300)) |>
+    dplyr::group_by(year, ocean_depth_class) |>
+    dplyr::summarise(val = sum(catch, na.rm = TRUE) / 1e6) |>
+    dplyr::rename(group = ocean_depth_class) |>
+    dplyr::ungroup() |>
+    dplyr::collect() |>
+    two_panel_plot(
+      fill = "Total catch \n by depth (m)",
+      cols = c("#C7E9B4", "#7FCDBB", "#41B6C4", "#225EA8", 'darkblue')
     )
-  if (lang == "is") {
-    out <- out + ggplot2::labs(fill = 'Afli (t/nm2)')
-  }
-  return(out)
 }
