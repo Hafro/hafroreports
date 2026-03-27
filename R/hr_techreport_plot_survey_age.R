@@ -18,7 +18,6 @@ hr_techreport_plot_survey_age_bubble <- function(
     dplyr::mutate(
       age_lab = ordered(
         max(age) - age,
-        # TODO: This was producing NA for the final age level, the following seems better I think, but should check others
         levels = 0:max(age - 1),
         labels = (max(age)):1
       )

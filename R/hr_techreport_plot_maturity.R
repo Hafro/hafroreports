@@ -18,8 +18,8 @@ hr_techreport_plot_maturity <- function(
     dplyr::mutate(
       age_lab = ordered(
         max(age) - age,
-        levels = 1:max(age),
-        labels = (max(age) - 1):0
+        levels = 0:max(age - 1),
+        labels = (max(age)):1
       )
     ) |>
     dplyr::group_by(age) |>
