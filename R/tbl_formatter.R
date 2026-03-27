@@ -80,7 +80,7 @@ tbl_formater <- function(x, banner_col = "#D3E7E0") {
     # Búa til gt töflu
     gt_tbl <-
       gt_tbl |>
-      cols_label(!!!label_list)
+      gt::cols_label(!!!label_list)
 
     # Bæta spanners (nema Year)
     for (spanner in unique(spanners[-1])) {
