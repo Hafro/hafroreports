@@ -6,13 +6,20 @@ hr_techreport_plot_landings_country <- function(
   year_start = 1000,
   year_end = 9999
 ) {
-  dplyr::tbl(pcon, "landings") |>
+  dat <- dplyr::tbl(pcon, "landings") |>
     dplyr::filter(year >= year_start, year <= year_end) |>
-    dplyr::mutate(country = ifelse(country != 'Iceland', 'Other', 'Iceland')) |>
+    dplyr::mutate(
+      country = ifelse(
+        country != 'Iceland' | is.na(country),
+        'Other',
+        'Iceland'
+      )
+    ) |>
     dplyr::group_by(year, country) |>
     dplyr::summarize(catch = sum(catch, na.rm = TRUE) / 1e3) |>
-    dplyr::arrange(dplyr::desc(country)) |>
-    ggplot2::ggplot(ggplot2::aes(year, catch, fill = country)) +
+    dplyr::arrange(dplyr::desc(country))
+
+  ggplot2::ggplot(dat, ggplot2::aes(year, catch, fill = country)) +
     ggplot2::geom_bar(stat = 'identity') +
     ggplot2::theme_bw() +
     ggplot2::labs(y = ylab, x = xlab, fill = '') +
