@@ -24,6 +24,7 @@ Imports:
     gam,
     ggiraph,
     ggplot2,
+    ggrepel,
     glue,
     gt,
     modelr,
