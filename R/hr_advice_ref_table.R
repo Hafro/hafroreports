@@ -16,8 +16,8 @@ hr_advice_ref_table <- function(ref_points, ref_points_basis_table) {
     dplyr::arrange(approach) |>
     dplyr::mutate(
       approach = dplyr::case_when(
-        is.na(lag(approach)) ~ approach,
-        approach == lag(approach) ~ '',
+        is.na(dplyr::lag(approach)) ~ approach,
+        approach == dplyr::lag(approach) ~ '',
         TRUE ~ approach
       ),
       value = ifelse(value < 1, value, hr_red_dot_number(round(value)))

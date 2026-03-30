@@ -15,7 +15,7 @@ hr_techreport_plot_wm_left <- function(input_data) {
     dplyr::group_by(yc) |>
     dplyr::arrange(age) |>
     dplyr::mutate(
-      w1 = lag(stock_weight),
+      w1 = dplyr::lag(stock_weight),
       marker = ifelse(year == tyr, as.character(tyr), '')
     ) |>
     dplyr::arrange(year) |>
@@ -74,7 +74,7 @@ hr_techreport_plot_wm_right <- function(input_data) {
     dplyr::select(yc, year, age, stock_weight) |>
     dplyr::group_by(yc) |>
     dplyr::arrange(age) |>
-    dplyr::mutate(w1 = lag(stock_weight)) |>
+    dplyr::mutate(w1 = dplyr::lag(stock_weight)) |>
     dplyr::filter(
       age > 1,
       (year > 1984 & age < 8) | (year > 2013 & age < 10)

@@ -10,7 +10,7 @@ hr_muppet_input_progwts <- function(assessment_input_data, year_end) {
     dplyr::select(yc, year, age, stock_weight) |>
     dplyr::group_by(yc) |>
     dplyr::arrange(age) |>
-    dplyr::mutate(w1 = lag(stock_weight)) |>
+    dplyr::mutate(w1 = dplyr::lag(stock_weight)) |>
     dplyr::filter(
       age > 1,
       (year > 1984 & age < 8) | (year > 2013 & age < 10)
@@ -116,7 +116,7 @@ hr_muppet_input_progwts <- function(assessment_input_data, year_end) {
           modelr::add_predictions(wm) |>
           dplyr::mutate(
             diff = pred + log(delta_hat) - (-0.168),
-            stock_weight = lag(exp(diff) * w1),
+            stock_weight = dplyr::lag(exp(diff) * w1),
             stock_weight = ifelse(is.na(stock_weight), w1, stock_weight),
             year = year_end + yr + 1,
             ssbwts = stock_weight,
