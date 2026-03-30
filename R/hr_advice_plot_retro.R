@@ -11,7 +11,9 @@ hr_advice_plot_retro <- function(
       assessment_year > .env$assessment_year - 5,
       year >= .env$assessment_year - 15
     ) |>
-    dplyr::filter(!(key == 'recruitment' & assessment_year < 2025)) |>
+    dplyr::filter(
+      !(key == 'recruitment' & assessment_year < .env$assessment_year)
+    ) |>
     #arrange(label) |>
     dplyr::mutate(
       label = eval(as.symbol(paste('label', lang, sep = '.'))), # gsub('(.+)~(.+)',"bold('\\1')~\\2",label),

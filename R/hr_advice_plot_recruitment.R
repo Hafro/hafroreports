@@ -50,8 +50,16 @@ hr_advice_plot_recruitment <- function(
   lang <- getOption("hr.lang", "en")
 
   data_assessment |>
-    dplyr::filter(key == 'recruitment', assessment_year == assessment_year) |>
-    ggplot2::ggplot(ggplot2::aes(year, median / 1000)) +
+    dplyr::filter(
+      key == 'recruitment',
+      assessment_year == .env$assessment_year
+    ) |>
+    dplyr::mutate(
+      low = low / 1e3,
+      median = median / 1e3,
+      high = high / 1e3
+    ) |>
+    ggplot2::ggplot(ggplot2::aes(year, median)) +
     ggiraph::geom_bar_interactive(
       stat = 'identity',
       fill = 'deepskyblue',
@@ -59,7 +67,7 @@ hr_advice_plot_recruitment <- function(
         tooltip = paste(
           eval(rlang::sym(paste('label', lang, sep = '.'))),
           ':',
-          round(median / 1e3),
+          round(median),
           'mill.',
           '\n',
           hr_label("year"),
@@ -70,7 +78,7 @@ hr_advice_plot_recruitment <- function(
       )
     ) +
     ggplot2::geom_errorbar(
-      ggplot2::aes(ymin = low / 1000, ymax = high / 1000),
+      ggplot2::aes(ymin = low, ymax = high),
       size = 0.25
     ) +
     hr_astand_theme() +

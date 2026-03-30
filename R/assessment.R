@@ -16,7 +16,6 @@ hr_assessment_from_sag <- function(
     ) |>
     dplyr::select(
       year = Year,
-      species = species,
       low_recruitment = low_recruitment,
       median_recruitment = recruitment,
       high_recruitment = high_recruitment,
@@ -33,8 +32,8 @@ hr_assessment_from_sag <- function(
       # median_F = CustomSeries2
     ) |>
     dplyr::mutate(
-      species = local(species),
-      assessment_year = local(assessment_year),
+      species = .env$species,
+      assessment_year = .env$assessment_year,
       low_HR = ifelse(year == assessment_year, NA_real_, low_HR),
       median_HR = ifelse(year == assessment_year, NA_real_, median_HR),
       high_HR = ifelse(year == assessment_year, NA_real_, high_HR)

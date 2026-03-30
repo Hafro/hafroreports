@@ -14,7 +14,7 @@ hr_advice_plot_ssb <- function(
   data_assessment |>
     dplyr::filter(
       key %in% c('SSB', 'refbio'),
-      assessment_year == assessment_year
+      assessment_year == .env$assessment_year
     ) |>
     dplyr::mutate(
       label = eval(as.symbol(paste('label', lang, sep = '.')))
