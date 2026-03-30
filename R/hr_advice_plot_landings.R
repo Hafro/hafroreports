@@ -37,18 +37,18 @@ hr_advice_data_landings <- function(landings_by_gear) {
 }
 
 hr_advice_plot_landings <- function(
-  landings_data,
+  data_landings,
   assessment_year
 ) {
   lang <- getOption("hr.lang", "en")
 
-  stacked <- landings_data |>
+  stacked <- data_landings |>
     dplyr::mutate(fill = !!as.symbol(paste0("gear.", lang))) |>
     dplyr::arrange(year, fill) |>
     dplyr::group_by(year) |>
     dplyr::mutate(
-      ymin = cumsum(lag(tonnes, default = 0)),
-      ymax = ymin + tonnes
+      ymax = cumsum(tonnes),
+      ymin = ymax - tonnes
     )
 
   ggplot2::ggplot(stacked, ggplot2::aes(x = year, fill = fill)) +
@@ -72,13 +72,11 @@ hr_advice_plot_landings <- function(
       )
     ) +
     ggplot2::scale_fill_manual(
-      # TODO: The original 4 is expecting only 3 gears + other
       values = c(
         "tomato3",
         "navajowhite3",
         "steelblue3",
-        "black",
-        rep("black", 9)
+        "black"
       ),
       guide = ggplot2::guide_legend(reverse = TRUE, label.position = "right")
     ) +
