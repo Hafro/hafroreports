@@ -4,13 +4,17 @@ hr_techreport_plot_sampling_overview <- function(
   pcon,
   mfdb_gear_codes = c('LLN', 'DSE', 'BMT'),
   sampling_types = c(1, 2, 3, 4, 8),
+  gear_group = list(
+    BMT = "BMT",
+    LLN = 'LLN',
+    DSE = "DSE"
+  ),
   year_start = 1000,
   year_end = 9999
 ) {
   # NSE variables
   year <- NULL
   month <- NULL
-  mfdb_gear_code <- NULL
   sampling_type <- NULL
   sample_id <- NULL
   n <- NULL
@@ -26,44 +30,45 @@ hr_techreport_plot_sampling_overview <- function(
   lat <- NULL
   lon <- NULL
   year <- NULL
-  mfdb_gear_code <- NULL
 
-  dplyr::tbl(pcon, "station") |>
+  dat <- dplyr::tbl(pcon, "station") |>
     dplyr::filter(
       year >= year_start,
       year <= year_end,
-      mfdb_gear_code %in% mfdb_gear_codes,
       sampling_type %in% sampling_types
     ) |>
-    dplyr::group_by(year, month, mfdb_gear_code, sampling_type) |>
+    # Only include samples that have a length measurement
+    dplyr::semi_join(dplyr::tbl(pcon, "ldist"), by = "sample_id") |>
+    pax::pax_add_gear_group(gear_group = gear_group) |>
+    dplyr::filter(!is.na(gear_name)) |>
+    dplyr::group_by(year, month, gear_name, sampling_type) |>
     dplyr::summarise(n = dplyr::n_distinct(sample_id, na.rm = TRUE)) |>
-    dplyr::group_by(mfdb_gear_code, year) |>
-    #    dplyr::arrange(month) |>
+    dplyr::group_by(gear_name, year) |>
     dplyr::mutate(p = (n) / sum(n)) |>
-    dplyr::group_by(mfdb_gear_code, year, month) |>
+    dplyr::group_by(gear_name, year, month) |>
     dplyr::mutate(n = sum(n), pp = sum(p)) |>
     dplyr::full_join(
       dplyr::tbl(pcon, "landings") |>
         dplyr::filter(
           year >= year_start,
           year <= year_end,
-          mfdb_gear_code %in% mfdb_gear_codes
         ) |>
         # Landings by gear
-        dplyr::group_by(species, year, month, mfdb_gear_code) |>
+        pax::pax_add_gear_group(gear_group = gear_group) |>
+        dplyr::filter(!is.na(gear_name)) |>
+        dplyr::group_by(species, year, month, gear_name) |>
         dplyr::summarise(lnd = sum(catch, na.rm = TRUE)) |>
         # Window working out proportion of landings per month
-        dplyr::group_by(species, year, mfdb_gear_code) |>
+        dplyr::group_by(species, year, gear_name) |>
         dplyr::mutate(p.lnd = ifelse(sum(lnd) == 0, 0, (lnd) / sum(lnd))),
-      #        dplyr::arrange(species, year, month),
-      by = c("year", "month", "mfdb_gear_code")
+      by = c("year", "month", "gear_name")
     ) |>
-    dplyr::ungroup() |>
     pax::pax_describe_sampling_type() |>
     pax::pax_describe_mfdb_gear_code() |>
-    dplyr::collect(n = Inf) |>
+    dplyr::arrange(year, month, gear_name) |>
+    dplyr::collect(n = Inf)
 
-    ggplot2::ggplot(ggplot2::aes(month, p.lnd)) +
+  ggplot2::ggplot(dat, ggplot2::aes(month, p.lnd)) +
     ggplot2::geom_bar(
       ggplot2::aes(y = p, fill = sampling_type_desc),
       stat = 'identity'
