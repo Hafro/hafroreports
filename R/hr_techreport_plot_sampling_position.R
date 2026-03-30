@@ -37,7 +37,8 @@ hr_techreport_plot_sampling_position <- function(
     pax::pax_map_layer_catch(
       catch_by_gear,
       annotation = 'gear',
-      na.fill = -50
+      na.fill = -50,
+      fill_lab = hr_label("catch_t_nm2")
     ) +
     ggplot2::geom_point(ggplot2::aes(lon, lat), data = sampling_pos, pch = 4)
 }

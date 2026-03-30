@@ -3,6 +3,8 @@ hr_techreport_plot_numboats <- function(
   year_start = 1000,
   year_end = 9999
 ) {
+  lang <- getOption("hr.lang", "en")
+
   tbl <- dplyr::tbl(pcon, "landings") |>
     dplyr::filter(year >= year_start, year <= year_end) |>
     pax::pax_landings_significantboats_summary()
@@ -33,7 +35,11 @@ hr_techreport_plot_numboats <- function(
     ggplot2::expand_limits(y = 0, x = 0) +
     #  ylim(c(0,250))+
     #  xlim(4000,12500)+
-    ggplot2::labs(y = "", x = "Catch (tonnes)", color = "Year") +
+    ggplot2::labs(
+      y = "",
+      x = hr_label("catch_tonnes"),
+      color = hr_label("year")
+    ) +
     ggplot2::theme(
       legend.position = c(0.9, 0.3),
       legend.title = ggplot2::element_text(size = 5),
@@ -46,8 +52,11 @@ hr_techreport_plot_numboats <- function(
     #  ylim(0,250)+
     ggplot2::expand_limits(y = 0) +
     ggplot2::labs(
-      x = "Year",
-      y = "Number of vessles accounting for 95% of catch"
+      x = hr_label("year"),
+      y = c(
+        en = "Number of vessles accounting for 95% of catch",
+        is = "Fjöldi báta sem veiða 95 % af heildarafla"
+      )[[lang]]
     ) +
     ggplot2::theme_light()
 

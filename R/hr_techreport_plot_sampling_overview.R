@@ -78,7 +78,11 @@ hr_techreport_plot_sampling_overview <- function(
     ggplot2::facet_grid(year ~ mfdb_gear_code_desc) +
     pax::pax_scale_fill_crayola() +
     ggplot2::scale_x_continuous(breaks = c(seq(2, 12, by = 2))) +
-    ggplot2::labs(x = 'Month', y = 'Percent samples/landings', fill = '') +
+    ggplot2::labs(
+      x = hr_label('month'),
+      y = hr_label("pct_samples_landings"),
+      fill = ''
+    ) +
     ggplot2::theme(
       strip.background = ggplot2::element_blank(),
       legend.position = 'top'

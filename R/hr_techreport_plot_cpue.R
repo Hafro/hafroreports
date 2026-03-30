@@ -27,6 +27,11 @@ hr_techreport_plot_cpue <- function(
     pax::pax_add_cpue()
 
   pax::pax_logbook_cpue_plot(dat) +
+    ggplot2::labs(
+      y = hr_label("catch_per_unit_effort"),
+      x = hr_label("year"),
+      lty = ''
+    ) +
     ggplot2::facet_wrap(
       ~mfdb_gear_code,
       scales = 'free_y',

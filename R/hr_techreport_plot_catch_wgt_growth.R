@@ -68,7 +68,7 @@ hr_techreport_plot_catch_wgt_growth <- function(
       strip.text = ggplot2::element_blank(),
       axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5)
     ) +
-    ggplot2::labs(y = 'Mean weight (g)', x = 'Year') +
+    ggplot2::labs(y = hr_label("mean_weight_g"), x = hr_label("year")) +
     ggplot2::scale_x_continuous(
       breaks = seq(year_start, year_end, by = 4),
       minor_breaks = seq(year_start, year_end, by = 2)

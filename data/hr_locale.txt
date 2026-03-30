@@ -1,5 +1,7 @@
 key		en			is
 year		Year			Ár
+month		Month			"Mánuður"
+length		Length			"Lengd"
 ssb		SSB			Hrygningarstofn
 ref_biomass	"Reference biomass"	Viðmiðunarstofn
 HRmsy		HR[MSY]			HR[MSY]
@@ -22,11 +24,13 @@ Ftarget		F[target]		F[target]
 Ilim		I[lim]			I[lim]
 Itrigger	I[trigger]		I[trigger]
 biomass		Biomass			Lífmassi
+mean_weight_g	"Mean weight (g)"	"Aflaþyngdir (g)"
 fproxy		"Fishing pressure proxy"	"Vísitala veiðihlutfalls"
 fbar		"Fishing mortality"	Veiðidánartala
 harvest_rate	"Harvest rate"		Veiðihlufall
 recindex	Juvenile~index		Nýliðunarvísitala
 catches		Catches			Afli
+catch_at_age	"Catch at age"		"Aldursgreindur afli"
 biomass_index_?	"Biomass index"		Lífmassavísitala
 biomass_index	"Biomass index"		Vísitala
 abundance_index	"Abundance index"	Fjöldavísitala
@@ -34,4 +38,31 @@ thousand_tonnes	"Thous. tonnes"		"Þús. tonn"
 million_tonnes	"Million tonnes"	"Milljón tonn"
 millions	Millions		Milljónir
 billions	Billions		Milljarðar
-prop_of_measure	"Proportion (of %s)"	"Hlutfall (of %s)"
+prop_of_measure	"Proportion (of %s)"	"Hlutfall (af %s)"
+catch_tonnes	"Catch (tonnes)"	"Afli (í tonnum)"
+catch_t_nm2	"Catch (t/nm2)"		"Afli (t/nm2)"
+total_catch	"Total catch"		"Heild afli"
+other		"Other"			"Önnur"
+W		"W"			"V"
+NW		"NW"			"NV"
+NE		"NE"			"NA"
+SE		"SE"			"SA"
+SW		"SW"			"SV"
+landings_kt	"Landings (in kt)"	"Landaður afli (kt)"
+iceland		"Iceland"		"Ísland"
+other_country	"Other"			"Önnur lönd"
+pct_samples_landings	"Percent samples/landings"	"Hlutfall sýnatöku/landana"
+discards_pct_wgt	"Discards (% weight)"		"Brottkast (% þyngd)"
+total_all_gears		"Total from all gears"		"Heild, öll veiðarfæri"
+number_of_samples	"Number of samples"		"Fjöldi sýna"
+number_of_lengths	"Number of lengths"		"Fjöldi lengdarmælinga"
+number_of_otoliths	"Number of otoliths"		"Fjöldi kvarna"
+catch_per_unit_effort	"Catch per unit effort"		"Afli á sóknareiningu"
+spring_survey		"Spring survey"			"Vorrall"
+autumn_survey		"Autumn survey"			"Haustrall"
+survey_biomass		"Survey biomass"		"Stofnvísitala"
+survey_at_age		"Survey at age"			"Aldursskipt vísitala"
+between_years		"Between years"			"Milli ára"
+between_species		"Between species"		"Tegundatilfærsla"
+quota_period		"Quota period"			"Fiskveiðiár"
+transfers_in_thous_t	"Transfers (in thousand t)"	"Kvótatilfærsla (í kt)"

@@ -39,7 +39,7 @@ hr_techreport_plot_catch_age_bubble <- function(
       scale = 'free_y'
     ) +
     ggplot2::theme(strip.background = ggplot2::element_blank()) +
-    ggplot2::labs(y = 'Catch at age', x = 'Year') +
+    ggplot2::labs(y = hr_label("catch_at_age"), x = hr_label("year")) +
     ggplot2::scale_x_continuous(
       breaks = seq(year_start, year_end, by = 4),
       minor_breaks = seq(year_start, year_end, by = 2)

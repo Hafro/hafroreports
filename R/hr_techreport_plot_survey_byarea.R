@@ -28,7 +28,13 @@ hr_techreport_plot_survey_byarea <- function(
       ) |>
       pax::pax_si_by_length() |>
       pax::pax_si_scale_by_strata(stratification) |>
-      pax::pax_add_regions(regions = regions) |>
+      pax::pax_add_regions(
+        regions = regions |>
+          stats::setNames(sapply(
+            c("W", "NW", "NE", "SE", "SW", "other"),
+            hr_label
+          ))
+      ) |>
       dplyr::group_by(year, sampling_type, region) |>
       dplyr::summarize(si_biomass = sum(si_biomass))
   }
@@ -42,13 +48,13 @@ hr_techreport_plot_survey_byarea <- function(
       # NB: This isn't a gear code, it's the plot split
       mfdb_gear_code = ifelse(
         sampling_type == 30,
-        'Spring survey',
-        'Autumn survey'
+        local(hr_label("spring_survey")),
+        local(hr_label("autumn_survey"))
       ),
       val = si_biomass / 1e3
     ) |>
     two_panel_plot(
-      y = 'Survey biomass',
+      y = hr_label("survey_biomass"),
       total.text = '%s',
       cols = c(
         "#999999",

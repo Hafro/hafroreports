@@ -25,7 +25,11 @@ hr_techreport_plot_survey_age_bubble <- function(
     dplyr::select(year, yc, age, age_lab, smb, smh) |>
     tidyr::pivot_longer(-c(year, yc, age, age_lab), values_to = 'ind') |>
     dplyr::mutate(
-      name = ifelse(name == 'smb', 'Spring survey', 'Autumn survey')
+      name = ifelse(
+        name == 'smb',
+        local(hr_label("spring_survey")),
+        local(hr_label("autumn_survey"))
+      )
     )
 
   ggplot2::ggplot(dat) +
@@ -37,7 +41,7 @@ hr_techreport_plot_survey_age_bubble <- function(
     ggplot2::theme(legend.position = 'none') +
     ggplot2::facet_grid(age_lab ~ name, scale = 'free_y') +
     ggplot2::theme(strip.background = ggplot2::element_blank()) +
-    ggplot2::labs(y = 'Survey at age', x = 'Year') +
+    ggplot2::labs(y = hr_label("survey_at_age"), x = hr_label("year")) +
     ggplot2::scale_x_continuous(
       breaks = seq(year_start, year_end, by = 4),
       minor_breaks = seq(year_start, year_end, by = 2)

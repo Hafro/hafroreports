@@ -22,13 +22,19 @@ hr_techreport_table_lengthsamples <- function(
   }
 
   sampling |>
-    dplyr::rename_with(~ gsub('__n$', '__Number of samples', .x)) |>
-    dplyr::rename_with(~ gsub('__n_lengths$', '__Number of lengths', .x)) |>
-    dplyr::rename_with(~ gsub('__n_otol$', '__Number of otoliths', .x)) |>
     dplyr::ungroup() |>
     dplyr::relocate(year) |>
     dplyr::arrange(year) |>
-    dplyr::rename(Year = year) |>
     dplyr::collect() |>
+    dplyr::rename_with(
+      ~ gsub('__n$', paste0("__", hr_label("number_of_samples")), .x)
+    ) |>
+    dplyr::rename_with(
+      ~ gsub('__n_lengths$', paste0("__", hr_label("number_of_lengths")), .x)
+    ) |>
+    dplyr::rename_with(
+      ~ gsub('__n_otol$', paste0("__", hr_label("number_of_otoliths")), .x)
+    ) |>
+    dplyr::rename_with(~ hr_label("year"), year) |>
     hafroreports:::tbl_formater()
 }

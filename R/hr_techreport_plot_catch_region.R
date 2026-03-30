@@ -14,9 +14,10 @@ hr_techreport_plot_catch_region <- function(
         NE = c(103, 104, 105),
         SE = c(107, 106),
         SW = 108
-      )
+      ) |>
+        stats::setNames(sapply(c("W", "NW", "NE", "SE", "SW"), hr_label))
     ) |>
-    dplyr::mutate(region = coalesce(region, 'Other')) |>
+    dplyr::mutate(region = coalesce(region, local(hr_label('other')))) |>
     dplyr::group_by(year, mfdb_gear_code, region, ocean_depth_class) |>
     dplyr::summarise(val = sum(catch, na.rm = TRUE) / 1e6) |>
     dplyr::rename(group = region) |>

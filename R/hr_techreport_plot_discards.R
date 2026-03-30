@@ -9,7 +9,7 @@ hr_techreport_plot_discards <- function(
         dplyr::mutate(tot = disc.wgt / disc.wgt.perc) |>
         dplyr::group_by(year) |>
         dplyr::summarise(
-          gear = ' Total from all gears',
+          gear = hr_label("total_all_gears"),
           disc.wgt.perc = sum(tot * disc.wgt.perc, na.rm = TRUE) /
             sum(tot, na.rm = TRUE),
           disc.wgt = sum(disc.wgt, na.rm = TRUE),
@@ -25,7 +25,7 @@ hr_techreport_plot_discards <- function(
     ggplot2::geom_point() +
     ggplot2::facet_wrap(~gear) +
     ggplot2::theme(strip.background = ggplot2::element_blank()) +
-    ggplot2::labs(y = 'Discards (% weight)', x = 'Year')
+    ggplot2::labs(y = hr_label("discards_pct_wgt"), x = hr_label("year"))
 }
 
 update_hr_discards_txt <- function(

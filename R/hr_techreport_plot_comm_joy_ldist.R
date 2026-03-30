@@ -26,5 +26,6 @@ hr_techreport_plot_comm_joy_ldist <- function(
     pax::pax_ldist_joy_plot(
       max_height = max_height,
       split_by_sex = split_by_sex
-    )
+    ) +
+    ggplot2::labs(y = hr_label("year"), x = hr_label("length"))
 }

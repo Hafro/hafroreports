@@ -1,7 +1,7 @@
 hr_techreport_plot_landings_country <- function(
   pcon,
-  ylab = 'Landings (in kt)',
-  xlab = 'Year',
+  ylab = hr_label("landings_kt"),
+  xlab = hr_label('year'),
   breaks = seq(0, 1e5, by = 10),
   year_start = 1000,
   year_end = 9999
@@ -11,8 +11,8 @@ hr_techreport_plot_landings_country <- function(
     dplyr::mutate(
       country = ifelse(
         country != 'Iceland' | is.na(country),
-        'Other',
-        'Iceland'
+        local(hr_label("other_country")),
+        local(hr_label('iceland'))
       )
     ) |>
     dplyr::group_by(year, country) |>
