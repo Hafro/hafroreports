@@ -12,7 +12,8 @@ hr_assessment_from_sag <- function(
   icesSAG::getSummaryTable(assessment_keys) |>
     dplyr::left_join(
       icesSAG::getCustomColumns(assessment_keys) |>
-        dplyr::filter(customName %in% local(c(ices_median_refbio)))
+        dplyr::select(-c(customUnit, customColumnId)) |>
+        tidyr::pivot_wider(names_from = customName, values_from = customValue)
     ) |>
     dplyr::select(
       year = Year,
@@ -23,7 +24,7 @@ hr_assessment_from_sag <- function(
       median_SSB = SSB,
       high_SSB = high_SSB,
       #low_refbio = CustomSeries3,
-      median_refbio = customValue,
+      median_refbio = as.symbol(ices_median_refbio),
       #high_refbio = CustomSeries4,
       landings = landings,
       low_HR = low_F,
