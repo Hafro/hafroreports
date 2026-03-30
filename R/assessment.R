@@ -41,9 +41,8 @@ hr_assessment_from_sag <- function(
     )
 }
 
-hr_assessment_combine <- function(...) {
-  # Start with a default set of columns
-  out <- tibble::tibble(
+hr_assessment_template <- function() {
+  tibble::tibble(
     year = NA_integer_,
     species = NA_integer_,
     median_SSB = NA_real_,
@@ -64,15 +63,4 @@ hr_assessment_combine <- function(...) {
     high_HR = NA_real_,
     assessment_year = NA_integer_
   )
-  for (a in list(...)) {
-    if (is.null(a)) {
-      continue
-    }
-    out <- out |>
-      # Remove any rows of a previous assessment in that year
-      dplyr::filter(!(assessment_year %in% unique(a$assessment_year))) |>
-      dplyr::bind_rows(a)
-  }
-  # Remove template once done
-  return(out |> dplyr::filter(!is.na(year)))
 }
