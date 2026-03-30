@@ -1,7 +1,6 @@
 # Was depth_plot
 hr_techreport_plot_catchdepth <- function(
   pcon,
-  mfdb_gear_codes = c('LLN', 'DSE', 'BMT'),
   year_start = 1000,
   year_end = 9999
 ) {
@@ -10,8 +9,7 @@ hr_techreport_plot_catchdepth <- function(
   dplyr::tbl(pcon, "logbook") |>
     dplyr::filter(
       year >= year_start,
-      year <= year_end,
-      mfdb_gear_code %in% .env$mfdb_gear_codes
+      year <= year_end
     ) |>
     pax::pax_add_ocean_depth_class(breaks = c(0, 100, 200, 300)) |>
     dplyr::group_by(year, ocean_depth_class) |>
