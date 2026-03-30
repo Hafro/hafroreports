@@ -1,6 +1,5 @@
 hr_techreport_plot_landings_gear <- function(
   pcon,
-  mfdb_gear_codes = c('LLN', 'DSE', 'BMT'),
   year_start = 1000,
   year_end = 9999
 ) {
@@ -8,7 +7,6 @@ hr_techreport_plot_landings_gear <- function(
     dplyr::filter(
       year >= year_start,
       year <= year_end,
-      mfdb_gear_code %in% mfdb_gear_codes
     ) |>
     pax::pax_landings_by_gear() |>
     dplyr::ungroup() |>
