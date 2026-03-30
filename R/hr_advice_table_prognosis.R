@@ -7,18 +7,18 @@ hr_advice_data_prognosis <- function(
 ) {
   tibble::tibble(
     assessment_year = assessment_year,
-    basis.is = basis_table[1, "desc.is"],
-    basis.en = basis_table[1, "desc.en"],
+    basis.is = unlist(basis_table[1, "desc.is"]),
+    basis.en = unlist(basis_table[1, "desc.en"]),
     HR = ref_points$HR_mgt,
     catch = tac_hist[tac_hist$assessment_year == assessment_year, "tac"],
     ssb = stock_dev[
       stock_dev$year == assessment_year + 2 & stock_dev$name == "ssb",
       "value"
     ],
-    ssb_change = (stock_dev[
+    ssb_change = (unlist(stock_dev[
       stock_dev$year == assessment_year + 2 & stock_dev$name == "ssb_ratio",
       "value"
-    ] -
+    ]) -
       1) *
       100,
     tac_current = tac_hist[
@@ -66,7 +66,7 @@ hr_advice_table_prognosis <- function(data_prognosis, assessment_year) {
         round(ssb_change, 1),
         round(ssb_change)
       ),
-      tac_change = round(100 * tac_current / (tac_previous - 1)),
+      tac_change = round(100 * (tac_current / tac_previous - 1)),
       advice_change = tac_change,
       advice_change = as.character(round(advice_change)),
       advice_change = dplyr::case_when(
@@ -74,6 +74,7 @@ hr_advice_table_prognosis <- function(data_prognosis, assessment_year) {
         .default = advice_change
       )
     ) |>
+    dplyr::select(-c(tac_current, tac_previous)) |>
     flextable::flextable() |>
     ftExtra::colformat_md() |>
     flextable::mk_par(
