@@ -65,7 +65,10 @@ hr_muppet_input_datafiles <- function(
       maturity = ifelse(is.na(maturity), ms, maturity)
     ) |>
     dplyr::arrange(year, age) |>
-    dplyr::mutate(across(everything(), ~ tidyr::replace_na(.x, -1))) # TODO: ?
+    dplyr::mutate(dplyr::across(
+      dplyr::everything(),
+      ~ tidyr::replace_na(.x, -1)
+    )) # TODO: ?
 
   out_files[['Files/catchandstockdata.dat']] <- dat |>
     dplyr::mutate(ssbwt = stock_weight) |>
