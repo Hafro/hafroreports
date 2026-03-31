@@ -39,5 +39,5 @@ hr_techreport_table_lengthsamples <- function(
       ~ gsub('__n_otol$', paste0("__", hr_label("number_of_otoliths")), .x)
     ) |>
     dplyr::rename_with(~ hr_label("year"), year) |>
-    hafroreports:::tbl_formater()
+    tbl_formater()
 }
