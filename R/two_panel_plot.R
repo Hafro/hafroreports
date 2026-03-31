@@ -7,6 +7,7 @@
 #' @param x Time label
 #' @param fill Fill label
 #' @param cols fill colours
+#' @param split_by_gear Boolean, Use mfdb_gear_code as a facet?
 #'
 #' @return ggplot object
 two_panel_plot <- function(
