@@ -33,6 +33,7 @@ Imports:
     officer,
     patchwork,
     pax,
+    psych,
     readr,
     rlang,
     rmuppet,

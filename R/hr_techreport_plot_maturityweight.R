@@ -20,7 +20,7 @@ hr_techreport_plot_maturityweight <- function(
 
   if (mat_model == "period") {
     mat_model_period <-
-      input_dat |>
+      input_data |>
       dplyr::filter(year > 1984, age %in% 3:20) |>
       dplyr::mutate(
         stock_weight = ifelse(round(stock_weight) == 4000, NA, stock_weight),
@@ -35,19 +35,19 @@ hr_techreport_plot_maturityweight <- function(
       ) |>
       stats::glm(
         maturity ~ log(stock_weight) * period,
-        data = .,
+        data = _,
         family = stats::quasi(variance = "mu(1-mu)", link = "logit")
       )
 
     dat <- dat |>
-      modelr::add_predictions(mat_model, var = 'pred_period') |>
+      modelr::add_predictions(mat_model_period, var = 'pred') |>
       dplyr::mutate(pred = psych::logistic(pred))
-    mod_geom <- ggplot2::geom_line(ggplot2::aes(y = pred_period, lty = period))
+    mod_geom <- ggplot2::geom_line(ggplot2::aes(y = pred, lty = period))
   }
 
   if (mat_model == "pred") {
     mat_model <-
-      input_dat |>
+      input_data |>
       dplyr::filter(year > 2012, age %in% 3:20) |>
       dplyr::mutate(
         stock_weight = ifelse(round(stock_weight) == 4000, NA, stock_weight),
@@ -62,7 +62,7 @@ hr_techreport_plot_maturityweight <- function(
       ) |>
       stats::glm(
         maturity ~ log(stock_weight),
-        data = .,
+        data = _,
         family = stats::quasi(variance = "mu(1-mu)", link = "logit")
       )
 
@@ -72,18 +72,17 @@ hr_techreport_plot_maturityweight <- function(
     mod_geom <- ggplot2::geom_line(ggplot2::aes(y = pred), col = 'black')
   }
 
-  ggplot2::ggplot(ggplot2::aes(stock_weight, maturity, col = period)) +
+  ggplot2::ggplot(dat, ggplot2::aes(stock_weight, maturity, col = period)) +
     ggplot2::geom_point() +
-    mode_geom +
+    mod_geom +
     ggplot2::scale_x_log10(breaks = c(200, 500, 1000, 2000, 5000)) +
     ggplot2::labs(
-      lty = 'Period',
       col = 'Period',
       x = 'Stock weights',
       y = 'Proportion mature'
     ) +
     ggplot2::theme(
-      legend.background = element_blank(),
+      legend.background = ggplot2::element_blank(),
       legend.position = c(0.8, 0.15)
     )
 }
