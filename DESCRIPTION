@@ -51,6 +51,7 @@ License: GPL-2
 LazyData: true
 Remotes:
     github::fishvice/rmuppet,
+    github::hafro/pax,
     github::hafro/SAMutils,
     github::fishfollower/SAM/stockassessment@iceland_HCR
 Roxygen: list(markdown = TRUE)
