@@ -32,6 +32,7 @@ hr_astand_theme <- function(...) {
 #' @name hr_astand_x_scale
 #' @param x break point
 #' @param tyr terminal year
+#' @param ... Further input to ggplot2::scale_x_continuous()
 hr_astand_x_scale <- function(x, tyr = lubridate::year(Sys.Date()), ...) {
   if ((tyr %% 2) == 0) {
     ggplot2::scale_x_continuous(
