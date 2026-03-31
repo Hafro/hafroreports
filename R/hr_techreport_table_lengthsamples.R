@@ -18,10 +18,10 @@ hr_techreport_table_lengthsamples <- function(
     )
 
   if (!("lengths" %in% include_cols)) {
-    sampling <- dplyr::select(sampling, -ends_with('lengths'))
+    sampling <- dplyr::select(sampling, -dplyr::ends_with('lengths'))
   }
   if (!("otol" %in% include_cols)) {
-    sampling <- dplyr::select(sampling, -ends_with('otol'))
+    sampling <- dplyr::select(sampling, -dplyr::ends_with('otol'))
   }
 
   sampling |>
