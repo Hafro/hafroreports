@@ -4,7 +4,7 @@ hr_update_hist <- function(
   out <- NULL
   for (a in list(...)) {
     if (is.null(a)) {
-      continue
+      next
     }
     if (is.character(a) && endsWith(a, ".csv")) {
       a <- readr::read_csv(a)
