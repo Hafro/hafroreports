@@ -4,7 +4,7 @@ hr_techreport_plot_lbindex <- function(
   var = "si_biomass"
 ) {
   # NSE variables
-  #year <- var <- var_cv <- NULL
+  year <- ovar <- ovar_cv <- NULL
 
   make_si <- function(survey, length_range) {
     stratification <- if (survey == "smb") {
@@ -27,19 +27,19 @@ hr_techreport_plot_lbindex <- function(
       pax::pax_si_strata_summary(length_range = length_range) |>
       pax::pax_si_year_summary() |>
       dplyr::mutate(
-        var = !!substitute(x / 1e3, list(x = as.symbol(var))),
-        var_cv = !!as.symbol(paste0(var, "_cv"))
+        ovar = !!substitute(x / 1e3, list(x = as.symbol(var))),
+        ovar_cv = !!as.symbol(paste0(var, "_cv"))
       ) |>
-      dplyr::select(year, var, var_cv) |>
+      dplyr::select(year, ovar, ovar_cv) |>
       dplyr::collect()
   }
 
   make_si("smb", length_range) |>
-    ggplot2::ggplot(ggplot2::aes(year, var)) +
+    ggplot2::ggplot(ggplot2::aes(year, ovar)) +
     ggplot2::geom_ribbon(
       ggplot2::aes(
-        ymin = var * (1 - 1.96 * var_cv),
-        ymax = var * (1 + 1.96 * var_cv)
+        ymin = ovar * (1 - 1.96 * ovar_cv),
+        ymax = ovar * (1 + 1.96 * ovar_cv)
       ),
       fill = 'grey'
     ) +
@@ -54,9 +54,9 @@ hr_techreport_plot_lbindex <- function(
       data = make_si("smh", length_range),
       ggplot2::aes(
         year,
-        var,
-        ymax = var * (1 + 1.96 * var_cv),
-        ymin = var * (1 - 1.96 * var_cv)
+        ovar,
+        ymax = ovar * (1 + 1.96 * ovar_cv),
+        ymin = ovar * (1 - 1.96 * ovar_cv)
       )
     )
 }
