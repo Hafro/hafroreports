@@ -28,5 +28,5 @@ hr_techreport_plot_landings_country <- function(
       legend.position = c(0.15, 0.75)
     ) +
     ggplot2::scale_x_continuous(breaks = breaks) +
-    pax::pax_scale_fill_crayola()
+    hr_theme_crayola_fill()
 }

@@ -59,7 +59,7 @@ hr_techreport_plot_catch_wgt_growth <- function(
       vjust = 1.2,
       hjust = -0.5
     ) +
-    pax::pax_scale_col_crayola() +
+    hr_theme_crayola_col() +
     ggplot2::theme(legend.position = 'none') +
     ggplot2::facet_wrap(~age, scale = 'free_y', drop = TRUE, dir = 'v') +
     ggplot2::theme(

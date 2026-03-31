@@ -30,7 +30,7 @@ hr_techreport_plot_catch_age_bubble <- function(
       stat = 'identity',
       ggplot2::aes(year, ind, fill = as.factor(yc))
     ) +
-    pax::pax_scale_fill_crayola() +
+    hr_theme_crayola_fill() +
     ggplot2::theme(legend.position = 'none') +
     ggplot2::facet_wrap(
       ~age_lab,

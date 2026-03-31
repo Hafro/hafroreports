@@ -30,7 +30,7 @@ hr_techreport_plot_maturity <- function(
       ggplot2::aes(year, maturity, xend = year, yend = mw, col = as.factor(yc)),
       size = 3
     ) +
-    pax::pax_scale_col_crayola() +
+    hr_theme_crayola_col() +
     ggplot2::theme(legend.position = 'none') +
     ggplot2::facet_wrap(~age, scale = 'free_y', strip.position = 'top') +
     ggplot2::theme(strip.background = ggplot2::element_blank()) +

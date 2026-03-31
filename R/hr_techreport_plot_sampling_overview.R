@@ -76,7 +76,7 @@ hr_techreport_plot_sampling_overview <- function(
     ggplot2::geom_text(ggplot2::aes(y = pp + 0.05, label = n)) +
     ggplot2::geom_line() +
     ggplot2::facet_grid(year ~ mfdb_gear_code_desc) +
-    pax::pax_scale_fill_crayola() +
+    hr_theme_crayola_fill() +
     ggplot2::scale_x_continuous(breaks = c(seq(2, 12, by = 2))) +
     ggplot2::labs(
       x = hr_label('month'),

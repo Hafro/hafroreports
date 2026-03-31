@@ -22,6 +22,7 @@ hr_techreport_plot_catchspatial <- function(
       na.fill = -50,
       breaks = c(0, 1, 2, seq(3, 20, by = 3), 40, 60)
     ) +
+    hr_theme_crayola_fill() +
     ggplot2::theme(legend.position = c(0.8, 0.2))
   if (lang == "is") {
     out <- out + ggplot2::labs(fill = 'Afli (t/nm2)')

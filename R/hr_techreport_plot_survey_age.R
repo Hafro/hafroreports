@@ -37,7 +37,7 @@ hr_techreport_plot_survey_age_bubble <- function(
       ggplot2::aes(year, ind, fill = as.factor(yc)),
       position = 'dodge'
     ) +
-    pax::pax_scale_fill_crayola() +
+    hr_theme_crayola_fill() +
     ggplot2::theme(legend.position = 'none') +
     ggplot2::facet_grid(age_lab ~ name, scale = 'free_y') +
     ggplot2::theme(strip.background = ggplot2::element_blank()) +
