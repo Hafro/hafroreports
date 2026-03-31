@@ -1,5 +1,5 @@
 #' The Ástand theme
-#' @name astand.theme
+#' @name hr_astand_theme
 #' @description Ástand functions
 #' @param ... input to ggplot theme
 #' @return ggplot2 theme for the Ástand
@@ -29,7 +29,7 @@ hr_astand_theme <- function(...) {
 }
 
 #' Astand x scale
-#' @name astand.x.scale
+#' @name hr_astand_x_scale
 #' @param x break point
 #' @param tyr terminal year
 hr_astand_x_scale <- function(x, tyr = lubridate::year(Sys.Date()), ...) {
@@ -49,7 +49,7 @@ hr_astand_x_scale <- function(x, tyr = lubridate::year(Sys.Date()), ...) {
 }
 
 #' @title Print number with a thousand separator
-#' @name red_dot_number
+#' @name hr_red_dot_number
 #' @param number the number you want to convert
 hr_red_dot_number <- function(number) {
   prettyNum(number, big.mark = " ", digits = 20)
