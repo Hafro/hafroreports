@@ -1,3 +1,17 @@
+#' Plot SSB and reference biomass for advice sheet
+#'
+#' Creates an interactive line plot showing the spawning stock biomass (SSB)
+#' and reference biomass time series with confidence ribbons. Reference
+#' point lines for \code{B_lim}, \code{B_pa}, and \code{MGT_btrigger} are
+#' overlaid.
+#'
+#' @param data_assessment A long-format data frame as returned by
+#'   \code{\link{hr_advice_data_assessment}}.
+#' @param assessment_year Integer. The assessment year to display.
+#' @param ref_points A named list or data frame with elements \code{B_lim},
+#'   \code{B_pa}, and \code{MGT_btrigger} (in thousands of tonnes).
+#' @return A \code{ggplot2} / \code{ggiraph} plot object.
+#' @export
 hr_advice_plot_ssb <- function(
   data_assessment,
   assessment_year,

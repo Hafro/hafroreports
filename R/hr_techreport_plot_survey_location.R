@@ -1,4 +1,17 @@
 # Was survey_location_plot
+#' Map survey station locations with catch density
+#'
+#' Creates a map of survey station locations (crosses) with the catch density
+#' (kg/nm, proportional circles) for the spring (SMB) and autumn (SMH)
+#' groundfish surveys in the assessment year. Zero-catch stations are shown
+#' as grey crosses; non-zero stations have red circles proportional to
+#' biomass per nautical mile of tow.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param assessment_year Integer. The SMB data from this year and the SMH
+#'   data from the previous year are displayed.
+#' @return A \code{ggplot2} plot object with two facets (SMB and SMH).
+#' @export
 hr_techreport_plot_survey_location <- function(
   pcon,
   assessment_year

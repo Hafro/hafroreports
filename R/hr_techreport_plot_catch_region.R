@@ -1,4 +1,16 @@
 # Was catch_by_area_plot
+#' Plot catch by geographic region (total and stacked)
+#'
+#' Queries the \code{logbook} table of a pax database and creates a two-panel
+#' plot showing total catch and proportional composition by region
+#' (W, NW, NE, SE, SW, and other) over time. Region names are localised to
+#' the current language setting.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param year_start Integer. First year to include. Default is \code{1000}.
+#' @param year_end Integer. Last year to include. Default is \code{9999}.
+#' @return A \code{ggplot2} / \code{patchwork} plot object.
+#' @export
 hr_techreport_plot_catch_region <- function(
   pcon,
   year_start = 1000,

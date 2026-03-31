@@ -1,4 +1,16 @@
 # Was transfer_plot
+#' Plot quota transfers between years and between species
+#'
+#' Queries the \code{quotatransfer} table of a pax database and produces a
+#' faceted bar chart showing quota transferred between fishing years and
+#' between species, both in absolute terms (thousands of tonnes) and as a
+#' percentage of the permanent quota.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param assessment_year Integer. Only fishing years starting before
+#'   \code{assessment_year} are included.
+#' @return A \code{ggplot2} plot object with four facets.
+#' @export
 hr_techreport_plot_quotatransfer <- function(pcon, assessment_year) {
   dat <- dplyr::tbl(pcon, "quotatransfer") |>
     dplyr::filter(as.numeric(substr(fishing_year, 1, 4)) < assessment_year)

@@ -1,3 +1,14 @@
+#' Format vessel and catch summary table by gear
+#'
+#' Queries the \code{landings} table, groups by gear, and produces a GT table
+#' summarising the number of vessels and catch (in thousands of tonnes) per
+#' gear type per year. Column headers are localised to the current language.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param year_start Integer. First year to include. Default is \code{1000}.
+#' @param year_end Integer. Last year to include. Default is \code{9999}.
+#' @return A \code{gt} table object.
+#' @export
 hr_techreport_table_boatsummary <- function(
   pcon,
   year_start = 1000,

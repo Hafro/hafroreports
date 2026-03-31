@@ -1,9 +1,15 @@
-#' Table formater
+#' Format a data frame as a styled GT table
 #'
-#' Format a data.frame as a gt table with nice formatting and colours
+#' Converts a data frame to a \code{gt} table with column header shading,
+#' vertical column borders, missing value replacement, and thousands-separator
+#' formatting for large numeric columns. Column names containing \code{"__"}
+#' are split on that separator: the text before becomes a spanner header and
+#' the text after becomes the column label.
 #'
-#' @param x data.frame
-#' @param banner_col banner colour
+#' @param x A data frame to render as a GT table.
+#' @param banner_col Character. Background colour for column headers and
+#'   spanners. Default is \code{"#D3E7E0"}.
+#' @return A \code{gt_tbl} object.
 tbl_formater <- function(x, banner_col = "#D3E7E0") {
   x |>
     gt::gt() |>

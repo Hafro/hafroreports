@@ -1,3 +1,29 @@
+#' Assemble haddock model input data
+#'
+#' Combines commercial catch-at-age, spring (IGFS/SMB) and autumn (AGFS/SMH)
+#' survey indices, and total landings into a single data frame suitable for
+#' passing to \code{\link{hr_sam_dat}} or \code{\link{hr_muppet_input_datafiles}}.
+#' Hard-coded stock weights and maturity ogives (for ages 1–14) are used to
+#' fill gaps before 1985 or when survey data are unavailable.
+#'
+#' @param year_start Integer. First year to include.
+#' @param year_end Integer. Last year to include.
+#' @param age_start Integer. Minimum age. Default is \code{1}.
+#' @param age_end Integer. Maximum age; defaults to the maximum age in
+#'   \code{input_data_comm_index}.
+#' @param input_data_comm_index Tibble. Commercial survey index with columns
+#'   \code{year}, \code{age}, \code{n} (catch numbers), and \code{mw}
+#'   (mean weight).
+#' @param input_data_igfs_index Tibble. Spring groundfish survey index with
+#'   columns \code{year}, \code{age}, \code{n}, \code{mw}, and \code{mat}.
+#' @param input_data_agfs_index Tibble. Autumn groundfish survey index with
+#'   columns \code{year}, \code{age}, and \code{n}.
+#' @param input_data_landings Tibble. Annual total landings with columns
+#'   \code{year} and \code{catch}.
+#' @return A tibble with columns \code{year}, \code{age}, \code{catch},
+#'   \code{catch_weight}, \code{smb}, \code{stock_weight}, \code{maturity},
+#'   \code{smh}, and \code{M}, covering the requested year and age range.
+#' @export
 hr_input_data_had <- function(
   year_start,
   year_end,

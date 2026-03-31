@@ -1,5 +1,24 @@
 #sampling_by_month_plot <-
 #  tidypax:::sampling_overview_plot(mar, species_nr = species_code, tyr = tyr)
+#' Plot sampling coverage by month, gear, and sampling type
+#'
+#' Creates a faceted tile/bar plot comparing the monthly distribution of
+#' biological samples to the monthly distribution of landings, grouped by
+#' gear and year. Sampling type is shown as stacked bar fill; the number of
+#' samples per month is annotated above each bar.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param mfdb_gear_codes Character vector of MFDB gear codes to include.
+#'   Default is \code{c("LLN", "DSE", "BMT")}.
+#' @param sampling_types Integer vector of sampling type codes. Default is
+#'   \code{c(1, 2, 3, 4, 8)}.
+#' @param gear_group Named list mapping gear group labels to MFDB gear codes,
+#'   used to group stations and landings by gear. Default groups are
+#'   \code{BMT}, \code{LLN}, and \code{DSE}.
+#' @param year_start Integer. First year to include. Default is \code{1000}.
+#' @param year_end Integer. Last year to include. Default is \code{9999}.
+#' @return A \code{ggplot2} plot object.
+#' @export
 hr_techreport_plot_sampling_overview <- function(
   pcon,
   mfdb_gear_codes = c('LLN', 'DSE', 'BMT'),

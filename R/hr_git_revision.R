@@ -1,3 +1,16 @@
+#' Get current git revision string
+#'
+#' Returns a string identifying the current git revision of a repository.
+#' If HEAD is exactly on a tag, the tag name is returned. Otherwise, returns
+#' a \code{branch:sha} string. A \code{-dirty} suffix is appended when there
+#' are uncommitted changes.
+#'
+#' @param repo_path Path to the git repository root. Defaults to \code{"."}.
+#' @param as_html Logical. If \code{TRUE}, wraps the output in an HTML
+#'   \code{<code>} element with reduced opacity and font size, suitable for
+#'   embedding in a report. Default is \code{FALSE}.
+#' @return A character string with the git revision, optionally wrapped in HTML.
+#' @export
 hr_git_revision <- function(repo_path = ".", as_html = FALSE) {
   git <- function(...) {
     rv <- suppressWarnings(system2(

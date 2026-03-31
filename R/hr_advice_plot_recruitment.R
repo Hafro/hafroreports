@@ -1,3 +1,17 @@
+#' Reshape wide assessment data into long format
+#'
+#' Pivots a wide assessment tibble (as returned by
+#' \code{\link{hr_assessment_from_sag}} or assembled manually) into the long
+#' format used by the advice plotting functions. Adds localised ordered factor
+#' labels for each assessment variable in both English and Icelandic.
+#'
+#' @param assessment A wide-format tibble with columns \code{year},
+#'   \code{species}, \code{assessment_year}, and columns named using the
+#'   pattern \code{<stat>_<key>} (e.g. \code{median_SSB}, \code{low_HR}).
+#' @return A long-format tibble with columns \code{year}, \code{species},
+#'   \code{assessment_year}, \code{key}, \code{low}, \code{median},
+#'   \code{high}, \code{label.is}, and \code{label.en}.
+#' @export
 hr_advice_data_assessment <- function(assessment) {
   # NSE variables
   key <- value <- year <- species <- assessment_year <- stat <- NULL
@@ -45,6 +59,16 @@ hr_advice_data_assessment <- function(assessment) {
       )
     )
 }
+#' Plot recruitment time series for advice sheet
+#'
+#' Creates an interactive bar chart of age-1 recruitment with error bars
+#' showing the confidence interval, in millions of fish.
+#'
+#' @param data_assessment A long-format data frame as returned by
+#'   \code{\link{hr_advice_data_assessment}}.
+#' @param assessment_year Integer. The assessment year to display.
+#' @return A \code{ggplot2} / \code{ggiraph} plot object.
+#' @export
 hr_advice_plot_recruitment <- function(
   data_assessment,
   assessment_year

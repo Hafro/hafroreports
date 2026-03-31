@@ -1,3 +1,18 @@
+#' Format prognosis input table for advice sheet
+#'
+#' Renders a formatted \code{flextable} summarising the key model inputs for
+#' the prognosis (SSB, recruitment, catch, harvest rate, reference biomass)
+#' with localised variable names, formatted values, and notes columns.
+#' Numeric formatting applies thousand separators to biomass and tonnage rows.
+#'
+#' @param data_prog_input A data frame with columns \code{name} (one of
+#'   \code{"ssb"}, \code{"rec"}, \code{"catch"}, \code{"HR"},
+#'   \code{"refbio"}), \code{year}, \code{value}, \code{notes.en}, and
+#'   \code{notes.is}.
+#' @param assessment_year Integer. Included in variable labels as the
+#'   reference year.
+#' @return A \code{flextable} object styled for inclusion in an advice sheet.
+#' @export
 hr_advice_table_prog_input <- function(data_prog_input, assessment_year) {
   # NSE variables
   name <- year <- value <- NULL

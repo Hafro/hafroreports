@@ -1,3 +1,24 @@
+#' Prepare MUPPET input data files
+#'
+#' Converts a model input data frame into the tab-delimited text files
+#' expected by MUPPET: \code{Files/catchandstockdata.dat},
+#' \code{Files/totcatch.dat}, \code{Files/marsurveydata.dat} (spring SMB),
+#' and \code{Files/autsurveydata.dat} (autumn SMH). Hard-coded fallback
+#' weight and maturity vectors are applied when data are missing.
+#'
+#' @param assessment_input_data A data frame with columns \code{year},
+#'   \code{age}, \code{catch}, \code{catch_weight}, \code{stock_weight},
+#'   \code{maturity}, \code{smb}, and \code{smh}, as produced by
+#'   \code{\link{hr_input_data_had}}.
+#' @param year_start Integer. First year to include in the output files.
+#' @param year_end Integer. Last year (assessment year). Catch and catch
+#'   weight are set to \code{-1} for this year as the data are incomplete.
+#' @param age_end Integer. Maximum age to include.
+#' @param age_start Integer. Minimum age to include. Default is \code{1}.
+#' @return A named list of character strings, each being the formatted
+#'   content of a MUPPET input file. Names are the file paths relative to
+#'   the MUPPET run directory.
+#' @export
 hr_muppet_input_datafiles <- function(
   assessment_input_data,
   year_start,

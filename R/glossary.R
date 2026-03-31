@@ -1,11 +1,23 @@
 #' Generate a glossary section
 #'
+#' Writes a Markdown/Quarto glossary section to the console using
+#' \code{cat}. The section title and term definitions are localised to
+#' the current language setting (\code{options(hr.lang = "en")} or
+#' \code{"is"}). Currently defines the acronym TAC.
+#'
+#' Intended to be called inside a Quarto code block with
+#' \code{output: asis}:
+#'
 #' ```{r}
 #' #| echo: false
 #' #| output: asis
 #'
 #' hr_glossary_section()
 #' ```
+#'
+#' @return Invisibly returns \code{NULL}; the glossary is written to the
+#'   console via \code{cat}.
+#' @export
 hr_glossary_section <- function() {
   lang <- getOption("hr.lang", "en")
 

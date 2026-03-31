@@ -1,3 +1,20 @@
+#' Plot landings by country
+#'
+#' Queries the \code{landings} table and creates a stacked bar chart of
+#' annual landings in thousands of tonnes, split between Icelandic and
+#' foreign catches. Country labels are localised to the current language.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param ylab Character. Y-axis label. Defaults to the localised label for
+#'   landings in thousands of tonnes.
+#' @param xlab Character. X-axis label. Defaults to the localised label for
+#'   year.
+#' @param breaks Numeric vector of x-axis break points. Default is every
+#'   10 units from 0 to 100 000.
+#' @param year_start Integer. First year to include. Default is \code{1000}.
+#' @param year_end Integer. Last year to include. Default is \code{9999}.
+#' @return A \code{ggplot2} plot object.
+#' @export
 hr_techreport_plot_landings_country <- function(
   pcon,
   ylab = hr_label("landings_kt"),

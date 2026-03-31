@@ -1,3 +1,23 @@
+#' Assemble prognosis summary data for advice sheet
+#'
+#' Collects the key prognosis metrics for a given assessment year into a
+#' single-row tibble: basis text, management harvest rate, catch, SSB at
+#' \code{assessment_year + 2}, SSB percentage change, and current and
+#' previous TAC values.
+#'
+#' @param basis_table A data frame with at least one row containing columns
+#'   \code{desc.is} and \code{desc.en} describing the prognosis basis.
+#' @param tac_hist A data frame with columns \code{assessment_year} and
+#'   \code{tac} giving the historical TAC series.
+#' @param ref_points A named list with at least element \code{HR_mgt}.
+#' @param stock_dev A long-format data frame with columns \code{year},
+#'   \code{name}, and \code{value} containing prognosis trajectories
+#'   (e.g. \code{"ssb"} and \code{"ssb_ratio"}).
+#' @param assessment_year Integer. The assessment year.
+#' @return A one-row tibble with columns \code{assessment_year},
+#'   \code{basis.is}, \code{basis.en}, \code{HR}, \code{catch}, \code{ssb},
+#'   \code{ssb_change}, \code{tac_current}, and \code{tac_previous}.
+#' @export
 hr_advice_data_prognosis <- function(
   basis_table,
   tac_hist,
@@ -32,6 +52,21 @@ hr_advice_data_prognosis <- function(
   )
 }
 
+#' Format prognosis table for advice sheet
+#'
+#' Renders a formatted \code{flextable} showing the prognosis basis, catch,
+#' harvest rate, SSB, SSB percentage change, TAC percentage change, and
+#' advice percentage change for a given assessment year. Footnotes describe
+#' the SSB comparison period and TAC history.
+#'
+#' @param data_prognosis A data frame as returned by
+#'   \code{\link{hr_advice_data_prognosis}}, containing one or more rows
+#'   with columns \code{assessment_year}, \code{basis.is}, \code{basis.en},
+#'   \code{catch}, \code{HR}, \code{ssb}, \code{ssb_change},
+#'   \code{tac_current}, and \code{tac_previous}.
+#' @param assessment_year Integer. The assessment year row to display.
+#' @return A \code{flextable} object styled for inclusion in an advice sheet.
+#' @export
 hr_advice_table_prognosis <- function(data_prognosis, assessment_year) {
   # NSE variables
   catch <- HR <- ssb <- ssb_change <- tac_current <- tac_previous <- tac_change <- advice_change <- NULL

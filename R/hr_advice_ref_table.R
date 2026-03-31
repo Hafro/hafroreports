@@ -1,3 +1,18 @@
+#' Format reference points table for advice sheet
+#'
+#' Joins reference point values with their basis descriptions and renders a
+#' formatted \code{flextable} with columns for approach, reference point name,
+#' value, and basis. Column headers and cell content are localised to the
+#' current language setting. Markdown in the basis column is rendered via
+#' \code{ftExtra::colformat_md}.
+#'
+#' @param ref_points A named list or one-row data frame of reference point
+#'   values (e.g. \code{HR_mgt}, \code{B_lim}). \code{NA} values are dropped.
+#' @param ref_points_basis_table A data frame with columns \code{ref_point},
+#'   \code{render}, \code{approach.en}, \code{approach.is}, \code{basis.en},
+#'   and \code{basis.is} describing each reference point.
+#' @return A \code{flextable} object styled for inclusion in an advice sheet.
+#' @export
 hr_advice_ref_table <- function(ref_points, ref_points_basis_table) {
   # NSE variables
   ref_point <- value <- approach <- basis <- render <- NULL

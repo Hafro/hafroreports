@@ -1,3 +1,21 @@
+#' Assemble TAC and landings history for advice sheet
+#'
+#' Joins historical advice, TAC, and landings data into a single table
+#' suitable for displaying in the TAC history section of an advice sheet.
+#' Landings are split into Icelandic and foreign components using the
+#' \code{country} column.
+#'
+#' @param advice_hist A data frame with columns \code{assessment_year} and
+#'   \code{advice} (recommended catch in tonnes) and \code{advice_period}
+#'   (fishing year label).
+#' @param tac_hist A data frame with columns \code{assessment_year} and
+#'   \code{tac} (national TAC in tonnes).
+#' @param landings_by_fishing_year_country A data frame with columns
+#'   \code{fishing_year}, \code{country}, and \code{catch} (in kg).
+#' @return A tibble with columns \code{advice_period}, \code{advice},
+#'   \code{tac}, \code{icelandic} (Icelandic catch in thousands of tonnes),
+#'   \code{foreign}, and \code{total}.
+#' @export
 hr_advice_data_tac <- function(
   advice_hist,
   tac_hist,
@@ -55,6 +73,18 @@ hr_advice_data_tac <- function(
     )
 }
 
+#' Format TAC history table for advice sheet
+#'
+#' Renders a formatted \code{flextable} showing historical advice, TAC,
+#' Icelandic landings, foreign landings, and total landings by fishing year.
+#' Localised column headers, footnotes for data caveats, and harvest control
+#' rule annotations are added automatically.
+#'
+#' @param data_tac A data frame as returned by \code{\link{hr_advice_data_tac}},
+#'   with columns \code{advice_period}, \code{advice}, \code{tac},
+#'   \code{icelandic}, \code{foreign}, and \code{total}.
+#' @return A \code{flextable} object styled for inclusion in an advice sheet.
+#' @export
 hr_advice_table_tac <- function(data_tac) {
   lang <- getOption("hr.lang", "en")
 

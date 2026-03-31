@@ -27,6 +27,18 @@ dat_ldist_by_year <- function(
 }
 
 # Was survey_ldist_joy_plot
+#' Plot survey length distributions as joy plots for both surveys
+#'
+#' Creates a side-by-side ridgeline (joy) plot of length distributions from
+#' the spring (sampling type 30) and autumn (sampling type 35) groundfish
+#' surveys. Each survey is shown in a separate panel.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param year_start Integer. First year to include. Default is \code{1000}.
+#' @param year_end Integer. Last year to include. Default is \code{9999}.
+#'   The autumn survey is excluded for the final year.
+#' @return A \code{patchwork} plot object with two panels.
+#' @export
 hr_techreport_plot_survey_ldist_joy <- function(
   pcon,
   year_start = 1000,
@@ -54,6 +66,16 @@ hr_techreport_plot_survey_ldist_joy <- function(
 }
 
 # Was agfs_ldist_plot
+#' Plot survey length distribution by year
+#'
+#' Queries the \code{station} and \code{ldist} tables for the specified
+#' sampling type and renders a length-frequency plot with year on the y-axis.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param sampling_type Integer or integer vector of sampling type codes
+#'   (e.g. \code{30} for the spring survey, \code{35} for the autumn survey).
+#' @return A \code{ggplot2} plot object.
+#' @export
 hr_techreport_plot_survey_ldist <- function(
   pcon,
   sampling_type

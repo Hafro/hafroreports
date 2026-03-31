@@ -1,3 +1,17 @@
+#' Plot CPUE time series by gear group
+#'
+#' Queries the \code{logbook} table, groups gears according to
+#' \code{gear_group}, calculates catch per unit effort for each gear, and
+#' produces a faceted CPUE time series plot.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param gear_group Named list mapping gear group labels to vectors of MFDB
+#'   gear codes. Default groups are \code{GIL}, \code{BMT}, \code{LLN},
+#'   and \code{DSE}.
+#' @param year_start Integer. First year to include. Default is \code{1000}.
+#' @param year_end Integer. Last year to include. Default is \code{9999}.
+#' @return A \code{ggplot2} plot object faceted by gear group.
+#' @export
 hr_techreport_plot_cpue <- function(
   pcon,
   gear_group = list(

@@ -1,4 +1,14 @@
 # Was model_resid_plot & model_pres_resid_plot
+#' Plot SAM model residuals by year, age, and fleet
+#'
+#' Creates a bubble plot of SAM model residuals from a fitted SAM object.
+#' Bubble size represents residual magnitude and colour indicates sign
+#' (red = negative, blue = positive). Residuals are faceted by fleet.
+#'
+#' @param res A fitted SAM model object, as returned by
+#'   \code{\link[stockassessment]{sam.fit}}.
+#' @return A \code{ggplot2} plot object.
+#' @export
 hr_techreport_plot_samres_resid <- function(
   res
 ) {
@@ -19,6 +29,18 @@ hr_techreport_plot_samres_resid <- function(
     ggplot2::scale_colour_manual(values = c('red', 'blue'))
 }
 
+#' Plot SAM combined survey fit
+#'
+#' Computes observed and predicted survey biomass indices (stock-weight
+#' expanded, in thousands of tonnes) from SAM model residuals, and plots
+#' points (observed) with overlaid lines (predicted) for each fleet.
+#'
+#' @param res A fitted SAM model object, as returned by
+#'   \code{\link[stockassessment]{sam.fit}}.
+#' @param model_data A data frame with columns \code{year}, \code{age}, and
+#'   \code{stock_weight} used to expand numbers to biomass.
+#' @return A \code{ggplot2} plot object.
+#' @export
 hr_techreport_plot_samres_combfit <- function(
   res,
   model_data

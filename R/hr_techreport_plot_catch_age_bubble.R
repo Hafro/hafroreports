@@ -1,3 +1,19 @@
+#' Plot catch-at-age bar chart coloured by year class
+#'
+#' Creates a stacked bar chart showing catch numbers at each age over time,
+#' with bars coloured by year class. Ages are displayed in descending order
+#' as facet strips on the right-hand side.
+#'
+#' @param input_data A data frame with columns \code{year}, \code{age},
+#'   and \code{catch} (catch numbers at age), as produced by
+#'   \code{\link{hr_input_data_had}} or similar.
+#' @param year_start Integer. First year to display. Default is \code{1970}.
+#' @param year_end Integer. Last year to display. Default is \code{9999}
+#'   (no upper limit).
+#' @param age_start Integer. Minimum age to display. Default is \code{0}.
+#' @param age_end Integer. Maximum age to display. Default is \code{9999}.
+#' @return A \code{ggplot2} plot object.
+#' @export
 hr_techreport_plot_catch_age_bubble <- function(
   input_data,
   year_start = 1970,

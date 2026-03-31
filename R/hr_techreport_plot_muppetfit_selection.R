@@ -1,3 +1,21 @@
+#' Plot MUPPET model selection and fit diagnostics
+#'
+#' Produces a four-panel diagnostic plot for a MUPPET \code{logit_length}
+#' model fit:
+#' \enumerate{
+#'   \item Selectivity-at-weight curve with MCMC uncertainty ribbon.
+#'   \item Age-specific observation standard deviations for catch and surveys.
+#'   \item Stock–recruitment scatter plot.
+#'   \item Catchability-at-age (\eqn{q}) for spring and autumn surveys.
+#' }
+#'
+#' @param fit A list returned by \code{\link{hr_muppet_run}}, containing
+#'   elements \code{$params}, \code{$rby}, \code{$rbage}, and
+#'   \code{$mcmc_results}.
+#' @param assessment_year Integer. Used to restrict the stock–recruitment
+#'   scatter to years before the assessment year.
+#' @return A \code{patchwork} plot object with four panels.
+#' @export
 hr_techreport_plot_muppetfit_selection <- function(
   fit,
   assessment_year

@@ -1,3 +1,15 @@
+#' Plot number of vessels accounting for 95% of catch
+#'
+#' Queries the \code{landings} table and computes the minimum number of
+#' vessels responsible for 95\% of total catch in each year. Returns a
+#' two-panel \code{patchwork} plot: a time series (left) and a
+#' catch-vs-number-of-vessels phase plot (right).
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param year_start Integer. First year to include. Default is \code{1000}.
+#' @param year_end Integer. Last year to include. Default is \code{9999}.
+#' @return A \code{patchwork} plot object.
+#' @export
 hr_techreport_plot_numboats <- function(
   pcon,
   year_start = 1000,

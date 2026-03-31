@@ -1,3 +1,24 @@
+#' Fetch assessment results from ICES SAG
+#'
+#' Downloads the summary table and custom columns for a given stock from the
+#' ICES Stock Assessment Graphs (SAG) database and reshapes them into the
+#' standard assessment data frame used by this package.
+#'
+#' @param assessment_year Numeric. The assessment year to retrieve.
+#' @param species Character. Species identifier to attach to the output
+#'   (not used for filtering; purely informational).
+#' @param ices_stock_key_label Character. The ICES stock key label
+#'   (e.g. \code{"had.27.5a"}).
+#' @param ices_median_refbio Character or \code{NULL}. Name of the custom
+#'   SAG column to use as the reference biomass median. If \code{NULL} no
+#'   reference biomass column is included.
+#' @return A tibble with columns \code{year}, \code{species},
+#'   \code{assessment_year}, \code{low_recruitment}, \code{median_recruitment},
+#'   \code{high_recruitment}, \code{low_SSB}, \code{median_SSB},
+#'   \code{high_SSB}, \code{median_refbio}, \code{landings}, \code{low_HR},
+#'   \code{median_HR}, and \code{high_HR}. Harvest rate estimates for the
+#'   assessment year itself are set to \code{NA}.
+#' @export
 hr_assessment_from_sag <- function(
   assessment_year,
   species,
@@ -47,6 +68,20 @@ hr_assessment_from_sag <- function(
     )
 }
 
+#' Create an empty assessment data template
+#'
+#' Returns a one-row tibble with all \code{NA} values and the column
+#' structure expected by the assessment data functions in this package.
+#' Useful as a starting point when building assessment data frames manually.
+#'
+#' @return A tibble with columns \code{year}, \code{species},
+#'   \code{median_SSB}, \code{low_SSB}, \code{high_SSB}, \code{median_F},
+#'   \code{low_F}, \code{high_F}, \code{median_recruitment},
+#'   \code{low_recruitment}, \code{high_recruitment}, \code{landings},
+#'   \code{median_refbio}, \code{low_refbio}, \code{high_refbio},
+#'   \code{median_HR}, \code{low_HR}, \code{high_HR}, and
+#'   \code{assessment_year}, all set to \code{NA}.
+#' @export
 hr_assessment_template <- function() {
   tibble::tibble(
     year = NA_integer_,

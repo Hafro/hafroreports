@@ -1,4 +1,17 @@
 # Was survey_by_area_plot
+#' Plot survey biomass by geographic region (total and stacked)
+#'
+#' Computes survey biomass indices for both the spring (SMB) and autumn (SMH)
+#' groundfish surveys, broken down by geographic region, and produces a
+#' two-panel plot per survey showing total biomass and regional proportions
+#' over time.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param regions Named list mapping region labels to integer MFDB area codes.
+#'   Default regions are W (101), NW (102), NE (103–105), SE (106–107),
+#'   SW (108), and Other (all remaining).
+#' @return A \code{ggplot2} / \code{patchwork} plot object split by survey.
+#' @export
 hr_techreport_plot_survey_byarea <- function(
   pcon,
   regions = list(

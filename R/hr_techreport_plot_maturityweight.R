@@ -1,4 +1,19 @@
 # Was maturity_model_plot
+#' Plot maturity as a function of stock weight
+#'
+#' Plots observed proportion mature against stock weight (on a log scale),
+#' coloured by time period, with a fitted model overlay. Two model types
+#' are available: a single curve fitted to data from 2013 onwards
+#' (\code{"pred"}), or period-specific curves (\code{"period"}).
+#'
+#' @param input_data A data frame with columns \code{year}, \code{age},
+#'   \code{stock_weight} (grams), and \code{maturity} (proportion), as
+#'   produced by \code{\link{hr_input_data_had}}.
+#' @param mat_model Character. Maturity model type: \code{"pred"} (default)
+#'   fits a single GLM to the most recent period; \code{"period"} fits
+#'   separate curves for three historical time periods.
+#' @return A \code{ggplot2} plot object.
+#' @export
 hr_techreport_plot_maturityweight <- function(
   input_data,
   mat_model = c("pred", "period")

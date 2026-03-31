@@ -1,3 +1,16 @@
+#' Plot spatial distribution of catch
+#'
+#' Creates a map of catch per unit tow area (t/nm²) for the selected years,
+#' overlaid on ocean depth contours. Each grid cell is rounded to one decimal
+#' degree of latitude and longitude. If more than one year is supplied, years
+#' are shown as facets.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param years Integer vector of years to map.
+#' @param low_res Logical. If \code{TRUE} (the default), uses a lower
+#'   resolution base map (faster to render).
+#' @return A \code{ggplot2} plot object.
+#' @export
 hr_techreport_plot_catchspatial <- function(
   pcon,
   years,

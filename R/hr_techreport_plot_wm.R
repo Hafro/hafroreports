@@ -1,4 +1,14 @@
 # Was weight_model_plot_left
+#' Plot stock weight growth model (left panel)
+#'
+#' Plots weight at age \eqn{a+1} in year \eqn{y+1} against weight at age
+#' \eqn{a} in year \eqn{y} on log scales, with a linear model smoother.
+#' Colours distinguish the current assessment year from historical data.
+#'
+#' @param input_data A data frame with columns \code{year}, \code{age}, and
+#'   \code{stock_weight} (grams), as produced by \code{\link{hr_input_data_had}}.
+#' @return A \code{ggplot2} plot object.
+#' @export
 hr_techreport_plot_wm_left <- function(input_data) {
   # NSE variables
   year <- age <- stock_weight <- yc <- period <- w1 <- marker <- tyr <- NULL
@@ -39,6 +49,17 @@ hr_techreport_plot_wm_left <- function(input_data) {
 }
 
 # Was weight_model_plot_center
+#' Plot catch weight vs. stock weight relationship (centre panel)
+#'
+#' Plots catch mean weight against stock mean weight on linear scales with
+#' a linear model smoother, coloured by time period. Used to visualise
+#' the systematic relationship between the two weight series.
+#'
+#' @param input_data A data frame with columns \code{year}, \code{age},
+#'   \code{stock_weight} (grams), and \code{catch_weight} (grams), as
+#'   produced by \code{\link{hr_input_data_had}}.
+#' @return A \code{ggplot2} plot object.
+#' @export
 hr_techreport_plot_wm_center <- function(input_data) {
   # NSE variables
   year <- age <- stock_weight <- catch_weight <- yc <- period <- marker <- tyr <- NULL
@@ -70,6 +91,16 @@ hr_techreport_plot_wm_center <- function(input_data) {
 }
 
 # Was weight_model_plot_right
+#' Plot year-effect estimates from stock weight growth model (right panel)
+#'
+#' Fits the linear weight-growth model and extracts the year-effect
+#' coefficients (\eqn{\delta_y}). Plots these year effects with 95\%
+#' confidence intervals and a horizontal reference line at 0.9.
+#'
+#' @param input_data A data frame with columns \code{year}, \code{age}, and
+#'   \code{stock_weight} (grams), as produced by \code{\link{hr_input_data_had}}.
+#' @return A \code{ggplot2} plot object.
+#' @export
 hr_techreport_plot_wm_right <- function(input_data) {
   # NSE variables
   year <- age <- stock_weight <- w1 <- yc <- term <- estimate <- conf.low <- conf.high <- NULL

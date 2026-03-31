@@ -1,3 +1,18 @@
+#' Prepare landings data for advice plots and tables
+#'
+#' Summarises landings from a gear-grouped data frame into thousands of tonnes
+#' per year per gear, and adds localised English and Icelandic gear name
+#' factors in the display order used by advice sheet figures.
+#'
+#' @param landings_by_gear A data frame or lazy table with columns \code{year},
+#'   \code{gear_name} (one of \code{"LLN"}, \code{"DSE"}, \code{"BMT"},
+#'   \code{"Other"}), and \code{catch} (in grams or the unit used throughout
+#'   the pax database).
+#' @return A tibble with columns \code{year}, \code{gear_name},
+#'   \code{tonnes} (landings in thousands of tonnes), \code{gear.is}
+#'   (ordered Icelandic gear factor), and \code{gear.en} (ordered English
+#'   gear factor).
+#' @export
 hr_advice_data_landings <- function(landings_by_gear) {
   # NSE variables
   year <- gear_name <- catch <- NULL
@@ -38,6 +53,17 @@ hr_advice_data_landings <- function(landings_by_gear) {
     )
 }
 
+#' Plot landings by gear for advice sheet
+#'
+#' Creates an interactive stacked bar chart showing total landings by gear
+#' type over time, with colours and labels adjusted for the current language
+#' setting.
+#'
+#' @param data_landings A data frame as returned by
+#'   \code{\link{hr_advice_data_landings}}.
+#' @param assessment_year Integer. Used to set the x-axis upper limit.
+#' @return A \code{ggplot2} / \code{ggiraph} plot object.
+#' @export
 hr_advice_plot_landings <- function(
   data_landings,
   assessment_year

@@ -8,6 +8,35 @@ write_file_list <- function(fl, workdir) {
   return(workdir)
 }
 
+#' Run MUPPET model and return results
+#'
+#' Writes a named list of input files to a temporary directory, locates the
+#' option file (\code{params/*.dat.opt}), executes MUPPET via
+#' \code{rmuppet::callMuppet}, and reads back the output tables.
+#'
+#' @param model_name Character. A label for this model run, attached as a
+#'   \code{model} column to all output tables.
+#' @param muppet_input_files Named list of character strings, where each name
+#'   is a file path relative to the run directory and each value is the file
+#'   contents. Typically assembled from \code{\link{hr_muppet_input_optionfile}},
+#'   \code{\link{hr_muppet_input_datafiles}}, and
+#'   \code{\link{hr_muppet_input_progwts}}.
+#' @param clear_on_exit Logical. If \code{TRUE} (the default), the temporary
+#'   run directory is deleted when the function exits.
+#' @param md Character. Path to the run directory. Defaults to a subdirectory
+#'   of \code{tempdir()} named by a hash of the input files.
+#' @param muppet_args Character vector of additional arguments passed to
+#'   \code{rmuppet::callMuppet}. Default is \code{c("nox")}.
+#' @return A named list with some or all of the following elements, depending
+#'   on which output files are produced:
+#'   \describe{
+#'     \item{\code{rby}}{Results by year from \code{resultsbyyear.out}.}
+#'     \item{\code{rbyage}}{Results by year and age from
+#'       \code{resultsbyyearandage.out}.}
+#'     \item{\code{params}}{Parameter estimates from \code{muppet.std}, with
+#'       log-scale parameters back-transformed.}
+#'   }
+#' @export
 hr_muppet_run <- function(
   model_name,
   muppet_input_files,

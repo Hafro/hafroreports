@@ -1,4 +1,21 @@
 # Was management_plot
+#' Plot management history (advice, TAC, and landings)
+#'
+#' Combines historical advice, TAC, and total landings into a single line
+#' plot by fishing year. User-supplied annotations (e.g. regulation changes)
+#' can be added via \code{m_labels}.
+#'
+#' @param advice_hist A data frame with columns \code{assessment_year},
+#'   \code{advice}, and \code{advice_period}.
+#' @param tac_hist A data frame with columns \code{assessment_year} and
+#'   \code{tac}.
+#' @param landings_by_fishing_year_country A data frame with columns
+#'   \code{fishing_year}, \code{country}, and \code{catch} (in tonnes).
+#' @param m_labels A data frame with columns \code{Year}, \code{value}
+#'   (in tonnes), and \code{type} (label text) for annotations placed on the
+#'   plot.
+#' @return A \code{ggplot2} plot object.
+#' @export
 hr_techreport_plot_management <- function(
   advice_hist,
   tac_hist,

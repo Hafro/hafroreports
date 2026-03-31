@@ -1,3 +1,18 @@
+#' Plot harvest rate time series for advice sheet
+#'
+#' Creates an interactive ggplot of the harvest rate (HR) time series with
+#' a confidence ribbon, and overlays reference point lines for the management
+#' (\code{HR_mgt}), precautionary (\code{HR_pa}), and MSY (\code{HR_msy})
+#' harvest rates.
+#'
+#' @param data_assessment A long-format data frame as returned by
+#'   \code{\link{hr_advice_data_assessment}}, filtered or containing a
+#'   \code{key} column and \code{assessment_year} column.
+#' @param assessment_year Integer. The assessment year to display.
+#' @param ref_points A named list or data frame with elements \code{HR_mgt},
+#'   \code{HR_pa}, and \code{HR_msy} giving the harvest rate reference points.
+#' @return A \code{ggplot2} / \code{ggiraph} plot object.
+#' @export
 hr_advice_plot_fpl <- function(
   data_assessment,
   assessment_year,

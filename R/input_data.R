@@ -1,3 +1,21 @@
+#' Extract length–weight data from a pax database
+#'
+#' Queries the \code{station} and \code{aldist} tables in a pax database
+#' connection to obtain individual length and weight measurements. When
+#' \code{prediction_length_range} is supplied, a GAM is fitted to the
+#' observed data and predicted weights are returned instead of raw
+#' observations.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param sampling_type Integer vector of sampling type codes to include.
+#'   Default is \code{30} (spring groundfish survey).
+#' @param prediction_length_range Numeric vector of lengths at which to
+#'   predict weight using a GAM. If \code{NULL} (the default), the raw
+#'   observed data are returned.
+#' @return A tibble with columns \code{species}, \code{length}, and
+#'   \code{weight}. If \code{prediction_length_range} is provided, each row
+#'   corresponds to a predicted weight at the specified length.
+#' @export
 hr_input_data_lw <- function(
   pcon,
   sampling_type = 30,
@@ -44,6 +62,29 @@ hr_input_data_lw <- function(
   return(lw_dat)
 }
 
+#' Estimate maturity-at-length key from survey data
+#'
+#' Builds a maturity ogive by fitting a quasi-binomial GLM to maturity
+#' observations from the \code{measurement} table, grouped by length class
+#' and region. Observed proportions mature (by year, length group, age,
+#' and region) are combined with model-predicted proportions (with
+#' \code{year = NA} and \code{age = NA}) in the output, so downstream
+#' code can distinguish measurements from estimates.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param lgroups Numeric vector of length group break points (lower bounds).
+#'   Default is \code{seq(0, 200, 5)}.
+#' @param regions Named list mapping region labels to integer MFDB area
+#'   codes. If \code{NULL}, all stations are treated as one region
+#'   (\code{"all"}). Default is \code{NULL}.
+#' @param ignore_years Integer vector of years to exclude from model fitting.
+#'   Default is \code{c()} (no years excluded).
+#' @param sampling_type Integer vector of sampling type codes to include.
+#'   Default is \code{30}.
+#' @return A tibble with columns \code{year}, \code{lgroup}, \code{age},
+#'   \code{region}, and \code{mat_p}. Rows with \code{year = NA} are
+#'   model predictions.
+#' @export
 hr_input_data_maturity_key <- function(
   pcon,
   lgroups = seq(0, 200, 5),
@@ -99,6 +140,47 @@ hr_input_data_maturity_key <- function(
 }
 
 ## Generate the ALK from the survey
+#' Compute survey index data (abundance and biomass at age)
+#'
+#' Derives age-structured survey abundance (thousands) and mean weight (g)
+#' from a pax database by applying a length distribution, an age–length key,
+#' optional strata scaling, and optional maturity weighting. The result is
+#' the primary model input table used by the SAM and MUPPET assessment
+#' workflows.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param lw_key Data frame with columns \code{species}, \code{length}, and
+#'   \code{weight} for joining weight-at-length. If \code{NULL}, weights are
+#'   derived directly from the \code{ldist} table.
+#' @param maturity_key Output of \code{\link{hr_input_data_maturity_key}}, used
+#'   to compute maturity-weighted biomass. If \code{NULL}, no maturity column
+#'   is produced.
+#' @param strata_name Character. Name of the stratification scheme to use for
+#'   survey scaling (passed to \code{pax::pax_si_scale_by_strata}). If
+#'   \code{NULL}, no strata scaling is applied.
+#' @param sampling_type Integer vector of sampling type codes for station
+#'   filtering. Default is \code{30}.
+#' @param sam_use_10_11_first_2_years Logical. If \code{TRUE}, sampling types
+#'   10 and 11 are additionally included for the first two years of data to
+#'   improve age-1 estimates. Default is \code{FALSE}.
+#' @param tow_number Integer vector of valid tow numbers (NA coerced to 0).
+#'   Default is \code{0:35}.
+#' @param tgroup Integer or \code{NULL}. Tow group for length-distribution
+#'   scaling. Default is \code{NULL}.
+#' @param regions Named list mapping region labels to integer MFDB area codes.
+#'   Default is \code{list(all = 101:115)}.
+#' @param lgroups Numeric vector of length group break points. Default is
+#'   \code{seq(0, 200, 5)}.
+#' @param gear_group Named list mapping gear group labels to MFDB gear codes.
+#'   Default groups are \code{Other}, \code{BMT}, \code{LLN}, and \code{DSE}.
+#' @param gear_id_filter Integer vector of gear IDs to include, or \code{NULL}
+#'   for no filtering. Default is \code{NULL}.
+#' @param scale_by_landings Logical. If \code{TRUE}, indices are additionally
+#'   scaled to match total landings. Default is \code{FALSE}.
+#' @return A grouped tibble with columns \code{year}, \code{age}, \code{n}
+#'   (abundance in thousands), \code{mw} (mean weight in grams), and
+#'   optionally \code{mat} (proportion mature).
+#' @export
 hr_input_data_si_index <- function(
   pcon,
   lw_key = NULL,
@@ -223,6 +305,15 @@ hr_input_data_si_index <- function(
   return(out)
 }
 
+#' Aggregate total landings by year from a pax database
+#'
+#' Queries the \code{landings} table and returns the sum of \code{catch}
+#' for each year.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @return A lazy tibble (or tibble after collection) with columns \code{year}
+#'   and \code{catch} (total catch in the units stored in the database).
+#' @export
 hr_input_data_landings <- function(pcon) {
   # NSE variables
   year <- catch <- NULL

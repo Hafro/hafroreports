@@ -1,3 +1,14 @@
+#' Plot discard rates by gear for a given species
+#'
+#' Uses the built-in \code{\link{hr_discards}} dataset to produce a faceted
+#' point-and-errorbar plot of the discard rate (percentage by weight) by gear
+#' and year. An overall total across all gears is added as an additional facet.
+#' Error bars represent approximate 95\% confidence intervals derived from the
+#' coefficient of variation.
+#'
+#' @param species Integer. Species code to filter on (1 = cod, 2 = haddock).
+#' @return A \code{ggplot2} plot object faceted by gear.
+#' @export
 hr_techreport_plot_discards <- function(
   species
 ) {

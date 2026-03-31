@@ -1,3 +1,15 @@
+#' Build SAM configuration for Icelandic haddock
+#'
+#' Creates a \code{stockassessment} configuration object for the Icelandic
+#' haddock stock assessment. Starts from the default configuration returned by
+#' \code{\link[stockassessment]{defcon}} and applies haddock-specific settings
+#' for age-structured fishing mortality, observation variance grouping, and
+#' AR correlation structures for the two survey fleets.
+#'
+#' @param dat A SAM data object as returned by \code{\link{hr_sam_dat}}.
+#' @return A SAM configuration list suitable for passing to
+#'   \code{\link[stockassessment]{sam.fit}}.
+#' @export
 hr_sam_conf <- function(dat) {
   within(stockassessment::defcon(dat), {
     maxAgePlusGroup = c(1, 1, 1)

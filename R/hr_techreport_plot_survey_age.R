@@ -1,4 +1,19 @@
 # Was survey_at_age_bubble_plot
+#' Plot spring and autumn survey indices at age coloured by year class
+#'
+#' Creates a faceted bar chart of spring (SMB) and autumn (SMH) survey
+#' abundance indices at each age over time. Bars are coloured by year class
+#' and ages are displayed in descending order.
+#'
+#' @param input_data A data frame with columns \code{year}, \code{age},
+#'   \code{smb} (spring survey index), and \code{smh} (autumn survey index),
+#'   as produced by \code{\link{hr_input_data_had}}.
+#' @param year_start Integer. First year to display. Default is \code{1970}.
+#' @param year_end Integer. Last year to display. Default is \code{9999}.
+#' @param age_start Integer. Minimum age. Default is \code{0}.
+#' @param age_end Integer. Maximum age. Default is \code{9999}.
+#' @return A \code{ggplot2} plot object.
+#' @export
 hr_techreport_plot_survey_age_bubble <- function(
   input_data,
   year_start = 1970,

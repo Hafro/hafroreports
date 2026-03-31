@@ -1,3 +1,21 @@
+#' Generate MUPPET projection weights file
+#'
+#' Fits linear models for stock weight growth and the stock-to-catch weight
+#' relationship, and a quasi-binomial GLM for maturity, then projects weights
+#' and maturity forward for 11 years beyond \code{year_end}. The result is
+#' written as \code{Files/ProgWts.dat} in the format expected by MUPPET.
+#'
+#' @param assessment_input_data A data frame of model input data as produced
+#'   by \code{\link{hr_input_data_had}}, containing columns \code{year},
+#'   \code{age}, \code{stock_weight}, \code{catch_weight}, and
+#'   \code{maturity}.
+#' @param year_end Integer. The assessment year; projections are produced for
+#'   years \code{year_end} through \code{year_end + 11}.
+#' @return A named list with one element: \code{"Files/ProgWts.dat"} mapped
+#'   to a tab-delimited character string with columns \code{year}, \code{age},
+#'   \code{catch_weight}, \code{stock_weight}, \code{maturity}, and
+#'   \code{ssbwts}.
+#' @export
 hr_muppet_input_progwts <- function(assessment_input_data, year_end) {
   # NSE variables
   year <- year_start <- age <- age_end <- stock_weight <- yc <- NULL

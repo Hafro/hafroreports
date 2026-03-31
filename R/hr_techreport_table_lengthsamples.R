@@ -1,3 +1,22 @@
+#' Format length and otolith sampling summary table
+#'
+#' Queries the \code{sampling} and \code{measurement} tables of a pax
+#' database and produces a GT table summarising the number of samples,
+#' length measurements, and/or otolith readings per gear and year.
+#' Column headers are localised to the current language.
+#'
+#' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param mfdb_gear_code Character vector of MFDB gear codes to include.
+#'   Default is \code{c("BMT", "LLN", "DSE")}.
+#' @param sampling_type Integer vector of sampling type codes. Default is
+#'   \code{c(1, 2, 3, 4, 8)}.
+#' @param year_start Integer. First year to include. Default is \code{1000}.
+#' @param year_end Integer. Last year to include. Default is \code{9999}.
+#' @param include_cols Character vector specifying which sample count columns
+#'   to include. Valid values are \code{"lengths"} and \code{"otol"}.
+#'   Default is \code{c("lengths", "otol")}.
+#' @return A \code{gt} table object.
+#' @export
 hr_techreport_table_lengthsamples <- function(
   pcon,
   mfdb_gear_code = c('BMT', 'LLN', 'DSE'),
