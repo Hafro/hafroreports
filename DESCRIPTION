@@ -9,7 +9,7 @@ Authors@R: c(person("Jamie", "Lentin", email="lentinj@shuttlethread.com",role = 
             person("Pamela J.","Woods", email = "pamela.woods@hafogvatn.is", role = c("aut")),
             person("Marine and Freshwater Research Institute (Iceland)", role = c("cph")))
 Maintainer: Bjarki Thor Elvarsson <bjarki.elvarsson@hafogvatn.is>
-Description: Common utilities for assessment report generation
+Description: Common utilities for assessment report generation in Hafro.
 URL: https://github.com/hafro/hafroreports/
 Encoding: UTF-8
 Depends: R (>= 4.2.0)
