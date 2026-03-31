@@ -13,8 +13,8 @@ two_panel_plot <- function(
   dat,
   prop.text = hr_label("prop_of_measure"),
   total.text = '%s (kt)',
-  y = hr_label("year"),
-  x = hr_label("catches"),
+  y = hr_label("catches"),
+  x = hr_label("year"),
   fill = '',
   cols = c(
     "#999999",
