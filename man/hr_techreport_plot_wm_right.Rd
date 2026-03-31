@@ -4,11 +4,13 @@
 \alias{hr_techreport_plot_wm_right}
 \title{Plot year-effect estimates from stock weight growth model (right panel)}
 \usage{
-hr_techreport_plot_wm_right(input_data)
+hr_techreport_plot_wm_right(input_data, assessment_year)
 }
 \arguments{
 \item{input_data}{A data frame with columns \code{year}, \code{age}, and
 \code{stock_weight} (grams), as produced by \code{\link{hr_input_data_had}}.}
+
+\item{assessment_year}{Year report is providing an assessment for}
 }
 \value{
 A \code{ggplot2} plot object.

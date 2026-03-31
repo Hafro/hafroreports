@@ -7,11 +7,15 @@
 #'
 #' @param input_data A data frame with columns \code{year}, \code{age}, and
 #'   \code{stock_weight} (grams), as produced by \code{\link{hr_input_data_had}}.
+#' @param assessment_year Year report is providing an assessment for
 #' @return A \code{ggplot2} plot object.
 #' @export
-hr_techreport_plot_wm_left <- function(input_data) {
+hr_techreport_plot_wm_left <- function(
+  input_data,
+  assessment_year
+) {
   # NSE variables
-  year <- age <- stock_weight <- yc <- period <- w1 <- marker <- tyr <- NULL
+  year <- age <- stock_weight <- yc <- period <- w1 <- marker <- NULL
 
   input_data |>
     dplyr::filter(year > 1984) |>
@@ -29,7 +33,7 @@ hr_techreport_plot_wm_left <- function(input_data) {
     dplyr::arrange(age) |>
     dplyr::mutate(
       w1 = dplyr::lag(stock_weight),
-      marker = ifelse(year == tyr, as.character(tyr), '')
+      marker = ifelse(year == assessment_year, as.character(assessment_year), '')
     ) |>
     dplyr::arrange(year) |>
     # modelr::add_predictions(wm) |>
@@ -58,11 +62,15 @@ hr_techreport_plot_wm_left <- function(input_data) {
 #' @param input_data A data frame with columns \code{year}, \code{age},
 #'   \code{stock_weight} (grams), and \code{catch_weight} (grams), as
 #'   produced by \code{\link{hr_input_data_had}}.
+#' @param assessment_year Year report is providing an assessment for
 #' @return A \code{ggplot2} plot object.
 #' @export
-hr_techreport_plot_wm_center <- function(input_data) {
+hr_techreport_plot_wm_center <- function(
+  input_data,
+  assessment_year
+) {
   # NSE variables
-  year <- age <- stock_weight <- catch_weight <- yc <- period <- marker <- tyr <- NULL
+  year <- age <- stock_weight <- catch_weight <- yc <- period <- marker <- NULL
 
   input_data |>
     dplyr::filter(
@@ -74,7 +82,7 @@ hr_techreport_plot_wm_center <- function(input_data) {
       stock_weight = ifelse(round(stock_weight) == 4000, NA, stock_weight),
       catch_weight = ifelse(round(catch_weight) == 4000, NA, catch_weight),
       yc = year - age,
-      marker = ifelse(year == tyr - 1, as.character(tyr), ''),
+      marker = ifelse(year == assessment_year - 1, as.character(assessment_year), ''),
       period = ifelse(
         year < 2000,
         '1985-1999',
@@ -99,9 +107,13 @@ hr_techreport_plot_wm_center <- function(input_data) {
 #'
 #' @param input_data A data frame with columns \code{year}, \code{age}, and
 #'   \code{stock_weight} (grams), as produced by \code{\link{hr_input_data_had}}.
+#' @param assessment_year Year report is providing an assessment for
 #' @return A \code{ggplot2} plot object.
 #' @export
-hr_techreport_plot_wm_right <- function(input_data) {
+hr_techreport_plot_wm_right <- function(
+  input_data,
+  assessment_year
+) {
   # NSE variables
   year <- age <- stock_weight <- w1 <- yc <- term <- estimate <- conf.low <- conf.high <- NULL
 
