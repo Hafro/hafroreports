@@ -45,7 +45,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck, mar=?ignore
+          extra-packages: any::rcmdcheck, stockassessment=?ignore, SAMutils=?ignore
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
