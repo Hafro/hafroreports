@@ -40,6 +40,6 @@ hr_techreport_plot_sampling_position <- function(
       na.fill = -50,
       fill_lab = hr_label("catch_t_nm2")
     ) +
-    pax_scale_fill_crayola() +
+    hr_theme_crayola_fill() +
     ggplot2::geom_point(ggplot2::aes(lon, lat), data = sampling_pos, pch = 4)
 }
