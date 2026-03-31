@@ -80,7 +80,7 @@ hr_techreport_plot_wm_right <- function(input_data) {
       (year > 1984 & age < 8) | (year > 2013 & age < 10)
     ) |>
     stats::na.omit() |>
-    stats::lm(log(stock_weight / w1) ~ log(w1) + as.factor(year - 1), data = .)
+    stats::lm(log(stock_weight / w1) ~ log(w1) + as.factor(year - 1), data = _)
 
   wm |>
     broom::tidy(conf.int = TRUE) |>
