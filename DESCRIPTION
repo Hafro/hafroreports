@@ -36,7 +36,6 @@ Imports:
     psych,
     readr,
     rlang,
-    rmuppet,
     scales,
     stringr,
     stockassessment,
@@ -46,9 +45,12 @@ Imports:
     withr
 Suggests:
     unittest (>= 1.4)
+Enhances:
+    rmuppet
 License: GPL-2
 LazyData: true
 Remotes:
+    github::fishvice/rmuppet,
     github::hafro/SAMutils,
     github::fishfollower/SAM/stockassessment
 Roxygen: list(markdown = TRUE)
