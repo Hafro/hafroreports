@@ -3,6 +3,9 @@ hr_techreport_plot_lbindex <- function(
   length_range,
   var = "si_biomass"
 ) {
+  # NSE variables
+  #year <- var <- var_cv <- NULL
+
   make_si <- function(survey, length_range) {
     stratification <- if (survey == "smb") {
       "new_strata_spring"

@@ -1,4 +1,6 @@
 hr_advice_data_assessment <- function(assessment) {
+  # NSE variables
+  key <- value <- year <- species <- assessment_year <- stat <- NULL
   assessment |>
     tidyr::gather(key, value, -c(year, species, assessment_year)) |>
     dplyr::filter(key != 'landings') |>
@@ -47,6 +49,8 @@ hr_advice_plot_recruitment <- function(
   data_assessment,
   assessment_year
 ) {
+  # NSE variables
+  key <- low <- median <- high <- year <- NULL
   lang <- getOption("hr.lang", "en")
 
   data_assessment |>

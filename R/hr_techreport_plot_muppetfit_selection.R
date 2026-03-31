@@ -2,6 +2,12 @@ hr_techreport_plot_muppetfit_selection <- function(
   fit,
   assessment_year
 ) {
+  # NSE variables
+  variable <- model <- w <- sel <- index <- value <- year <- age <- filename <- NULL
+  survey <- sigma <- name <- std.dev <- selslope <- fullselwt <- m <- l <- u <- NULL
+  SigmaC <- SigmaSurvey1 <- SigmaSurvey2 <- SurveylnQ1 <- SurveylnQ2 <- NULL
+  Spawningstock <- Recruitment <- NULL
+
   selection_plot_1 <-
     fit$params |>
     dplyr::filter(

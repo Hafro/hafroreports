@@ -2,6 +2,9 @@ dat_ldist_by_year <- function(
   pcon,
   sampling_type
 ) {
+  # NSE variables
+  species <- year <- sex <- length <- mfdb_gear_code <- count <- n <- NULL
+
   dplyr::tbl(pcon, "station") |>
     dplyr::filter(sampling_type %in% .env$sampling_type) |>
     dplyr::left_join(
@@ -29,6 +32,9 @@ hr_techreport_plot_survey_ldist_joy <- function(
   year_start = 1000,
   year_end = 9999
 ) {
+  # NSE variables
+  year <- NULL
+
   plots <- lapply(c(30, 35), function(sampling_type) {
     dat_ldist_by_year(pcon, sampling_type) |>
       dplyr::filter(

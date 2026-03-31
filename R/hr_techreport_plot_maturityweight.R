@@ -3,6 +3,8 @@ hr_techreport_plot_maturityweight <- function(
   input_data,
   mat_model = c("pred", "period")
 ) {
+  # NSE variables
+  year <- age <- stock_weight <- catch_weight <- yc <- period <- maturity <- pred <- NULL
   mat_model <- match.arg(mat_model)
 
   dat <- input_data |>

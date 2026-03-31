@@ -82,6 +82,9 @@ hr_sam_smb <- function(
   minage,
   maxage
 ) {
+  # NSE variables
+  year <- NULL
+
   smb <-
     model_dat |>
     dplyr::filter(year > 1984) |>
@@ -102,6 +105,9 @@ hr_sam_smh <- function(
   minage,
   maxage
 ) {
+  # NSE variables
+  year <- age <- NULL
+
   smh <-
     model_dat |>
     dplyr::filter(year > 1994) |>

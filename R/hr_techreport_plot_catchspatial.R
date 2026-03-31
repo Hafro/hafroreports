@@ -3,6 +3,8 @@ hr_techreport_plot_catchspatial <- function(
   years,
   low_res = TRUE
 ) {
+  # NSE variables
+  year <- lat <- lon <- catch <- tow_area <- tow_time <- NULL
   lang <- getOption("hr.lang", "en")
 
   catch_by_location <- dplyr::tbl(pcon, "logbook") |>

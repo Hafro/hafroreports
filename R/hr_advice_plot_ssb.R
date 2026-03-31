@@ -3,6 +3,8 @@ hr_advice_plot_ssb <- function(
   assessment_year,
   ref_points
 ) {
+  # NSE variables
+  key <- year <- median <- label <- low <- high <- NULL
   lang <- getOption("hr.lang", "en")
 
   # Create a named color vector

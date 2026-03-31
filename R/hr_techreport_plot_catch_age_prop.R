@@ -5,6 +5,9 @@ hr_techreport_plot_catch_age_prop <- function(
   age_start = 0,
   age_end = 9999
 ) {
+  # NSE variables
+  year <- age <- catch_weight <- catch <- yc <- val <- NULL
+
   dat <- input_data |>
     dplyr::filter(
       year >= year_start,

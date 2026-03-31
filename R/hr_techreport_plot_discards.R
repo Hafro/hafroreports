@@ -1,6 +1,9 @@
 hr_techreport_plot_discards <- function(
   species
 ) {
+  # NSE variables
+  disc.wgt <- disc.wgt.perc <- CV <- gear <- year <- u <- l <- tot <- NULL
+
   hafroreports::hr_discards |>
     dplyr::filter(species == .env$species) |>
     dplyr::bind_rows(
@@ -31,6 +34,9 @@ hr_techreport_plot_discards <- function(
 update_hr_discards_txt <- function(
   in_file = "02-had/data/brottkast2001-2017.txt"
 ) {
+  # NSE variables
+  species <- gear <- disc.n <- disc.n.perc <- disc.wgt <- disc.wgt.perc <- CV <- NULL
+
   species_recode <- c(cod = 1, haddock = 2)
   gear_recode <- c()
 

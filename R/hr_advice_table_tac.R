@@ -3,6 +3,10 @@ hr_advice_data_tac <- function(
   tac_hist,
   landings_by_fishing_year_country
 ) {
+  # NSE variables
+  fishing_year <- country <- catch <- icelandic <- foreign <- total <- advice_period <- NULL
+  advice <- tac <- NULL
+
   # TODO: 02-had say:, from mar::vessel() mutate(origin = case_when(status == 'Erlent' ~ 'foreign', TRUE ~ 'icelandic'))
   #       I think this is a poor-man's version of our contry column, from mar::landadur_afli():land
   # TODO: Vastly over-reported foreign landings, not filtering areas?
@@ -24,7 +28,7 @@ hr_advice_data_tac <- function(
       names_from = country,
       values_from = catch
     ) |>
-    dplyr::select(-`NA`) |> # TODO: No idea.
+    dplyr::select(-as.symbol("NA")) |>
     dplyr::mutate(
       total = icelandic + foreign
     ) |>

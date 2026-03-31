@@ -9,6 +9,11 @@ hr_techreport_plot_cpue <- function(
   year_start = 1000,
   year_end = 9999
 ) {
+  # NSE variables
+  year <- tow_hooks <- tow_num_nets <- tow_time <- mfdb_gear_code <- catch <- eff_miss <- NULL
+  gear_name <- NULL
+  coalesce <- NULL
+
   dat <- dplyr::tbl(pcon, "logbook") |>
     dplyr::filter(year >= year_start, year <= year_end) |>
     dplyr::mutate(

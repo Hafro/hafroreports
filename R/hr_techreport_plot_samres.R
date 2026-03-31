@@ -2,6 +2,8 @@
 hr_techreport_plot_samres_resid <- function(
   res
 ) {
+  # NSE variables
+  year <- age <- residual <- fleet <- NULL
   res |>
     SAMutils::format_sam_pres() |>
     ggplot2::ggplot(ggplot2::aes(
@@ -21,6 +23,8 @@ hr_techreport_plot_samres_combfit <- function(
   res,
   model_data
 ) {
+  # NSE variables
+  year <- age <- fleet <- residual <- stock_weight <- observation <- mean <- obs <- pred <- NULL
   res |>
     SAMutils::format_sam_res() |>
     dplyr::filter(year > 1980, residual != 0, fleet != 'Residual catch') |>

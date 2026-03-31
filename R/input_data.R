@@ -3,6 +3,9 @@ hr_input_data_lw <- function(
   sampling_type = 30,
   prediction_length_range = NULL
 ) {
+  # NSE variables
+  species <- length <- weight <- count <- NULL
+
   lw_dat <- dplyr::tbl(pcon, "station") |>
     dplyr::filter(sampling_type %in% local(sampling_type)) |>
     dplyr::left_join(
@@ -48,6 +51,9 @@ hr_input_data_maturity_key <- function(
   ignore_years = c(),
   sampling_type = 30
 ) {
+  # NSE variables
+  measurement_type <- age <- maturity_stage <- mat <- year <- lgroup <- region <- mat_p <- NULL
+
   mat_length <- dplyr::tbl(pcon, "station") |>
     dplyr::filter(sampling_type %in% local(sampling_type)) |>
     dplyr::inner_join(
@@ -113,6 +119,10 @@ hr_input_data_si_index <- function(
   gear_id_filter = NULL,
   scale_by_landings = FALSE
 ) {
+  # NSE variables
+  si_abund <- si_biomass <- mat_p <- mat_p_est <- year <- age <- NULL
+  coalesce <- gear_id <- NULL
+
   ldist <- dplyr::tbl(pcon, "ldist")
   if (!is.null(lw_key)) {
     ldist <- dplyr::left_join(
@@ -214,6 +224,9 @@ hr_input_data_si_index <- function(
 }
 
 hr_input_data_landings <- function(pcon) {
+  # NSE variables
+  year <- catch <- NULL
+
   dplyr::tbl(pcon, "landings") |>
     dplyr::group_by(year) |>
     dplyr::summarize(catch = sum(catch))

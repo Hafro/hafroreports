@@ -1,4 +1,6 @@
 hr_advice_ref_table <- function(ref_points, ref_points_basis_table) {
+  # NSE variables
+  ref_point <- value <- approach <- basis <- render <- NULL
   lang <- getOption("hr.lang", "en")
 
   ref_table <-

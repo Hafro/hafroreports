@@ -5,6 +5,10 @@ hr_muppet_input_datafiles <- function(
   age_end,
   age_start = 1
 ) {
+  # NSE variables
+  year <- age <- catch <- stock_weight <- ws <- maturity <- ms <- NULL
+  catch_weight <- ssbwt <- cno <- cwt <- smb <- smh <- NULL
+
   out_files <- list()
 
   prepend_header <- function(x, head) paste(head, x, sep = "\n")

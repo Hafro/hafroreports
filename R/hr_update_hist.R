@@ -1,6 +1,9 @@
 hr_update_hist <- function(
   ...
 ) {
+  # NSE variables
+  assessment_year <- NULL
+
   out <- NULL
   for (a in list(...)) {
     if (is.null(a)) {

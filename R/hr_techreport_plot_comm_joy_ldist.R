@@ -9,6 +9,9 @@ hr_techreport_plot_comm_joy_ldist <- function(
   max_height = 50,
   split_by_sex = FALSE
 ) {
+  # NSE variables
+  year <- mfdb_gear_code <- sampling_type <- NULL
+
   dplyr::tbl(pcon, "station") |>
     dplyr::filter(
       year >= year_start,

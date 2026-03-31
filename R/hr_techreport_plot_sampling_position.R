@@ -4,6 +4,8 @@ hr_techreport_plot_sampling_position <- function(
   year_start = 2000,
   year_end = 2000
 ) {
+  # NSE variables
+  year <- mfdb_gear_code <- lon <- lat <- catch <- tow_area <- tow_time <- NULL
   sampling_pos <- dplyr::tbl(pcon, "sampling") |>
     dplyr::filter(
       year >= local(year_start),

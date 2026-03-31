@@ -3,6 +3,12 @@ hr_techreport_plot_survey_location <- function(
   pcon,
   assessment_year
 ) {
+  # NSE variables
+  sampling_type <- year <- lat <- lon <- bio <- zero_station <- survey <- NULL
+  species <- sample_id <- count <- weight <- tow_length <- NULL
+  begin_lat <- begin_lon <- NULL
+  coalesce <- NULL
+
   dat <- dplyr::tbl(pcon, "station") |>
     dplyr::filter(
       sampling_type == 30 &&

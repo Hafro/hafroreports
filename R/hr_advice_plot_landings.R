@@ -1,4 +1,6 @@
 hr_advice_data_landings <- function(landings_by_gear) {
+  # NSE variables
+  year <- gear_name <- catch <- NULL
   # Was advice/tables/landings.csv
   landings_by_gear |>
     dplyr::group_by(year, gear_name) |>
@@ -40,6 +42,8 @@ hr_advice_plot_landings <- function(
   data_landings,
   assessment_year
 ) {
+  # NSE variables
+  year <- fill <- tonnes <- ymax <- ymin <- NULL
   lang <- getOption("hr.lang", "en")
 
   stacked <- data_landings |>

@@ -1,5 +1,8 @@
 # Was weight_model_plot_left
 hr_techreport_plot_wm_left <- function(input_data) {
+  # NSE variables
+  year <- age <- stock_weight <- yc <- period <- w1 <- marker <- tyr <- NULL
+
   input_data |>
     dplyr::filter(year > 1984) |>
     dplyr::mutate(
@@ -37,6 +40,9 @@ hr_techreport_plot_wm_left <- function(input_data) {
 
 # Was weight_model_plot_center
 hr_techreport_plot_wm_center <- function(input_data) {
+  # NSE variables
+  year <- age <- stock_weight <- catch_weight <- yc <- period <- marker <- tyr <- NULL
+
   input_data |>
     dplyr::filter(
       year > 1984,
@@ -65,6 +71,9 @@ hr_techreport_plot_wm_center <- function(input_data) {
 
 # Was weight_model_plot_right
 hr_techreport_plot_wm_right <- function(input_data) {
+  # NSE variables
+  year <- age <- stock_weight <- w1 <- yc <- term <- estimate <- conf.low <- conf.high <- NULL
+
   wm <-
     input_data |>
     dplyr::mutate(

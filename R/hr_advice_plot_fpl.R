@@ -3,6 +3,8 @@ hr_advice_plot_fpl <- function(
   assessment_year,
   ref_points
 ) {
+  # NSE variables
+  key <- year <- median <- low <- high <- NULL
   lang <- getOption("hr.lang", "en")
   data_assessment |>
     dplyr::filter(key %in% c('HR'), assessment_year == .env$assessment_year) |>

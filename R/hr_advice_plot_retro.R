@@ -3,6 +3,8 @@ hr_advice_plot_retro <- function(
   ref_points,
   assessment_year
 ) {
+  # NSE variables
+  key <- year <- median <- label <- label2 <- NULL
   lang <- getOption("hr.lang", "en")
 
   data_assessment |>

@@ -33,6 +33,8 @@ hr_advice_data_prognosis <- function(
 }
 
 hr_advice_table_prognosis <- function(data_prognosis, assessment_year) {
+  # NSE variables
+  catch <- HR <- ssb <- ssb_change <- tac_current <- tac_previous <- tac_change <- advice_change <- NULL
   lang <- getOption("hr.lang", "en")
 
   if (any(!(c("tac_current", "tac_previous") %in% colnames(data_prognosis)))) {

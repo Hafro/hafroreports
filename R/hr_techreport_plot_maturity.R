@@ -6,6 +6,8 @@ hr_techreport_plot_maturity <- function(
   age_start = 0,
   age_end = 9999
 ) {
+  # NSE variables
+  year <- age <- maturity <- yc <- age_lab <- mw <- NULL
   dat <- input_data |>
     dplyr::filter(
       year >= year_start,

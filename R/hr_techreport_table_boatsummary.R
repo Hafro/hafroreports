@@ -3,6 +3,8 @@ hr_techreport_table_boatsummary <- function(
   year_start = 1000,
   year_end = 9999
 ) {
+  # NSE variables
+  year <- gear_name <- catch <- country <- NULL
   lang <- getOption("hr.lang", "en")
 
   tlate_cols <- function(col_names) {

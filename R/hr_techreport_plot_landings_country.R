@@ -6,6 +6,8 @@ hr_techreport_plot_landings_country <- function(
   year_start = 1000,
   year_end = 9999
 ) {
+  # NSE variables
+  year <- country <- catch <- NULL
   dat <- dplyr::tbl(pcon, "landings") |>
     dplyr::filter(year >= year_start, year <= year_end) |>
     dplyr::mutate(

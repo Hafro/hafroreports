@@ -3,6 +3,8 @@ hr_techreport_plot_numboats <- function(
   year_start = 1000,
   year_end = 9999
 ) {
+  # NSE variables
+  year <- catch <- n <- NULL
   lang <- getOption("hr.lang", "en")
 
   tbl <- dplyr::tbl(pcon, "landings") |>

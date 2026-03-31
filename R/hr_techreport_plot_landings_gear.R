@@ -3,6 +3,9 @@ hr_techreport_plot_landings_gear <- function(
   year_start = 1000,
   year_end = 9999
 ) {
+  # NSE variables
+  year <- gear_name <- catch <- country <- NULL
+
   dplyr::tbl(pcon, "landings") |>
     dplyr::filter(
       year >= year_start,

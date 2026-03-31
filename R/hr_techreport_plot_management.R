@@ -5,6 +5,10 @@ hr_techreport_plot_management <- function(
   landings_by_fishing_year_country,
   m_labels
 ) {
+  # NSE variables
+  assessment_year <- advice_period <- advice <- tac <- total <- fishing_year <- NULL
+  value <- group <- Year <- type <- catch <- NULL
+
   dat <- advice_hist |>
     dplyr::inner_join(tac_hist, by = "assessment_year") |>
     dplyr::inner_join(

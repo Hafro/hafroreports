@@ -1,4 +1,9 @@
 hr_muppet_input_progwts <- function(assessment_input_data, year_end) {
+  # NSE variables
+  year <- year_start <- age <- age_end <- stock_weight <- yc <- NULL
+  catch_weight <- term <- estimate <- delta <- maturity <- pred <- NULL
+  w1 <- ssbwts <- NULL
+
   input_dat <- assessment_input_data |>
     dplyr::filter(year >= year_start, age %in% 1:age_end)
 

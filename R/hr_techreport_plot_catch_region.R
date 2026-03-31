@@ -4,6 +4,10 @@ hr_techreport_plot_catch_region <- function(
   year_start = 1000,
   year_end = 9999
 ) {
+  # NSE variables
+  year <- mfdb_gear_code <- region <- catch <- ocean_depth_class <- NULL
+  coalesce <- NULL
+
   dplyr::tbl(pcon, "logbook") |>
     dplyr::filter(year >= year_start, year <= year_end) |>
     pax::pax_add_ocean_depth_class(breaks = c(0, 100, 200, 300)) |>

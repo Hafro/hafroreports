@@ -4,6 +4,12 @@ hr_assessment_from_sag <- function(
   ices_stock_key_label,
   ices_median_refbio = NULL
 ) {
+  # NSE variables
+  StockKeyLabel <- Year <- low_recruitment <- recruitment <- high_recruitment <- NULL
+  low_SSB <- SSB <- high_SSB <- landings <- low_F <- F <- high_F <- NULL
+  customUnit <- customColumnId <- customName <- customValue <- NULL
+  year <- low_HR <- median_HR <- high_HR <- NULL
+
   assessment_keys <-
     icesSAG::getListStocks(assessment_year) |>
     dplyr::filter(StockKeyLabel == ices_stock_key_label) |>

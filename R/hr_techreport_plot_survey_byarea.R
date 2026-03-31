@@ -10,6 +10,9 @@ hr_techreport_plot_survey_byarea <- function(
     Other = pax::pax_add_other()
   )
 ) {
+  # NSE variables
+  year <- region <- si_biomass <- mfdb_gear_code <- val <- group <- sampling_type <- NULL
+
   make_si <- function(survey) {
     stratification <- if (survey == "smb") {
       "new_strata_spring"

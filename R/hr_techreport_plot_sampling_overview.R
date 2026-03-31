@@ -30,6 +30,8 @@ hr_techreport_plot_sampling_overview <- function(
   lat <- NULL
   lon <- NULL
   year <- NULL
+  gear_name <- NULL
+  catch <- NULL
 
   dat <- dplyr::tbl(pcon, "station") |>
     dplyr::filter(

@@ -4,6 +4,8 @@ hr_techreport_plot_catchdepth <- function(
   year_start = 1000,
   year_end = 9999
 ) {
+  # NSE variables
+  year <- ocean_depth_class <- catch <- NULL
   lang <- getOption("hr.lang", "en")
 
   dplyr::tbl(pcon, "logbook") |>

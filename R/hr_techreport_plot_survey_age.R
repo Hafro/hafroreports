@@ -6,6 +6,8 @@ hr_techreport_plot_survey_age_bubble <- function(
   age_start = 0,
   age_end = 9999
 ) {
+  # NSE variables
+  year <- age <- yc <- age_lab <- smb <- smh <- name <- ind <- NULL
   dat <- input_data |>
     dplyr::filter(
       year >= year_start,

@@ -1,4 +1,6 @@
 hr_advice_table_prog_input <- function(data_prog_input, assessment_year) {
+  # NSE variables
+  name <- year <- value <- NULL
   lang <- getOption("hr.lang", "en")
 
   data_prog_input |>

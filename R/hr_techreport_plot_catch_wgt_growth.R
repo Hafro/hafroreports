@@ -5,6 +5,8 @@ hr_techreport_plot_catch_wgt_growth <- function(
   age_start = 0,
   age_end = 9999
 ) {
+  # NSE variables
+  year <- age <- catch_weight <- catch <- stock_weight <- yc <- age_lab <- w <- mw <- survey <- NULL
   dat <- input_data |>
     dplyr::filter(
       year >= year_start,

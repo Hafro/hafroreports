@@ -8,6 +8,9 @@ hr_input_data_had <- function(
   input_data_agfs_index,
   input_data_landings
 ) {
+  # NSE variables
+  n <- mw <- mat <- smb <- lnd <- ws <- ms <- NULL
+  year <- age <- catch <- catch_weight <- stock_weight <- maturity <- NULL
   tidyr::expand_grid(
     year = year_start:year_end,
     age = age_start:age_end

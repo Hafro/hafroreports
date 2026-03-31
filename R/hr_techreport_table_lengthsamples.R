@@ -6,6 +6,9 @@ hr_techreport_table_lengthsamples <- function(
   year_end = 9999,
   include_cols = c("lengths", "otol")
 ) {
+  # NSE variables
+  year <- NULL
+
   sampling <- dplyr::tbl(pcon, "sampling") |>
     dplyr::inner_join(dplyr::tbl(pcon, "measurement")) |>
     dplyr::filter(year >= year_start, year <= year_end) |>

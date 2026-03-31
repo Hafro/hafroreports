@@ -29,6 +29,8 @@ two_panel_plot <- function(
   ),
   split_by_gear = FALSE
 ) {
+  # NSE variables
+  year <- val <- group <- mfdb_gear_code <- NULL
   p1 <-
     dat |>
     ggplot2::ggplot(ggplot2::aes(year, val, fill = group)) +

@@ -18,6 +18,9 @@ hr_muppet_run <- function(
   ),
   muppet_args = c('nox')
 ) {
+  # NSE variables
+  CalcCno <- name <- value <- variable <- NULL
+
   write_file_list(muppet_input_files, md)
   if (isTRUE(clear_on_exit)) {
     on.exit(unlink(md, recursive = TRUE), add = TRUE)
