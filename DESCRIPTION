@@ -38,14 +38,14 @@ Imports:
     rlang,
     scales,
     stringr,
-    stockassessment,
-    SAMutils,
     tibble,
     tidyr,
     withr
 Suggests:
     unittest (>= 1.4)
 Enhances:
+    stockassessment,
+    SAMutils,
     rmuppet
 License: GPL-2
 LazyData: true
@@ -53,6 +53,5 @@ Remotes:
     github::fishvice/rmuppet,
     github::hafro/pax,
     github::hafro/SAMutils,
-    github::fishfollower/SAM/stockassessment@iceland_HCR
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.0.2
