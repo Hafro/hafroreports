@@ -14,7 +14,7 @@ hr_advice_data_assessment <- function(assessment) {
           'Hrygningarstofn' = 'SSB',
           'Viðmiðunarstofn' = 'refbio',
           'Veiðihlutfall' = 'HR',
-          #'Landaður afli' = 'landings',
+          # 'Landaður afli' = 'landings',
           'Veiðidánartala' = 'F'
         ),
         levels = c(
@@ -32,7 +32,7 @@ hr_advice_data_assessment <- function(assessment) {
           'SSB' = 'SSB',
           'Reference biomass' = 'refbio',
           'Harvest rate' = 'HR',
-          #'Landaður afli' = 'landings',
+          # 'Landaður afli' = 'landings',
           'Fishing mortality' = 'F'
         ),
         levels = c(
