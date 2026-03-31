@@ -1,5 +1,5 @@
 #' @title Advice sheet banner
-#' @param tyr the assessment year
+#' @param year_end the assessment year
 #' @param tac TAC
 #' @param tac_last_year last years tac
 #' @param note banner note, if needed
@@ -8,7 +8,6 @@
 #' @param publication_note publication note, if needed
 #' @export
 hr_advice_banner <- function(
-  params = list(),
   year_end,
   tac,
   tac_last_year,
