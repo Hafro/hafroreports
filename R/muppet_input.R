@@ -12,17 +12,17 @@ hr_muppet_input_optionfile <- function(
     strsplit("\n") |>
     unlist() |>
     stringr::str_remove('../') |>
-    rmuppet:::line_replace(age_end, '# Last model age') |>
-    rmuppet:::line_replace(plus_group, '# Plus group') |>
-    rmuppet:::line_replace(
+    rmuppet::line_replace(age_end, '# Last model age') |>
+    rmuppet::line_replace(plus_group, '# Plus group') |>
+    rmuppet::line_replace(
       year_end - 1,
       '# Last data year, last year with catch at age data'
     ) |>
-    rmuppet:::line_replace(
+    rmuppet::line_replace(
       year_end - 1,
       '# Last opt year i.e last year before assyear   <=lastdatayear'
     ) |>
-    rmuppet:::line_replace(year_end - 1, '# Last year smh') |>
-    rmuppet:::line_replace(year_end, '# Last year smb')
+    rmuppet::line_replace(year_end - 1, '# Last year smh') |>
+    rmuppet::line_replace(year_end, '# Last year smb')
   return(out_files)
 }
