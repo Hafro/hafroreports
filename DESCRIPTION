@@ -52,6 +52,6 @@ LazyData: true
 Remotes:
     github::fishvice/rmuppet,
     github::hafro/SAMutils,
-    github::fishfollower/SAM/stockassessment
+    github::fishfollower/SAM/stockassessment@iceland_HCR
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.0.2
