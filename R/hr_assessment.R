@@ -27,7 +27,7 @@ hr_assessment_from_sag <- function(
 ) {
   # NSE variables
   StockKeyLabel <- Year <- low_recruitment <- recruitment <- high_recruitment <- NULL
-  low_SSB <- SSB <- high_SSB <- landings <- low_F <- F <- high_F <- NULL
+  low_SSB <- SSB <- high_SSB <- landings <- low_F <- high_F <- NULL
   customUnit <- customColumnId <- customName <- customValue <- NULL
   year <- low_HR <- median_HR <- high_HR <- NULL
 
@@ -55,7 +55,7 @@ hr_assessment_from_sag <- function(
       #high_refbio = CustomSeries4,
       landings = landings,
       low_HR = low_F,
-      median_HR = F,
+      median_HR = as.symbol("F"),
       high_HR = high_F
       # median_F = CustomSeries2
     ) |>
