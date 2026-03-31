@@ -26,7 +26,7 @@ hr_techreport_plot_muppetfit_selection <- function(
       data = fit$mcmc_results |>
         dplyr::filter(variable %in% c('fullselwt', 'selslope')) |>
         dplyr::select(-year) |>
-        dplyr::spread(variable, value) |>
+        tidyr::spread(variable, value) |>
         dplyr::left_join(tibble::tibble(
           filename = 'parameter',
           w = seq(0, 6000, by = 100)
