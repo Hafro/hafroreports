@@ -53,5 +53,12 @@ hr_astand_x_scale <- function(x, tyr = lubridate::year(Sys.Date()), ...) {
 #' @name hr_red_dot_number
 #' @param number the number you want to convert
 hr_red_dot_number <- function(number) {
-  prettyNum(number, big.mark = " ", digits = 20)
+  lang <- getOption("hr.lang", "en")
+
+  prettyNum(
+    number,
+    big.mark = " ",
+    decimal.mark = if (lang == "is") "," else ".",
+    digits = 10
+  )
 }
