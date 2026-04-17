@@ -35,7 +35,7 @@ hr_techreport_plot_catchdepth <- function(
     dplyr::ungroup() |>
     dplyr::collect() |>
     two_panel_plot(
-      fill = "Total catch \n by depth (m)",
+      fill = hr_label("total_catch_by_depth"),
       cols = c("#C7E9B4", "#7FCDBB", "#41B6C4", "#225EA8", 'darkblue')
     )
 }

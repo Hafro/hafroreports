@@ -40,7 +40,7 @@ billions	Billions		Milljarðar
 prop_of_measure	"Proportion (of %s)"	"Hlutfall (af %s)"
 catch_tonnes	"Catch (tonnes)"	"Afli (í tonnum)"
 catch_t_nm2	"Catch (t/nm²)"		"Afli (t/nm²)"
-total_catch	"Total catch"		"Heild afli"
+total_catch_by_depth	"Total catch by depth (m)"		"Dýpi (m)"
 other		"Other"			"Önnur"
 W		"W"			"V"
 NW		"NW"			"NV"
