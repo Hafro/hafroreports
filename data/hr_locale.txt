@@ -31,8 +31,7 @@ harvest_rate	"Harvest rate"		Veiðihlufall
 recindex	Juvenile~index		Nýliðunarvísitala
 catches		Catches			Afli
 catch_at_age	"Catch at age"		"Aldursgreindur afli"
-biomass_index_?	"Biomass index"		Lífmassavísitala
-biomass_index	"Biomass index"		Vísitala
+biomass_index	"Biomass index"		Lífmassavísitala
 abundance_index	"Abundance index"	Fjöldavísitala
 thousand_tonnes	"Thous. tonnes"		"Þús. tonn"
 million_tonnes	"Million tonnes"	"Milljón tonn"
