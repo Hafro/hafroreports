@@ -4,10 +4,22 @@
 \alias{hr_techreport_plot_catch_region}
 \title{Plot catch by geographic region (total and stacked)}
 \usage{
-hr_techreport_plot_catch_region(pcon, year_start = 1000, year_end = 9999)
+hr_techreport_plot_catch_region(
+  pcon,
+  depth_class = c(0, 100, 200, 300),
+  regions = list(W = 101, NW = 102, NE = c(103, 104, 105), SE = c(107, 106), SW = 108),
+  year_start = 1000,
+  year_end = 9999
+)
 }
 \arguments{
 \item{pcon}{A database connection object compatible with \code{dplyr::tbl}.}
+
+\item{depth_class}{Positive numeric vector of depth breaks.}
+
+\item{regions}{Named list mapping region labels to integer MFDB area codes.
+Default regions are W (101), NW (102), NE (103–105), SE (106–107),
+SW (108)}
 
 \item{year_start}{Integer. First year to include. Default is \code{1000}.}
 

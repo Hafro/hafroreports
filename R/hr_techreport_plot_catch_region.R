@@ -7,12 +7,24 @@
 #' the current language setting.
 #'
 #' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param depth_class Positive numeric vector of depth breaks.
+#' @param regions Named list mapping region labels to integer MFDB area codes.
+#'   Default regions are W (101), NW (102), NE (103–105), SE (106–107),
+#'   SW (108)
 #' @param year_start Integer. First year to include. Default is \code{1000}.
 #' @param year_end Integer. Last year to include. Default is \code{9999}.
 #' @return A \code{ggplot2} / \code{patchwork} plot object.
 #' @export
 hr_techreport_plot_catch_region <- function(
   pcon,
+  depth_class = c(0, 100, 200, 300),
+  regions = list(
+        W = 101,
+        NW = 102,
+        NE = c(103, 104, 105),
+        SE = c(107, 106),
+        SW = 108
+      ),
   year_start = 1000,
   year_end = 9999
 ) {
@@ -22,16 +34,9 @@ hr_techreport_plot_catch_region <- function(
 
   dplyr::tbl(pcon, "logbook") |>
     dplyr::filter(year >= year_start, year <= year_end) |>
-    pax::pax_add_ocean_depth_class(breaks = c(0, 100, 200, 300)) |>
+    pax::pax_add_ocean_depth_class(breaks = depth_class) |>
     pax::pax_add_regions(
-      regions = list(
-        W = 101,
-        NW = 102,
-        NE = c(103, 104, 105),
-        SE = c(107, 106),
-        SW = 108
-      ) |>
-        stats::setNames(sapply(c("W", "NW", "NE", "SE", "SW"), hr_label))
+      regions = regions |> stats::setNames(sapply(c("W", "NW", "NE", "SE", "SW"), hr_label))
     ) |>
     dplyr::mutate(region = coalesce(region, local(hr_label('other')))) |>
     dplyr::group_by(year, mfdb_gear_code, region, ocean_depth_class) |>
