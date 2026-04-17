@@ -7,6 +7,7 @@
 #' time.
 #'
 #' @param pcon A database connection object compatible with \code{dplyr::tbl}.
+#' @param depth_class Positive numeric vector of depth breaks.
 #' @param year_start Integer. First year to include. Default is \code{1000}
 #'   (no lower limit).
 #' @param year_end Integer. Last year to include. Default is \code{9999}.
@@ -14,6 +15,7 @@
 #' @export
 hr_techreport_plot_catchdepth <- function(
   pcon,
+  depth_class = c(0, 100, 200, 300),
   year_start = 1000,
   year_end = 9999
 ) {
@@ -26,7 +28,7 @@ hr_techreport_plot_catchdepth <- function(
       year >= year_start,
       year <= year_end
     ) |>
-    pax::pax_add_ocean_depth_class(breaks = c(0, 100, 200, 300)) |>
+    pax::pax_add_ocean_depth_class(breaks = depth_class) |>
     dplyr::group_by(year, ocean_depth_class) |>
     dplyr::summarise(val = sum(catch, na.rm = TRUE) / 1e6) |>
     dplyr::rename(group = ocean_depth_class) |>

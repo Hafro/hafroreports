@@ -4,10 +4,17 @@
 \alias{hr_techreport_plot_catchdepth}
 \title{Plot catch by depth class (total and stacked)}
 \usage{
-hr_techreport_plot_catchdepth(pcon, year_start = 1000, year_end = 9999)
+hr_techreport_plot_catchdepth(
+  pcon,
+  depth_class = c(0, 100, 200, 300),
+  year_start = 1000,
+  year_end = 9999
+)
 }
 \arguments{
 \item{pcon}{A database connection object compatible with \code{dplyr::tbl}.}
+
+\item{depth_class}{Positive numeric vector of depth breaks.}
 
 \item{year_start}{Integer. First year to include. Default is \code{1000}
 (no lower limit).}
