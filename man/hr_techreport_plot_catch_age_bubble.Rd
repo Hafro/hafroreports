@@ -15,7 +15,7 @@ hr_techreport_plot_catch_age_bubble(
 \arguments{
 \item{input_data}{A data frame with columns \code{year}, \code{age},
 and \code{catch} (catch numbers at age), as produced by
-\code{\link{hr_input_data_had}} or similar.}
+\code{\link{hr_input_data_combine}} or similar.}
 
 \item{year_start}{Integer. First year to display. Default is \code{1970}.}
 

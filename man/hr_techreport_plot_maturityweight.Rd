@@ -9,7 +9,7 @@ hr_techreport_plot_maturityweight(input_data, mat_model = c("pred", "period"))
 \arguments{
 \item{input_data}{A data frame with columns \code{year}, \code{age},
 \code{stock_weight} (grams), and \code{maturity} (proportion), as
-produced by \code{\link{hr_input_data_had}}.}
+produced by \code{\link{hr_input_data_combine}}.}
 
 \item{mat_model}{Character. Maturity model type: \code{"pred"} (default)
 fits a single GLM to the most recent period; \code{"period"} fits

@@ -5,7 +5,7 @@
 #'
 #' @param input_data A data frame with columns \code{year}, \code{age},
 #'   \code{catch} (numbers), and \code{catch_weight} (mean weight in grams),
-#'   as produced by \code{\link{hr_input_data_had}} or similar.
+#'   as produced by \code{\link{hr_input_data_combine}} or similar.
 #' @param year_start Integer. First year to display. Default is \code{1970}.
 #' @param year_end Integer. Last year to display. Default is \code{9999}.
 #' @param age_start Integer. Minimum age to include. Default is \code{0}.

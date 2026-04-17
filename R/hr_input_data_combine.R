@@ -1,4 +1,4 @@
-#' Assemble haddock model input data
+#' Combine survey indices into single input_data
 #'
 #' Combines commercial catch-at-age, spring (IGFS/SMB) and autumn (AGFS/SMH)
 #' survey indices, and total landings into a single data frame suitable for
@@ -24,7 +24,7 @@
 #'   \code{catch_weight}, \code{smb}, \code{stock_weight}, \code{maturity},
 #'   \code{smh}, and \code{M}, covering the requested year and age range.
 #' @export
-hr_input_data_had <- function(
+hr_input_data_combine <- function(
   year_start,
   year_end,
   age_start = 1,

@@ -15,7 +15,7 @@ hr_techreport_plot_maturity(
 \arguments{
 \item{input_data}{A data frame with columns \code{year}, \code{age}, and
 \code{maturity} (proportion mature), as produced by
-\code{\link{hr_input_data_had}}.}
+\code{\link{hr_input_data_combine}}.}
 
 \item{year_start}{Integer. First year to display. Default is \code{1970}.}
 

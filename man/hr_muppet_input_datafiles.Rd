@@ -16,7 +16,7 @@ hr_muppet_input_datafiles(
 \item{assessment_input_data}{A data frame with columns \code{year},
 \code{age}, \code{catch}, \code{catch_weight}, \code{stock_weight},
 \code{maturity}, \code{smb}, and \code{smh}, as produced by
-\code{\link{hr_input_data_had}}.}
+\code{\link{hr_input_data_combine}}.}
 
 \item{year_start}{Integer. First year to include in the output files.}
 

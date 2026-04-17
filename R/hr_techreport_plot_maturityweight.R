@@ -8,7 +8,7 @@
 #'
 #' @param input_data A data frame with columns \code{year}, \code{age},
 #'   \code{stock_weight} (grams), and \code{maturity} (proportion), as
-#'   produced by \code{\link{hr_input_data_had}}.
+#'   produced by \code{\link{hr_input_data_combine}}.
 #' @param mat_model Character. Maturity model type: \code{"pred"} (default)
 #'   fits a single GLM to the most recent period; \code{"period"} fits
 #'   separate curves for three historical time periods.

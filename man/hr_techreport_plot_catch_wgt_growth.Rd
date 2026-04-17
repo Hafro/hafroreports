@@ -15,7 +15,7 @@ hr_techreport_plot_catch_wgt_growth(
 \arguments{
 \item{input_data}{A data frame with columns \code{year}, \code{age},
 \code{catch}, \code{catch_weight} (grams), and \code{stock_weight}
-(grams), as produced by \code{\link{hr_input_data_had}}.}
+(grams), as produced by \code{\link{hr_input_data_combine}}.}
 
 \item{year_start}{Integer. First year to display. Default is \code{1970}.}
 

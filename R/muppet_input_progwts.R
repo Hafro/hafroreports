@@ -6,7 +6,7 @@
 #' written as \code{Files/ProgWts.dat} in the format expected by MUPPET.
 #'
 #' @param assessment_input_data A data frame of model input data as produced
-#'   by \code{\link{hr_input_data_had}}, containing columns \code{year},
+#'   by \code{\link{hr_input_data_combine}}, containing columns \code{year},
 #'   \code{age}, \code{stock_weight}, \code{catch_weight}, and
 #'   \code{maturity}.
 #' @param year_end Integer. The assessment year; projections are produced for

@@ -8,7 +8,7 @@ hr_techreport_plot_wm_right(input_data, assessment_year)
 }
 \arguments{
 \item{input_data}{A data frame with columns \code{year}, \code{age}, and
-\code{stock_weight} (grams), as produced by \code{\link{hr_input_data_had}}.}
+\code{stock_weight} (grams), as produced by \code{\link{hr_input_data_combine}}.}
 
 \item{assessment_year}{Year report is providing an assessment for}
 }

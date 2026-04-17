@@ -9,7 +9,7 @@
 #' @param assessment_input_data A data frame with columns \code{year},
 #'   \code{age}, \code{catch}, \code{catch_weight}, \code{stock_weight},
 #'   \code{maturity}, \code{smb}, and \code{smh}, as produced by
-#'   \code{\link{hr_input_data_had}}.
+#'   \code{\link{hr_input_data_combine}}.
 #' @param year_start Integer. First year to include in the output files.
 #' @param year_end Integer. Last year (assessment year). Catch and catch
 #'   weight are set to \code{-1} for this year as the data are incomplete.

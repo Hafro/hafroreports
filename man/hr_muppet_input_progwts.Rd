@@ -8,7 +8,7 @@ hr_muppet_input_progwts(assessment_input_data, year_end)
 }
 \arguments{
 \item{assessment_input_data}{A data frame of model input data as produced
-by \code{\link{hr_input_data_had}}, containing columns \code{year},
+by \code{\link{hr_input_data_combine}}, containing columns \code{year},
 \code{age}, \code{stock_weight}, \code{catch_weight}, and
 \code{maturity}.}
 

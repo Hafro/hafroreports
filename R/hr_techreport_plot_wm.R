@@ -6,7 +6,7 @@
 #' Colours distinguish the current assessment year from historical data.
 #'
 #' @param input_data A data frame with columns \code{year}, \code{age}, and
-#'   \code{stock_weight} (grams), as produced by \code{\link{hr_input_data_had}}.
+#'   \code{stock_weight} (grams), as produced by \code{\link{hr_input_data_combine}}.
 #' @param assessment_year Year report is providing an assessment for
 #' @return A \code{ggplot2} plot object.
 #' @export
@@ -61,7 +61,7 @@ hr_techreport_plot_wm_left <- function(
 #'
 #' @param input_data A data frame with columns \code{year}, \code{age},
 #'   \code{stock_weight} (grams), and \code{catch_weight} (grams), as
-#'   produced by \code{\link{hr_input_data_had}}.
+#'   produced by \code{\link{hr_input_data_combine}}.
 #' @param assessment_year Year report is providing an assessment for
 #' @return A \code{ggplot2} plot object.
 #' @export
@@ -106,7 +106,7 @@ hr_techreport_plot_wm_center <- function(
 #' confidence intervals and a horizontal reference line at 0.9.
 #'
 #' @param input_data A data frame with columns \code{year}, \code{age}, and
-#'   \code{stock_weight} (grams), as produced by \code{\link{hr_input_data_had}}.
+#'   \code{stock_weight} (grams), as produced by \code{\link{hr_input_data_combine}}.
 #' @param assessment_year Year report is providing an assessment for
 #' @return A \code{ggplot2} plot object.
 #' @export
