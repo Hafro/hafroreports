@@ -66,10 +66,11 @@ hr_input_data_lw <- function(
 #'
 #' Builds a maturity ogive by fitting a quasi-binomial GLM to maturity
 #' observations from the \code{measurement} table, grouped by length class
-#' and region. Observed proportions mature (by year, length group, age,
-#' and region) are combined with model-predicted proportions (with
-#' \code{year = NA} and \code{age = NA}) in the output, so downstream
-#' code can distinguish measurements from estimates.
+#' (and region, and optionally year). Observed proportions mature (by year,
+#' length group, age, and region) are combined with model-predicted
+#' proportions in the output. Predictions are marked by \code{age = NA}, and
+#' have \code{year = NA} unless \code{by_year = TRUE}, so downstream code can
+#' distinguish measurements from estimates.
 #'
 #' @param pcon A database connection object compatible with \code{dplyr::tbl}.
 #' @param lgroups Numeric vector of length group break points (lower bounds).
@@ -81,8 +82,26 @@ hr_input_data_lw <- function(
 #'   Default is \code{c()} (no years excluded).
 #' @param sampling_type Integer vector of sampling type codes to include.
 #'   Default is \code{30}.
+#' @param by_year Logical. If \code{TRUE}, the model includes year as a factor
+#'   (\code{mat_p ~ log(lgroup) + as.factor(year)}) and predictions are made
+#'   per year. Otherwise the model is \code{mat_p ~ log(lgroup) * region}
+#'   (\code{mat_p ~ log(lgroup)} with a single region). Default is
+#'   \code{FALSE}.
+#' @param sex Integer sex code to restrict the observations to (e.g. \code{2}
+#'   for females), or \code{NULL} for all fish. Default is \code{NULL}.
+#' @param mature_above,immature_below Length (cm). Before fitting, proportions
+#'   mature in length groups above \code{mature_above} are set to 1 and below
+#'   \code{immature_below} to 0. Default \code{NULL} (not used).
+#' @param predict_lgroups Length groups to predict for. Default is all
+#'   \code{lgroups} above 0.
+#' @param predict_years Years to predict for when \code{by_year = TRUE}.
+#'   Default \code{NULL} is all years in the data; years without data are
+#'   dropped.
+#' @param copy_years Named vector to fill years without data from another
+#'   year's predictions, e.g. \code{c("1985" = 1987, "1986" = 1987)}.
+#'   Only with \code{by_year = TRUE}. Default \code{NULL}.
 #' @return A tibble with columns \code{year}, \code{lgroup}, \code{age},
-#'   \code{region}, and \code{mat_p}. Rows with \code{year = NA} are
+#'   \code{region}, and \code{mat_p}. Rows with \code{age = NA} are
 #'   model predictions.
 #' @export
 hr_input_data_maturity_key <- function(
@@ -90,53 +109,202 @@ hr_input_data_maturity_key <- function(
   lgroups = seq(0, 200, 5),
   regions = NULL,
   ignore_years = c(),
-  sampling_type = 30
+  sampling_type = 30,
+  by_year = FALSE,
+  sex = NULL,
+  mature_above = NULL,
+  immature_below = NULL,
+  predict_lgroups = lgroups[lgroups > 0],
+  predict_years = NULL,
+  copy_years = NULL
 ) {
   # NSE variables
   measurement_type <- age <- maturity_stage <- mat <- year <- lgroup <- region <- mat_p <- NULL
 
+  measurements <- dplyr::tbl(pcon, "measurement") |>
+    dplyr::filter(
+      measurement_type == "OTOL",
+      !is.na(age),
+      !is.na(maturity_stage)
+    )
+  if (!is.null(sex)) {
+    measurements <- dplyr::filter(measurements, sex %in% local(sex))
+  }
   mat_length <- dplyr::tbl(pcon, "station") |>
     dplyr::filter(sampling_type %in% local(sampling_type)) |>
     dplyr::inner_join(
-      dplyr::tbl(pcon, "measurement") |>
-        dplyr::filter(
-          measurement_type == "OTOL",
-          !is.na(age),
-          !is.na(maturity_stage)
-        ) |>
+      measurements |>
         dplyr::mutate(mat = ifelse(maturity_stage == 1, 0, 1))
     ) |>
-    pax::pax_add_lgroups(lgroups = lgroups) |>
-    pax::pax_add_regions(regions = regions)
+    pax::pax_add_lgroups(lgroups = lgroups)
+  mat_length <- if (is.null(regions)) {
+    dplyr::mutate(mat_length, region = 'all')
+  } else {
+    pax::pax_add_regions(mat_length, regions = regions)
+  }
+  region_names <- if (is.null(regions)) 'all' else unique(names(regions))
 
-  mat_model <-
+  mat_dat <-
     mat_length |>
     dplyr::group_by(year, lgroup, region) |>
     dplyr::summarise(mat_p = mean(mat)) |>
     dplyr::collect(n = Inf) |>
-    na.omit() |>
-    dplyr::filter(!(year %in% local(ignore_years))) |>
-    stats::glm(
-      mat_p ~ log(lgroup) * region,
-      data = _,
-      family = stats::quasi(variance = "mu(1-mu)", link = "logit")
-    )
+    dplyr::ungroup()
+  if (!is.null(mature_above)) {
+    mat_dat <- dplyr::mutate(mat_dat, mat_p = ifelse(lgroup > mature_above, 1, mat_p))
+  }
+  if (!is.null(immature_below)) {
+    mat_dat <- dplyr::mutate(mat_dat, mat_p = ifelse(lgroup < immature_below, 0, mat_p))
+  }
+  mat_dat <- mat_dat |>
+    stats::na.omit() |>
+    dplyr::filter(lgroup > 0, !(year %in% local(ignore_years)))
 
-  mat_filler <- expand.grid(
-    lgroup = lgroups,
-    region = (if (is.null(regions)) 'all' else unique(names(regions)))
-  ) |>
-    dplyr::filter(lgroup > 0) |>
-    modelr::add_predictions(mat_model, type = 'response', var = 'mat_p')
+  formula <- if (isTRUE(by_year)) {
+    mat_p ~ log(lgroup) + as.factor(year)
+  } else if (length(region_names) > 1) {
+    mat_p ~ log(lgroup) * region
+  } else {
+    mat_p ~ log(lgroup)
+  }
+  mat_model <- stats::glm(
+    formula,
+    data = mat_dat,
+    family = stats::quasi(variance = "mu(1-mu)", link = "logit")
+  )
 
-  # Combine measurements & estimates, with year/age = NA signifying the estimates
-  return(dplyr::union_all(
+  if (isTRUE(by_year)) {
+    model_years <- sort(unique(mat_dat$year))
+    if (!is.null(predict_years)) {
+      model_years <- intersect(model_years, predict_years)
+    }
+    mat_filler <- tidyr::expand_grid(
+      year = model_years,
+      lgroup = predict_lgroups,
+      region = region_names
+    ) |>
+      modelr::add_predictions(mat_model, type = 'response', var = 'mat_p')
+    for (target in names(copy_years)) {
+      mat_filler <- dplyr::bind_rows(
+        mat_filler,
+        mat_filler |>
+          dplyr::filter(year == copy_years[[target]]) |>
+          dplyr::mutate(year = as.numeric(target))
+      )
+    }
+  } else {
+    mat_filler <- tidyr::expand_grid(
+      lgroup = predict_lgroups,
+      region = region_names
+    ) |>
+      modelr::add_predictions(mat_model, type = 'response', var = 'mat_p') |>
+      dplyr::mutate(year = NA_real_)
+  }
+
+  # Combine measurements & estimates, with age = NA signifying the estimates
+  dplyr::bind_rows(
     mat_length |>
       dplyr::group_by(year, lgroup, age, region) |>
       dplyr::summarise(mat_p = mean(mat)) |>
-      dplyr::collect(),
-    mat_filler |> dplyr::mutate(year = NA, age = NA)
-  ))
+      dplyr::collect() |>
+      dplyr::ungroup(),
+    mat_filler |> dplyr::mutate(age = NA_real_)
+  )
+}
+
+#' Scale survey abundance to strata using a station list
+#'
+#' As \code{pax::pax_si_scale_by_strata()}, but assigns stations to strata
+#' with a fixed station list (e.g. \code{biota.strata_stations}, as the
+#' tidypax-based assessments did) instead of the h3 cell of the tow position.
+#' Tows near a stratum boundary otherwise move between strata, which can
+#' change a survey index by tens of percent in single years. Stratum areas
+#' come from the pax strata table \code{strata_name}.
+#'
+#' @param tbl Output of \code{pax::pax_si_by_length()}.
+#' @param strata_stations Data frame with columns \code{station} and
+#'   \code{stratum}.
+#' @param strata_name Name of the pax strata table holding stratum areas
+#'   (\code{rall_area}, km^2).
+#' @return \code{tbl} with \code{si_abund} and \code{si_biomass} scaled to
+#'   the stratum area.
+#' @export
+hr_si_scale_by_strata_stations <- function(tbl, strata_stations, strata_name) {
+  # NSE variables
+  sample_id <- station <- gridcell <- species <- year <- length <- NULL
+  tow_depth <- stratum <- sampling_type <- area <- rall_area <- NULL
+  si_abund <- si_biomass <- NULL
+
+  pcon <- dbplyr::remote_con(tbl)
+  strata_area <- dplyr::tbl(pcon, strata_name) |>
+    dplyr::select(stratum, rall_area) |>
+    dplyr::collect() |>
+    dplyr::mutate(
+      # Convert km^2 (reitmapping units) to square nautical miles (tow area units)
+      area = dplyr::coalesce(rall_area, 0) / 1.852^2
+    ) |>
+    dplyr::select(stratum, area)
+
+  tbl |>
+    dplyr::left_join(
+      pax::pax_temptbl(
+        pcon,
+        strata_stations |>
+          dplyr::distinct(station, stratum) |>
+          dplyr::left_join(strata_area, by = "stratum")
+      ),
+      by = "station"
+    ) |>
+    dplyr::mutate(area = dplyr::coalesce(area, 0)) |>
+    dplyr::group_by(
+      sample_id,
+      station,
+      gridcell,
+      species,
+      year,
+      length,
+      tow_depth,
+      stratum,
+      sampling_type,
+      area
+    ) |>
+    dplyr::summarize(
+      si_abund = sum(si_abund, na.rm = TRUE),
+      si_biomass = sum(si_biomass, na.rm = TRUE)
+    ) |>
+    dplyr::group_by(species, year, stratum, sampling_type, area) |>
+    dplyr::mutate(
+      # NB: Not summarise, i.e. window function
+      si_abund = area * si_abund / dplyr::n_distinct(sample_id, na.rm = TRUE),
+      si_biomass = area *
+        si_biomass /
+        dplyr::n_distinct(sample_id, na.rm = TRUE)
+    )
+}
+
+#' Pool years for an age-length key
+#'
+#' Relabels every year in each group of \code{ygroup} as the group's first
+#' year, so the years share one age-length key. Used instead of the
+#' \code{ygroup} argument of pax, which coalesces the (text) group name with
+#' the (numeric) year and fails in DuckDB.
+#'
+#' @param tbl A (lazy) table with a \code{year} column.
+#' @param ygroup Named list of year vectors, e.g.
+#'   \code{list(past = 1980:1994)}. \code{NULL} does nothing.
+#' @return \code{tbl} with \code{year} relabelled.
+#' @export
+hr_pool_years <- function(tbl, ygroup) {
+  # NSE variables
+  year <- NULL
+  for (g in ygroup) {
+    first_year <- min(g)
+    tbl <- dplyr::mutate(
+      tbl,
+      year = ifelse(year %in% local(g), local(first_year), year)
+    )
+  }
+  tbl
 }
 
 ## Generate the ALK from the survey
@@ -146,7 +314,7 @@ hr_input_data_maturity_key <- function(
 #' from a pax database by applying a length distribution, an age–length key,
 #' optional strata scaling, and optional maturity weighting. The result is
 #' the primary model input table used by the SAM and MUPPET assessment
-#' workflows.
+#' workflows. Used for both surveys and commercial samples.
 #'
 #' @param pcon A database connection object compatible with \code{dplyr::tbl}.
 #' @param lw_key Data frame with columns \code{species}, \code{length}, and
@@ -161,22 +329,49 @@ hr_input_data_maturity_key <- function(
 #' @param sampling_type Integer vector of sampling type codes for station
 #'   filtering. Default is \code{30}.
 #' @param sam_use_10_11_first_2_years Logical. If \code{TRUE}, sampling types
-#'   10 and 11 are additionally included for the first two years of data to
-#'   improve age-1 estimates. Default is \code{FALSE}.
-#' @param tow_number Integer vector of valid tow numbers (NA coerced to 0).
-#'   Default is \code{0:35}.
-#' @param tgroup Integer or \code{NULL}. Tow group for length-distribution
-#'   scaling. Default is \code{NULL}.
+#'   10 and 11 are additionally included in the age-length key for the first
+#'   two years of data to improve age-1 estimates. Default is \code{FALSE}.
+#' @param tow_number Integer vector of valid tow numbers (NA coerced to 0), or
+#'   \code{NULL} for no filtering. Use for surveys (e.g. \code{0:35} for the
+#'   spring survey); for commercial samples \code{tow_number} is the haul
+#'   number, which can exceed 35. Default is \code{NULL}.
+#' @param tgroup Named list of months, e.g. \code{list(t1 = 1:6, t2 = 7:12)},
+#'   or \code{NULL}. Default is \code{NULL}.
 #' @param regions Named list mapping region labels to integer MFDB area codes.
 #'   Default is \code{list(all = 101:115)}.
 #' @param lgroups Numeric vector of length group break points. Default is
 #'   \code{seq(0, 200, 5)}.
-#' @param gear_group Named list mapping gear group labels to MFDB gear codes.
-#'   Default groups are \code{Other}, \code{BMT}, \code{LLN}, and \code{DSE}.
+#' @param gear_group Named list mapping gear group labels to MFDB gear codes,
+#'   or \code{NULL} for no gear grouping. Default is \code{NULL}.
 #' @param gear_id_filter Integer vector of gear IDs to include, or \code{NULL}
 #'   for no filtering. Default is \code{NULL}.
 #' @param scale_by_landings Logical. If \code{TRUE}, indices are additionally
-#'   scaled to match total landings. Default is \code{FALSE}.
+#'   scaled to match landings by gear group and time group. Default is
+#'   \code{FALSE}.
+#' @param haul_scalar Data frame with columns \code{sample_id} and
+#'   \code{scalar}, to down-weight individual (e.g. very large) hauls.
+#'   Default \code{NULL}.
+#' @param strata_stations Data frame with columns \code{station} and
+#'   \code{stratum}. If given, strata are assigned from it rather than from
+#'   tow positions, see \code{\link{hr_si_scale_by_strata_stations}}.
+#'   Default \code{NULL}.
+#' @param maturity_measured Logical. If \code{FALSE}, only the modelled
+#'   maturity at length from \code{maturity_key} is used, not the measured
+#'   maturity at age. Default \code{TRUE}.
+#' @param maturity_na Proportion mature for lengths with neither a measurement
+#'   nor an estimate, or \code{NULL} to leave them out. Default \code{NULL}.
+#' @param ygroup Named list of years to pool in the age-length key, e.g.
+#'   \code{list(past = 1980:1994)}, see \code{\link{hr_pool_years}}. Default
+#'   \code{NULL}.
+#' @param gridcell_na Grid cell to give samples without a position. Without a
+#'   position a sample gets no region, matches no age-length key cell and is
+#'   dropped. Default \code{NULL}.
+#' @param sample_gear_na Gear code to give samples with unknown gear, when
+#'   raising them (not in the age-length key). Default \code{NULL}.
+#' @param landings_gear_na,landings_month_na Gear code and month to give
+#'   landings with unknown gear or month when \code{scale_by_landings = TRUE}.
+#'   Landings without a month are otherwise left out of the scaling. Default
+#'   \code{NULL}.
 #' @return A grouped tibble with columns \code{year}, \code{age}, \code{n}
 #'   (abundance in thousands), \code{mw} (mean weight in grams), and
 #'   optionally \code{mat} (proportion mature).
@@ -188,22 +383,27 @@ hr_input_data_si_index <- function(
   strata_name = NULL,
   sampling_type = 30,
   sam_use_10_11_first_2_years = FALSE,
-  tow_number = 0:35,
+  tow_number = NULL,
   tgroup = NULL,
   regions = list(all = 101:115),
   lgroups = seq(0, 200, 5),
-  gear_group = list(
-    Other = 'Var',
-    BMT = c('BMT', 'NPT', 'SHT', 'PGT'),
-    LLN = 'LLN',
-    DSE = c('PSE', 'DSE')
-  ),
+  gear_group = NULL,
   gear_id_filter = NULL,
-  scale_by_landings = FALSE
+  scale_by_landings = FALSE,
+  haul_scalar = NULL,
+  strata_stations = NULL,
+  maturity_measured = TRUE,
+  maturity_na = NULL,
+  ygroup = NULL,
+  gridcell_na = NULL,
+  sample_gear_na = NULL,
+  landings_gear_na = NULL,
+  landings_month_na = NULL
 ) {
   # NSE variables
   si_abund <- si_biomass <- mat_p <- mat_p_est <- year <- age <- NULL
-  coalesce <- gear_id <- NULL
+  coalesce <- gear_id <- scalar <- year_orig <- mfdb_gear_code <- NULL
+  gridcell <- month <- NULL
 
   ldist <- dplyr::tbl(pcon, "ldist")
   if (!is.null(lw_key)) {
@@ -215,9 +415,16 @@ hr_input_data_si_index <- function(
   } else {
     ldist <- pax::pax_ldist_add_weight(ldist)
   }
+  station_filter <- function(tbl) {
+    dplyr::filter(
+      tbl,
+      local(is.null(tow_number)) |
+        coalesce(tow_number, 0) %in% local(c(tow_number, -1)),
+      local(is.null(gear_id_filter)) | (gear_id %in% local(gear_id_filter))
+    )
+  }
 
   alk <- dplyr::tbl(pcon, "station")
-
   if (isTRUE(sam_use_10_11_first_2_years)) {
     # NB: SAM is sensitive to the first 2 years in age 1, use sampling_types 10 & 11 to increase reported data
     start_year <- dplyr::tbl(pcon, "station") |>
@@ -232,12 +439,9 @@ hr_input_data_si_index <- function(
   } else {
     alk <- dplyr::filter(alk, sampling_type %in% local(sampling_type))
   }
-
   alk <- alk |>
-    dplyr::filter(
-      coalesce(tow_number, 0) %in% local(tow_number),
-      local(is.null(gear_id_filter)) | (gear_id %in% local(gear_id_filter))
-    ) |>
+    hr_pool_years(ygroup) |>
+    station_filter() |>
     pax::pax_ldist_alk(
       lgroups = lgroups,
       tgroup = tgroup,
@@ -246,27 +450,68 @@ hr_input_data_si_index <- function(
     )
 
   at_age <- dplyr::tbl(pcon, "station") |>
-    dplyr::filter(
-      sampling_type %in% local(sampling_type),
-      coalesce(tow_number, 0) %in% local(tow_number)
-    ) |>
-    pax::pax_si_by_length(ldist = ldist)
-  if (!is.null(strata_name)) {
-    at_age <- pax::pax_si_scale_by_strata(at_age, strata_name)
+    dplyr::filter(sampling_type %in% local(sampling_type)) |>
+    station_filter()
+  if (!is.null(gridcell_na)) {
+    at_age <- dplyr::mutate(at_age, gridcell = coalesce(gridcell, local(gridcell_na)))
   }
-  if (!is.null(alk)) {
-    at_age <- pax::pax_si_scale_by_alk(
+  if (!is.null(sample_gear_na)) {
+    at_age <- dplyr::mutate(
       at_age,
-      lgroups = lgroups,
-      tgroup = tgroup,
-      regions = regions,
-      gear_group = gear_group,
-      alk = alk
+      mfdb_gear_code = coalesce(mfdb_gear_code, local(sample_gear_na))
     )
   }
+  at_age <- pax::pax_si_by_length(at_age, ldist = ldist)
+
+  if (!is.null(haul_scalar)) {
+    at_age <- at_age |>
+      dplyr::left_join(pax::pax_temptbl(pcon, haul_scalar), by = "sample_id") |>
+      dplyr::mutate(
+        si_abund = coalesce(scalar, 1) * si_abund,
+        si_biomass = coalesce(scalar, 1) * si_biomass
+      ) |>
+      dplyr::select(-scalar)
+  }
+  if (!is.null(strata_stations)) {
+    at_age <- hr_si_scale_by_strata_stations(at_age, strata_stations, strata_name)
+  } else if (!is.null(strata_name)) {
+    at_age <- pax::pax_si_scale_by_strata(at_age, strata_name)
+  }
+  if (!is.null(ygroup)) {
+    at_age <- at_age |>
+      dplyr::mutate(year_orig = year) |>
+      hr_pool_years(ygroup)
+  }
+  at_age <- pax::pax_si_scale_by_alk(
+    at_age,
+    lgroups = lgroups,
+    tgroup = tgroup,
+    regions = regions,
+    gear_group = gear_group,
+    alk = alk
+  )
+  if (!is.null(ygroup)) {
+    at_age <- at_age |>
+      dplyr::mutate(year = year_orig) |>
+      dplyr::select(-year_orig)
+  }
   if (isTRUE(scale_by_landings)) {
+    landings_tbl <- dplyr::tbl(pcon, "landings")
+    if (!is.null(landings_gear_na)) {
+      landings_tbl <- dplyr::mutate(
+        landings_tbl,
+        mfdb_gear_code = coalesce(mfdb_gear_code, local(landings_gear_na))
+      )
+    }
+    if (!is.null(landings_month_na)) {
+      landings_tbl <- dplyr::mutate(
+        landings_tbl,
+        month = coalesce(month, local(landings_month_na))
+      )
+    }
     at_age <- pax::pax_si_scale_by_landings(
       at_age,
+      landings_tbl = landings_tbl,
       tgroup = tgroup,
       regions = regions,
       gear_group = gear_group
@@ -274,12 +519,22 @@ hr_input_data_si_index <- function(
   }
 
   if (!is.null(maturity_key)) {
-    # Break apart measurements & filler, join both separately
-    mat_measurements <- maturity_key |> dplyr::filter(!is.na(year))
+    # Break apart measurements & estimates (age = NA), join both separately.
+    # Estimates are by year if the key was fitted by year
+    mat_measurements <- maturity_key |> dplyr::filter(!is.na(age))
+    if (!isTRUE(maturity_measured)) {
+      mat_measurements <- mat_measurements |> dplyr::filter(FALSE)
+    }
     mat_filler <- maturity_key |>
-      dplyr::filter(is.na(year)) |>
-      dplyr::select(-year, -age) |>
+      dplyr::filter(is.na(age)) |>
+      dplyr::select(-age) |>
       dplyr::rename(mat_p_est = mat_p)
+    filler_by <- if (all(is.na(mat_filler$year))) {
+      mat_filler <- dplyr::select(mat_filler, -year)
+      c("lgroup", "region")
+    } else {
+      c("year", "lgroup", "region")
+    }
     at_age <- at_age |>
       dplyr::left_join(
         pax::pax_temptbl(pcon, mat_measurements),
@@ -287,10 +542,17 @@ hr_input_data_si_index <- function(
       ) |>
       dplyr::left_join(
         pax::pax_temptbl(pcon, mat_filler),
-        by = c("lgroup", "region")
+        by = filler_by
       )
 
-    mat_c <- quote(sum(si_abund * coalesce(mat_p, mat_p_est)) / sum(si_abund))
+    mat_c <- if (is.null(maturity_na)) {
+      quote(sum(si_abund * coalesce(mat_p, mat_p_est)) / sum(si_abund))
+    } else {
+      substitute(
+        sum(si_abund * coalesce(mat_p, mat_p_est, x)) / sum(si_abund),
+        list(x = maturity_na)
+      )
+    }
   } else {
     mat_c <- NA
   }

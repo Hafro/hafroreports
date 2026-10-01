@@ -9,7 +9,14 @@ hr_input_data_maturity_key(
   lgroups = seq(0, 200, 5),
   regions = NULL,
   ignore_years = c(),
-  sampling_type = 30
+  sampling_type = 30,
+  by_year = FALSE,
+  sex = NULL,
+  mature_above = NULL,
+  immature_below = NULL,
+  predict_lgroups = lgroups[lgroups > 0],
+  predict_years = NULL,
+  copy_years = NULL
 )
 }
 \arguments{
@@ -27,17 +34,42 @@ Default is \code{c()} (no years excluded).}
 
 \item{sampling_type}{Integer vector of sampling type codes to include.
 Default is \code{30}.}
+
+\item{by_year}{Logical. If \code{TRUE}, the model includes year as a factor
+(\code{mat_p ~ log(lgroup) + as.factor(year)}) and predictions are made
+per year. Otherwise the model is \code{mat_p ~ log(lgroup) * region}
+(\code{mat_p ~ log(lgroup)} with a single region). Default is
+\code{FALSE}.}
+
+\item{sex}{Integer sex code to restrict the observations to (e.g. \code{2}
+for females), or \code{NULL} for all fish. Default is \code{NULL}.}
+
+\item{mature_above, immature_below}{Length (cm). Before fitting, proportions
+mature in length groups above \code{mature_above} are set to 1 and below
+\code{immature_below} to 0. Default \code{NULL} (not used).}
+
+\item{predict_lgroups}{Length groups to predict for. Default is all
+\code{lgroups} above 0.}
+
+\item{predict_years}{Years to predict for when \code{by_year = TRUE}.
+Default \code{NULL} is all years in the data; years without data are
+dropped.}
+
+\item{copy_years}{Named vector to fill years without data from another
+year's predictions, e.g. \code{c("1985" = 1987, "1986" = 1987)}.
+Only with \code{by_year = TRUE}. Default \code{NULL}.}
 }
 \value{
 A tibble with columns \code{year}, \code{lgroup}, \code{age},
-\code{region}, and \code{mat_p}. Rows with \code{year = NA} are
+\code{region}, and \code{mat_p}. Rows with \code{age = NA} are
 model predictions.
 }
 \description{
 Builds a maturity ogive by fitting a quasi-binomial GLM to maturity
 observations from the \code{measurement} table, grouped by length class
-and region. Observed proportions mature (by year, length group, age,
-and region) are combined with model-predicted proportions (with
-\code{year = NA} and \code{age = NA}) in the output, so downstream
-code can distinguish measurements from estimates.
+(and region, and optionally year). Observed proportions mature (by year,
+length group, age, and region) are combined with model-predicted
+proportions in the output. Predictions are marked by \code{age = NA}, and
+have \code{year = NA} unless \code{by_year = TRUE}, so downstream code can
+distinguish measurements from estimates.
 }

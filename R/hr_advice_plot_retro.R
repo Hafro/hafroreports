@@ -1,54 +1,78 @@
-#' Plot retrospective assessment results for advice sheet
+#' Plot retrospective comparison of recent assessments for advice sheet
 #'
-#' Creates an interactive faceted line plot showing time series of HR, SSB,
-#' reference biomass, and recruitment from up to five consecutive assessment
-#' years. The most recent year is highlighted in red. Reference point lines
-#' are overlaid on the relevant panels.
+#' Faceted line plot comparing the current assessment (red) with the
+#' assessments of the previous years (black) over the last 15 years: fishing
+#' pressure (harvest rate or F), SSB, the reference biomass (if the stock has
+#' one) and recruitment (current assessment only). Dashed lines show the
+#' reference points the stock has.
 #'
-#' @param data_assessment A long-format data frame as returned by
-#'   \code{\link{hr_advice_data_assessment}}.
-#' @param ref_points A named list or data frame with elements \code{HR_mgt},
-#'   \code{HR_pa}, \code{HR_msy}, \code{B_pa}, \code{B_lim}, and
-#'   \code{MGT_btrigger}.
-#' @param assessment_year Integer. The most recent assessment year.
-#' @return A \code{ggplot2} / \code{ggiraph} faceted plot object.
+#' @param data_assessment Long-format assessment data as returned by
+#'   \code{\link{hr_advice_data_assessment}}, with several assessment years.
+#' @param ref_points Named list of reference points (biomass in thousand
+#'   tonnes).
+#' @param assessment_year Integer. The current assessment year.
+#' @param fishing_pressure \code{"HR"} (harvest rate) or \code{"F"}. Default
+#'   \code{"HR"}.
+#' @return A \code{ggplot2} / \code{ggiraph} plot object.
 #' @export
 hr_advice_plot_retro <- function(
   data_assessment,
   ref_points,
-  assessment_year
+  assessment_year,
+  fishing_pressure = c("HR", "F")
 ) {
   # NSE variables
-  key <- year <- median <- label <- label2 <- NULL
+  key <- year <- median <- label <- value <- facet <- label2 <- .data <- NULL
   lang <- getOption("hr.lang", "en")
+  fishing_pressure <- match.arg(fishing_pressure)
 
-  data_assessment |>
+  d <- data_assessment |>
     dplyr::filter(
-      key %in% c('HR', 'SSB', 'refbio', 'recruitment'),
+      key %in% c(fishing_pressure, 'SSB', 'refbio', 'recruitment'),
       assessment_year > .env$assessment_year - 5,
       year >= .env$assessment_year - 15
     ) |>
     dplyr::filter(
       !(key == 'recruitment' & assessment_year < .env$assessment_year)
     ) |>
-    #arrange(label) |>
+    dplyr::group_by(key) |>
+    dplyr::filter(any(!is.na(median))) |>
+    dplyr::ungroup() |>
     dplyr::mutate(
-      label = eval(as.symbol(paste('label', lang, sep = '.'))), # gsub('(.+)~(.+)',"bold('\\1')~\\2",label),
+      label = as.character(.data[[paste('label', lang, sep = '.')]]),
       assessment_year = as.ordered(assessment_year),
-      median = ifelse(key == 'HR', median, median / 1e3)
-    ) |>
-    ggplot2::ggplot(ggplot2::aes(
-      x = year,
-      y = median,
-      color = assessment_year
-    )) +
+      median = ifelse(key == fishing_pressure, median, median / 1e3)
+    )
+  label_of <- function(k) unique(d$label[d$key == k])
+  n_years <- nlevels(droplevels(d$assessment_year))
+
+  fp_refs <- advice_ref_lines(ref_points, fishing_pressure)
+  b_refs <- tibble::tibble(
+    value = c(ref_points$B_pa, ref_points$B_lim),
+    label = c(hr_label("Bpa"), hr_label("Blim"))
+  )
+  refs <- dplyr::bind_rows(
+    if (length(label_of(fishing_pressure))) dplyr::mutate(fp_refs, facet = label_of(fishing_pressure)),
+    if (length(label_of('SSB'))) dplyr::mutate(b_refs, facet = label_of('SSB'))
+  )
+  if (!is.null(refs) && nrow(refs)) {
+    refs <- refs |>
+      dplyr::filter(!is.na(value)) |>
+      dplyr::rename(label2 = label, label = facet) |>
+      dplyr::mutate(year = assessment_year - 14 + 3 * (dplyr::row_number() - 1) %% 4)
+  }
+
+  ggplot2::ggplot(d, ggplot2::aes(
+    x = year,
+    y = median,
+    color = assessment_year
+  )) +
     ggplot2::scale_color_manual(
-      values = c("black", "black", 'black', 'black', 'tomato3'),
-      labels = scales::parse_format(),
+      values = c(rep("black", max(n_years - 1, 0)), 'tomato3'),
       guide = ggplot2::guide_legend(label.position = 'right')
     ) +
     ggiraph::geom_line_interactive(
-      size = 0.5,
+      linewidth = 0.5,
       ggplot2::aes(
         tooltip = paste(
           if (lang == 'is') 'Ráðgjafarár' else 'Assessment year',
@@ -58,7 +82,6 @@ hr_advice_plot_retro <- function(
         data_id = assessment_year
       )
     ) +
-    #geom_line(size=0.5) +
     ggplot2::facet_wrap(
       ~label,
       labeller = ggplot2::label_value,
@@ -66,61 +89,15 @@ hr_advice_plot_retro <- function(
     ) +
     ggplot2::labs(y = '') +
     ggplot2::geom_hline(
-      data = tibble::tibble(
-        year = rep(assessment_year - 10, 5),
-        median = c(
-          ref_points$HR_mgt,
-          ref_points$HR_msy, # ref_points$HR_lim,
-          ref_points$HR_pa,
-          ref_points$B_pa,
-          ref_points$B_lim
-        ),
-        label = c(
-          rep(
-            if (lang == 'is') "Veiðihlutfall" else "Harvest rate",
-            3
-          ),
-          rep(if (lang == 'is') "Hrygningarstofn" else "SSB", 2)
-        ),
-        #c(rep("bold('Veiðihlutfall')~italic('Harvest rate')",4),
-        #           rep("bold('Hrygningarstofn')~italic('SSB')",2)),
-        label2 = sapply(c("HRmgt", "HRmsy", "HRpa", "Bpa", "Blim"), hr_label)
-      ),
-      ggplot2::aes(yintercept = median),
+      data = refs,
+      ggplot2::aes(yintercept = value),
       linetype = "dashed",
-      size = 0.4
+      linewidth = 0.4
     ) +
     ggplot2::geom_text(
-      data = tibble::tibble(
-        year = c(
-          assessment_year - 14,
-          assessment_year - 11,
-          assessment_year - 0.25,
-          assessment_year - 12,
-          assessment_year - 13,
-          assessment_year - 5
-        ),
-        median = c(
-          1.1 * ref_points$HR_mgt,
-          1.1 * ref_points$HR_msy,
-          1.1 * ref_points$HR_pa, #1.05*ref_points$HR_lim,
-          1.15 * ref_points$B_pa,
-          1.15 * ref_points$B_lim,
-          1.15 * ref_points$MGT_btrigger
-        ),
-        label = c(
-          rep(
-            if (lang == 'is') "Veiðihlutfall" else "Harvest rate",
-            3
-          ),
-          rep(if (lang == 'is') "Hrygningarstofn" else "SSB", 3)
-        ),
-        label2 = sapply(
-          c("HRmgt", "HRmsy", "HRpa", "Bpa", "Blim", "Btrigger"),
-          hr_label
-        )
-      ),
-      ggplot2::aes(label = label2),
+      data = refs,
+      ggplot2::aes(x = year, y = 1.1 * value, label = label2),
+      inherit.aes = FALSE,
       parse = TRUE,
       size = 2.5,
       color = 'black'

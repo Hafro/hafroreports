@@ -2,26 +2,36 @@
 % Please edit documentation in R/hr_advice_plot_fpl.R
 \name{hr_advice_plot_fpl}
 \alias{hr_advice_plot_fpl}
-\title{Plot harvest rate time series for advice sheet}
+\title{Plot fishing pressure for advice sheet}
 \usage{
-hr_advice_plot_fpl(data_assessment, assessment_year, ref_points)
+hr_advice_plot_fpl(
+  data_assessment,
+  assessment_year,
+  ref_points,
+  fishing_pressure = c("HR", "F"),
+  title = NULL
+)
 }
 \arguments{
-\item{data_assessment}{A long-format data frame as returned by
-\code{\link{hr_advice_data_assessment}}, filtered or containing a
-\code{key} column and \code{assessment_year} column.}
+\item{data_assessment}{Long-format assessment data as returned by
+\code{\link{hr_advice_data_assessment}}.}
 
-\item{assessment_year}{Integer. The assessment year to display.}
+\item{assessment_year}{Integer. The assessment year to plot.}
 
-\item{ref_points}{A named list or data frame with elements \code{HR_mgt},
-\code{HR_pa}, and \code{HR_msy} giving the harvest rate reference points.}
+\item{ref_points}{Named list of reference points.}
+
+\item{fishing_pressure}{\code{"HR"} (harvest rate) or \code{"F"}. Default
+\code{"HR"}.}
+
+\item{title}{Plot title. Default: harvest rate, or fishing mortality.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.
 }
 \description{
-Creates an interactive ggplot of the harvest rate (HR) time series with
-a confidence ribbon, and overlays reference point lines for the management
-(\code{HR_mgt}), precautionary (\code{HR_pa}), and MSY (\code{HR_msy})
-harvest rates.
+Line plot with confidence band of the harvest rate (\code{"HR"}) or fishing
+mortality (\code{"F"}) in the current assessment, with dashed lines for the
+management, MSY and precautionary reference points the stock has
+(\code{HR_mgt}, \code{HR_msy}, \code{HR_pa} or \code{F_mgt}, \code{F_msy},
+\code{F_pa} in \code{ref_points}).
 }

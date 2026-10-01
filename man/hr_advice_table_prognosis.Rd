@@ -10,7 +10,7 @@ hr_advice_table_prognosis(data_prognosis, assessment_year)
 \item{data_prognosis}{A data frame as returned by
 \code{\link{hr_advice_data_prognosis}}, containing one or more rows
 with columns \code{assessment_year}, \code{basis.is}, \code{basis.en},
-\code{catch}, \code{HR}, \code{ssb}, \code{ssb_change},
+\code{catch}, \code{HR} or \code{F}, \code{ssb}, \code{ssb_change},
 \code{tac_current}, and \code{tac_previous}.}
 
 \item{assessment_year}{Integer. The assessment year row to display.}

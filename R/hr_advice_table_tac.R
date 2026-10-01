@@ -46,9 +46,15 @@ hr_advice_data_tac <- function(
       names_from = country,
       values_from = catch
     ) |>
-    dplyr::select(-as.symbol("NA")) |>
+    # Landings with no country, if any
+    dplyr::select(-dplyr::any_of("NA")) |>
     dplyr::mutate(
-      total = icelandic + foreign
+      # Missing landings of one part (e.g. no foreign landings) count as 0
+      total = ifelse(
+        is.na(icelandic) & is.na(foreign),
+        NA_real_,
+        dplyr::coalesce(icelandic, 0) + dplyr::coalesce(foreign, 0)
+      )
     ) |>
     dplyr::rename(
       advice_period = fishing_year
@@ -75,90 +81,72 @@ hr_advice_data_tac <- function(
 
 #' Format TAC history table for advice sheet
 #'
-#' Renders a formatted \code{flextable} showing historical advice, TAC,
-#' Icelandic landings, foreign landings, and total landings by fishing year.
-#' Localised column headers, footnotes for data caveats, and harvest control
-#' rule annotations are added automatically.
+#' Renders a formatted \code{flextable} showing historical advice, TAC and
+#' landings by fishing year, with localised column headers. A note on foreign
+#' landings before 2014 is added when those columns are shown, and
+#' stock-specific notes can be attached to cells with \code{footnotes}.
 #'
 #' @param data_tac A data frame as returned by \code{\link{hr_advice_data_tac}},
 #'   with columns \code{advice_period}, \code{advice}, \code{tac},
 #'   \code{icelandic}, \code{foreign}, and \code{total}.
+#' @param columns Columns to show. Default all six.
+#' @param footnotes List of footnotes, each a list with \code{i} (rows, or a
+#'   function of the number of rows), \code{j} (column name or number),
+#'   \code{en} and \code{is} (text), e.g.
+#'   \code{list(list(i = 32:36, j = "advice", en = "40 \% harvest control rule", is = "40 \% aflaregla"))}.
+#'   Rows outside the table are ignored. Default \code{NULL}.
 #' @return A \code{flextable} object styled for inclusion in an advice sheet.
 #' @export
-hr_advice_table_tac <- function(data_tac) {
+hr_advice_table_tac <- function(
+  data_tac,
+  columns = c("advice_period", "advice", "tac", "icelandic", "foreign", "total"),
+  footnotes = NULL
+) {
   lang <- getOption("hr.lang", "en")
+  headers <- list(
+    advice_period = c(en = 'Fishing year', is = "Fiskveiðiár"),
+    advice = c(en = 'Recommended TAC', is = "Tillaga"),
+    tac = c(en = "National TAC", is = "Aflamark"),
+    icelandic = c(en = "Catches Iceland", is = "Afli Íslendinga"),
+    foreign = c(en = "Catches other nations", is = "Afli annarra þjóða"),
+    total = c(en = "Total catch", is = "Afli alls")
+  )
+  data_tac <- data_tac[, columns, drop = FALSE]
+  n_rows <- nrow(data_tac)
+  width <- 9 / length(columns) ### Total width of table in advice sheet is 9
 
-  data_tac |>
-    flextable::flextable() |>
-    flextable::mk_par(
-      j = "advice_period",
+  ft <- flextable::flextable(data_tac)
+  for (col in columns) {
+    ft <- flextable::mk_par(
+      ft,
+      j = col,
       part = "header",
-      value = flextable::as_paragraph(
-        if (lang == 'is') "Fiskveiðiár" else 'Fishing year'
-      )
-    ) |>
-    flextable::mk_par(
-      j = "advice",
-      part = "header",
-      value = flextable::as_paragraph(
-        if (lang == 'is') "Tillaga" else 'Recommended TAC'
-      )
-    ) |>
-    flextable::mk_par(
-      j = "tac",
-      part = "header",
-      value = flextable::as_paragraph(
-        if (lang == 'is') "Aflamark" else "National TAC"
-      )
-    ) |>
-    flextable::mk_par(
-      j = "icelandic",
-      part = "header",
-      value = flextable::as_paragraph(
-        if (lang == 'is') "Afli Íslendinga" else "Catches Iceland"
-      )
-    ) |>
-    flextable::mk_par(
-      j = "foreign",
-      part = "header",
-      value = flextable::as_paragraph(
-        if (lang == 'is') "Afli annarra þjóða" else "Catches other nations"
-      )
-    ) |>
-    flextable::mk_par(
-      j = "total",
-      part = "header",
-      value = flextable::as_paragraph(
-        if (lang == 'is') "Afli alls" else "Total catch"
-      )
-    ) |>
+      value = flextable::as_paragraph(headers[[col]][[lang]])
+    )
+  }
+  ft <- ft |>
     flextable::colformat_num(
-      j = 2:6,
-      big.mark = "  ",
+      j = setdiff(columns, "advice_period"),
+      big.mark = "  ",
       decimal.mark = ".",
       na_str = ""
     ) |>
     flextable::valign(valign = "top", part = "all") |>
     flextable::bg(bg = "#DEEAF6", part = "header") |>
-    ### Total width of table in advice sheet is 9
-    flextable::width(j = 1, width = 1.5) |>
-    flextable::width(j = 2, width = 1.5) |>
-    flextable::width(j = 3, width = 1.5) |>
-    flextable::width(j = 4, width = 1.5) |>
-    flextable::width(j = 5, width = 1.5) |>
-    flextable::width(j = 6, width = 1.5) |>
+    flextable::width(width = width) |>
     flextable::line_spacing(space = 1.1, part = "all") |>
     flextable::padding(padding = 2, part = "body") |>
-    flextable::align(
-      #j = 2:6,
-      align = "center",
-      part = "all"
-    ) |>
+    flextable::align(align = "center", part = "all") |>
     flextable::border_remove() |>
     flextable::border_outer(part = "all", border = officer::fp_border()) |>
-    flextable::border(part = "all", border.right = officer::fp_border()) |>
-    flextable::footnote(
-      j = 5:6,
+    flextable::border(part = "all", border.right = officer::fp_border())
+
+  symbol <- 1
+  foreign_cols <- intersect(c("foreign", "total"), columns)
+  if ("foreign" %in% columns) {
+    ft <- flextable::footnote(
+      ft,
+      j = foreign_cols,
       i = 1,
       value = flextable::as_paragraph(
         if (lang == 'is') {
@@ -167,53 +155,26 @@ hr_advice_table_tac <- function(data_tac) {
           "Landings of other nations before 2014 is only available by calendar year. Before that time total catches within the fishing year mostly excludes foreign landings."
         }
       ),
-      ref_symbols = "1) ",
+      ref_symbols = paste0(symbol, ") "),
       part = "header"
-    ) |>
-    flextable::footnote(
-      i = 32:36,
-      j = 2,
-      value = flextable::as_paragraph(
-        if (lang == 'is') '40 % aflaregla' else "40 % harvest control rule"
-      ),
-      ref_symbols = "2) ",
+    )
+    symbol <- symbol + 1
+  }
+  for (fn in footnotes) {
+    rows <- if (is.function(fn$i)) fn$i(n_rows) else fn$i
+    rows <- rows[rows >= 1 & rows <= n_rows]
+    if (!length(rows)) next
+    ft <- flextable::footnote(
+      ft,
+      i = rows,
+      j = fn$j,
+      value = flextable::as_paragraph(fn[[lang]]),
+      ref_symbols = paste0(symbol, ") "),
       part = "body"
-    ) |>
-    flextable::footnote(
-      i = 37:dim(data_tac)[1],
-      j = 2,
-      value = flextable::as_paragraph(
-        if (lang == 'is') '35 % aflaregla' else "35 % harvest control rule"
-      ),
-      ref_symbols = "3) ",
-      part = "body"
-    ) |>
-    flextable::footnote(
-      i = 38,
-      j = 3,
-      value = flextable::as_paragraph(
-        if (lang == 'is') {
-          "Aflamark aukið um 8 000 t um mitt fiskveiðiár"
-        } else {
-          "TAC was increased by 8 000 t mid-fishing year"
-        }
-      ),
-      ref_symbols = "4) ",
-      part = "body"
-    ) |>
-    flextable::footnote(
-      i = 39,
-      j = 3,
-      value = flextable::as_paragraph(
-        if (lang == 'is') {
-          "Aflamark minnkað um 8 000 t vegna aukningar á fyrra fiskveiðiári"
-        } else {
-          "TAC was decreased by 8 000 t because of the increase in the previous fishing year"
-        }
-      ),
-      ref_symbols = "5) ",
-      part = "body"
-    ) |>
+    )
+    symbol <- symbol + 1
+  }
+  ft |>
     flextable::padding(padding = 2, part = "footer") |>
     flextable::fontsize(size = 8, part = "footer") |>
     flextable::fontsize(size = 9, part = "body") |>

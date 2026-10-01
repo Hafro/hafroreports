@@ -2,25 +2,38 @@
 % Please edit documentation in R/hr_advice_table_prog_input.R
 \name{hr_advice_table_prog_input}
 \alias{hr_advice_table_prog_input}
-\title{Format prognosis input table for advice sheet}
+\title{Format forecast assumptions table for advice sheet}
 \usage{
-hr_advice_table_prog_input(data_prog_input, assessment_year)
+hr_advice_table_prog_input(
+  data_prog_input,
+  assessment_year,
+  recruitment_age = NULL,
+  order = NULL
+)
 }
 \arguments{
-\item{data_prog_input}{A data frame with columns \code{name} (one of
-\code{"ssb"}, \code{"rec"}, \code{"catch"}, \code{"HR"},
-\code{"refbio"}), \code{year}, \code{value}, \code{notes.en}, and
-\code{notes.is}.}
+\item{data_prog_input}{A data frame with columns \code{name}, \code{year},
+\code{value}, \code{notes.en}, \code{notes.is}, and optionally
+\code{variable.en}, \code{variable.is}.}
 
-\item{assessment_year}{Integer. Included in variable labels as the
-reference year.}
+\item{assessment_year}{Integer. The assessment year (unused, kept for
+compatibility).}
+
+\item{recruitment_age}{Recruitment age for the built-in recruitment label.
+Default \code{NULL} (no age).}
+
+\item{order}{Row indices to show, in order, e.g. \code{c(5, 3, 2, 4, 6, 1)}.
+Default \code{NULL} (data order).}
 }
 \value{
 A \code{flextable} object styled for inclusion in an advice sheet.
 }
 \description{
-Renders a formatted \code{flextable} summarising the key model inputs for
-the prognosis (SSB, recruitment, catch, harvest rate, reference biomass)
-with localised variable names, formatted values, and notes columns.
-Numeric formatting applies thousand separators to biomass and tonnage rows.
+Renders a formatted \code{flextable} showing the assumptions for the
+interim year and forecast: variable, value and notes. Row labels come from
+the \code{variable.en} / \code{variable.is} columns of
+\code{data_prog_input} if present, otherwise they are built from
+\code{name} (\code{ssb}, \code{rec}, \code{catch}, \code{HR}, \code{fbar},
+\code{refbio}) and \code{year}. Rows are shown in the order of
+\code{data_prog_input}, or of \code{order}.
 }

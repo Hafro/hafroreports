@@ -2,26 +2,34 @@
 % Please edit documentation in R/hr_advice_plot_retro.R
 \name{hr_advice_plot_retro}
 \alias{hr_advice_plot_retro}
-\title{Plot retrospective assessment results for advice sheet}
+\title{Plot retrospective comparison of recent assessments for advice sheet}
 \usage{
-hr_advice_plot_retro(data_assessment, ref_points, assessment_year)
+hr_advice_plot_retro(
+  data_assessment,
+  ref_points,
+  assessment_year,
+  fishing_pressure = c("HR", "F")
+)
 }
 \arguments{
-\item{data_assessment}{A long-format data frame as returned by
-\code{\link{hr_advice_data_assessment}}.}
+\item{data_assessment}{Long-format assessment data as returned by
+\code{\link{hr_advice_data_assessment}}, with several assessment years.}
 
-\item{ref_points}{A named list or data frame with elements \code{HR_mgt},
-\code{HR_pa}, \code{HR_msy}, \code{B_pa}, \code{B_lim}, and
-\code{MGT_btrigger}.}
+\item{ref_points}{Named list of reference points (biomass in thousand
+tonnes).}
 
-\item{assessment_year}{Integer. The most recent assessment year.}
+\item{assessment_year}{Integer. The current assessment year.}
+
+\item{fishing_pressure}{\code{"HR"} (harvest rate) or \code{"F"}. Default
+\code{"HR"}.}
 }
 \value{
-A \code{ggplot2} / \code{ggiraph} faceted plot object.
+A \code{ggplot2} / \code{ggiraph} plot object.
 }
 \description{
-Creates an interactive faceted line plot showing time series of HR, SSB,
-reference biomass, and recruitment from up to five consecutive assessment
-years. The most recent year is highlighted in red. Reference point lines
-are overlaid on the relevant panels.
+Faceted line plot comparing the current assessment (red) with the
+assessments of the previous years (black) over the last 15 years: fishing
+pressure (harvest rate or F), SSB, the reference biomass (if the stock has
+one) and recruitment (current assessment only). Dashed lines show the
+reference points the stock has.
 }

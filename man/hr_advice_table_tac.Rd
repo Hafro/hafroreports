@@ -4,19 +4,31 @@
 \alias{hr_advice_table_tac}
 \title{Format TAC history table for advice sheet}
 \usage{
-hr_advice_table_tac(data_tac)
+hr_advice_table_tac(
+  data_tac,
+  columns = c("advice_period", "advice", "tac", "icelandic", "foreign", "total"),
+  footnotes = NULL
+)
 }
 \arguments{
 \item{data_tac}{A data frame as returned by \code{\link{hr_advice_data_tac}},
 with columns \code{advice_period}, \code{advice}, \code{tac},
 \code{icelandic}, \code{foreign}, and \code{total}.}
+
+\item{columns}{Columns to show. Default all six.}
+
+\item{footnotes}{List of footnotes, each a list with \code{i} (rows, or a
+function of the number of rows), \code{j} (column name or number),
+\code{en} and \code{is} (text), e.g.
+\code{list(list(i = 32:36, j = "advice", en = "40 \% harvest control rule", is = "40 \% aflaregla"))}.
+Rows outside the table are ignored. Default \code{NULL}.}
 }
 \value{
 A \code{flextable} object styled for inclusion in an advice sheet.
 }
 \description{
-Renders a formatted \code{flextable} showing historical advice, TAC,
-Icelandic landings, foreign landings, and total landings by fishing year.
-Localised column headers, footnotes for data caveats, and harvest control
-rule annotations are added automatically.
+Renders a formatted \code{flextable} showing historical advice, TAC and
+landings by fishing year, with localised column headers. A note on foreign
+landings before 2014 is added when those columns are shown, and
+stock-specific notes can be attached to cells with \code{footnotes}.
 }

@@ -59,19 +59,22 @@ hr_advice_data_assessment <- function(assessment) {
       )
     )
 }
-#' Plot recruitment time series for advice sheet
+#' Plot recruitment for advice sheet
 #'
-#' Creates an interactive bar chart of age-1 recruitment with error bars
-#' showing the confidence interval, in millions of fish.
+#' Bar chart of recruitment (millions) with confidence intervals for the
+#' current assessment.
 #'
-#' @param data_assessment A long-format data frame as returned by
+#' @param data_assessment Long-format assessment data as returned by
 #'   \code{\link{hr_advice_data_assessment}}.
-#' @param assessment_year Integer. The assessment year to display.
+#' @param assessment_year Integer. The assessment year to plot.
+#' @param recruitment_age Recruitment age, shown in the title, or \code{NULL}
+#'   for no age. Default \code{NULL}.
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
 #' @export
 hr_advice_plot_recruitment <- function(
   data_assessment,
-  assessment_year
+  assessment_year,
+  recruitment_age = NULL
 ) {
   # NSE variables
   key <- low <- median <- high <- year <- NULL
@@ -96,7 +99,7 @@ hr_advice_plot_recruitment <- function(
           eval(rlang::sym(paste('label', lang, sep = '.'))),
           ':',
           round(median),
-          'mill.',
+          if (lang == 'is') 'millj.' else 'mill.',
           '\n',
           hr_label("year"),
           ':',
@@ -107,17 +110,17 @@ hr_advice_plot_recruitment <- function(
     ) +
     ggplot2::geom_errorbar(
       ggplot2::aes(ymin = low, ymax = high),
-      size = 0.25
+      linewidth = 0.25
     ) +
     hr_astand_theme() +
     ggplot2::labs(
-      y = hr_label("million_tonnes", bold = TRUE),
-      title = hr_label("recruitment_age", 1, bold = TRUE)
+      y = hr_label("millions", bold = TRUE),
+      title = if (is.null(recruitment_age)) {
+        hr_label("recruitment", bold = TRUE)
+      } else {
+        hr_label("recruitment_age", recruitment_age, bold = TRUE)
+      }
     ) +
-    ggplot2::scale_y_continuous(
-      breaks = seq(0, 600, 100),
-      expand = c(0, 0),
-      limits = c(0, 600)
-    ) +
+    hr_advice_y_scale() +
     hr_astand_x_scale(5)
 }

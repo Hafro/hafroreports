@@ -1,41 +1,54 @@
-#' Plot SSB and reference biomass for advice sheet
+#' Plot spawning stock biomass for advice sheet
 #'
-#' Creates an interactive line plot showing the spawning stock biomass (SSB)
-#' and reference biomass time series with confidence ribbons. Reference
-#' point lines for \code{B_lim}, \code{B_pa}, and \code{MGT_btrigger} are
-#' overlaid.
+#' Line plot with confidence bands of SSB and, if the stock has one, the
+#' reference biomass in the current assessment (thousand tonnes), with lines
+#' for MGT Btrigger and Blim. Series without values (e.g. the reference
+#' biomass of a stock with F-based advice) are left out.
 #'
-#' @param data_assessment A long-format data frame as returned by
+#' @param data_assessment Long-format assessment data as returned by
 #'   \code{\link{hr_advice_data_assessment}}.
-#' @param assessment_year Integer. The assessment year to display.
-#' @param ref_points A named list or data frame with elements \code{B_lim},
-#'   \code{B_pa}, and \code{MGT_btrigger} (in thousands of tonnes).
+#' @param assessment_year Integer. The assessment year to plot.
+#' @param ref_points Named list of reference points (biomass in thousand
+#'   tonnes): \code{MGT_btrigger}, \code{B_lim}, \code{B_pa}.
+#' @param refbio_label Text added to the reference biomass legend entry, e.g.
+#'   \code{"(B4+)"}. Default \code{NULL}.
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
 #' @export
 hr_advice_plot_ssb <- function(
   data_assessment,
   assessment_year,
-  ref_points
+  ref_points,
+  refbio_label = NULL
 ) {
   # NSE variables
-  key <- year <- median <- label <- low <- high <- NULL
+  key <- year <- median <- label <- low <- high <- .data <- NULL
   lang <- getOption("hr.lang", "en")
 
-  # Create a named color vector
-  color_map <- stats::setNames(
-    c("darkgreen", "black"),
-    c(hr_label("ssb"), hr_label("ref biomass"))
-  )
-
-  data_assessment |>
+  d <- data_assessment |>
     dplyr::filter(
       key %in% c('SSB', 'refbio'),
       assessment_year == .env$assessment_year
     ) |>
+    dplyr::group_by(key) |>
+    dplyr::filter(any(!is.na(median))) |>
+    dplyr::ungroup() |>
     dplyr::mutate(
-      label = eval(as.symbol(paste('label', lang, sep = '.')))
-    ) |>
-    ggplot2::ggplot(ggplot2::aes(x = year, y = median / 1000)) +
+      label = as.character(.data[[paste('label', lang, sep = '.')]])
+    )
+  # Colours keyed by the labels in the data
+  labels <- dplyr::distinct(d, key, label)
+  colours <- c(SSB = "darkgreen", refbio = "black")[labels$key]
+  names(colours) <- labels$label
+  legend_labels <- stats::setNames(
+    ifelse(
+      labels$key == "refbio" & !is.null(refbio_label),
+      paste(labels$label, refbio_label),
+      labels$label
+    ),
+    labels$label
+  )
+
+  ggplot2::ggplot(d, ggplot2::aes(x = year, y = median / 1000)) +
     ggiraph::geom_point_interactive(
       ggplot2::aes(
         tooltip = paste(
@@ -54,22 +67,22 @@ hr_advice_plot_ssb <- function(
       col = 'white',
       alpha = 0
     ) +
-    ggplot2::geom_line(ggplot2::aes(color = label), size = 0.5) +
+    ggplot2::geom_line(ggplot2::aes(color = label), linewidth = 0.5) +
     ggplot2::geom_ribbon(
       ggplot2::aes(ymin = low / 1000, ymax = high / 1000, fill = label),
       alpha = 0.4
     ) +
-    ggplot2::scale_color_manual(values = color_map) +
-    ggplot2::scale_fill_manual(values = color_map) +
+    ggplot2::scale_color_manual(values = colours, labels = legend_labels) +
+    ggplot2::scale_fill_manual(values = colours, labels = legend_labels) +
     ggplot2::geom_hline(
       yintercept = ref_points$MGT_btrigger,
       linetype = "dashed",
-      size = 0.4
+      linewidth = 0.4
     ) +
     ggplot2::geom_hline(
       yintercept = ref_points$B_lim,
       linetype = "solid",
-      size = 0.4
+      linewidth = 0.4
     ) +
     ggplot2::annotate(
       "text",
@@ -99,11 +112,9 @@ hr_advice_plot_ssb <- function(
       title = hr_label("biomass", bold = TRUE),
       y = hr_label("thousand_tonnes", bold = TRUE)
     ) +
-    ggplot2::scale_y_continuous(
-      breaks = seq(0, 250, 50),
-      expand = c(0, 0),
-      limits = c(0, 275)
+    hr_advice_y_scale() +
+    hr_astand_theme(
+      legend.position = if (nrow(labels) > 1) c(0.275, 0.9) else "none"
     ) +
-    hr_astand_theme(legend.position = c(0.275, 0.9)) +
     hr_astand_x_scale(5, 1)
 }

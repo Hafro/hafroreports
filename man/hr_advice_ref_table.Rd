@@ -4,7 +4,11 @@
 \alias{hr_advice_ref_table}
 \title{Format reference points table for advice sheet}
 \usage{
-hr_advice_ref_table(ref_points, ref_points_basis_table)
+hr_advice_ref_table(
+  ref_points,
+  ref_points_basis_table,
+  biomass_multiplier = 1000
+)
 }
 \arguments{
 \item{ref_points}{A named list or one-row data frame of reference point
@@ -13,6 +17,11 @@ values (e.g. \code{HR_mgt}, \code{B_lim}). \code{NA} values are dropped.}
 \item{ref_points_basis_table}{A data frame with columns \code{ref_point},
 \code{render}, \code{approach.en}, \code{approach.is}, \code{basis.en},
 and \code{basis.is} describing each reference point.}
+
+\item{biomass_multiplier}{Multiplier for the biomass reference points
+(\code{B_*}, \code{*btrigger}), to show values given in thousand tonnes
+in tonnes. Default \code{1000}; use \code{1} if they are already in
+tonnes.}
 }
 \value{
 A \code{flextable} object styled for inclusion in an advice sheet.

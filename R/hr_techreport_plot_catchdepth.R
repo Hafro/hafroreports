@@ -20,7 +20,7 @@ hr_techreport_plot_catchdepth <- function(
   year_end = 9999
 ) {
   # NSE variables
-  year <- ocean_depth_class <- catch <- NULL
+  year <- ocean_depth_class <- catch <- group <- NULL
   lang <- getOption("hr.lang", "en")
 
   dplyr::tbl(pcon, "logbook") |>
@@ -34,8 +34,15 @@ hr_techreport_plot_catchdepth <- function(
     dplyr::rename(group = ocean_depth_class) |>
     dplyr::ungroup() |>
     dplyr::collect() |>
+    # Order depth classes by depth ("100+" would otherwise sort before "20-40")
+    dplyr::mutate(
+      group = factor(group, levels = unique(group)[order(as.numeric(sub("[^0-9].*$", "", unique(group))))])
+    ) |>
     two_panel_plot(
       fill = hr_label("total_catch_by_depth"),
-      cols = c("#C7E9B4", "#7FCDBB", "#41B6C4", "#225EA8", 'darkblue')
+      # One colour per depth class, interpolated over the same ramp
+      cols = grDevices::colorRampPalette(
+        c("#C7E9B4", "#7FCDBB", "#41B6C4", "#225EA8", 'darkblue')
+      )(length(depth_class) + 1)
     )
 }

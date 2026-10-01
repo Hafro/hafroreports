@@ -4,13 +4,20 @@
 \alias{hr_advice_plot_landings}
 \title{Plot landings by gear for advice sheet}
 \usage{
-hr_advice_plot_landings(data_landings, assessment_year)
+hr_advice_plot_landings(
+  data_landings,
+  assessment_year,
+  legend_position = c(0.35, 0.85)
+)
 }
 \arguments{
 \item{data_landings}{A data frame as returned by
 \code{\link{hr_advice_data_landings}}.}
 
 \item{assessment_year}{Integer. Used to set the x-axis upper limit.}
+
+\item{legend_position}{Legend position inside the panel. Default
+\code{c(0.35, 0.85)}.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.
@@ -18,5 +25,5 @@ A \code{ggplot2} / \code{ggiraph} plot object.
 \description{
 Creates an interactive stacked bar chart showing total landings by gear
 type over time, with colours and labels adjusted for the current language
-setting.
+setting. Each gear group keeps its colour whichever groups the stock uses.
 }

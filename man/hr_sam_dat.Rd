@@ -2,7 +2,7 @@
 % Please edit documentation in R/hr_sam_dat.R
 \name{hr_sam_dat}
 \alias{hr_sam_dat}
-\title{Assemble SAM input data for Icelandic haddock}
+\title{Assemble SAM input data}
 \usage{
 hr_sam_dat(
   model_dat = NULL,
@@ -10,8 +10,7 @@ hr_sam_dat(
   maxage = NULL,
   cn = hr_sam_cn(model_dat, minage, maxage),
   cw = hr_sam_cw(model_dat, minage, maxage),
-  smb = hr_sam_smb(model_dat, minage, maxage),
-  smh = hr_sam_smh(model_dat, minage, maxage),
+  surveys = list(spring = hr_sam_smb(model_dat, minage, maxage)),
   sw = hr_sam_sw(model_dat, minage, maxage),
   mo = hr_sam_mo(model_dat, minage, maxage),
   lf = hr_sam_lf(model_dat, cn),
@@ -23,7 +22,7 @@ hr_sam_dat(
 \arguments{
 \item{model_dat}{A data frame of model input data containing columns for
 year, age, catch, catch_weight, stock_weight, maturity, smb (spring
-survey), smh (autumn survey), and natural mortality (M).}
+survey), smh (autumn survey, if used), and natural mortality (M).}
 
 \item{minage}{Minimum age to include in the assessment.}
 
@@ -33,19 +32,20 @@ survey), smh (autumn survey), and natural mortality (M).}
 
 \item{cw}{Catch mean weight matrix; defaults to \code{hr_sam_cw(model_dat, minage, maxage)}.}
 
-\item{smb}{Spring (SMB) survey index matrix; defaults to \code{hr_sam_smb(model_dat, minage, maxage)}.}
-
-\item{smh}{Autumn (SMH) survey index matrix; defaults to \code{hr_sam_smh(model_dat, minage, maxage)}.}
+\item{surveys}{Named list of survey index matrices (the names are the SAM
+fleet names). Defaults to the spring survey only,
+\code{list(spring = hr_sam_smb(model_dat, minage, maxage))}; add e.g.
+\code{autumn = hr_sam_smh(...)} for more surveys.}
 
 \item{sw}{Stock mean weight matrix; defaults to \code{hr_sam_sw(model_dat, minage, maxage)}.}
 
 \item{mo}{Proportion mature matrix; defaults to \code{hr_sam_mo(model_dat, minage, maxage)}.}
 
-\item{lf}{Proportion of fishing before spawning matrix; defaults to \code{hr_sam_lf(model_dat, cn)}.}
+\item{lf}{Landed fraction matrix; defaults to \code{hr_sam_lf(model_dat, cn)}.}
 
-\item{pf}{Proportion of F before spawning matrix; defaults to \code{hr_sam_pf(model_dat, cn)}.}
+\item{pf}{Proportion of F before spawning matrix; defaults to \code{hr_sam_pf(model_dat, cn)} (0).}
 
-\item{pm}{Proportion of M before spawning matrix; defaults to \code{hr_sam_pm(model_dat, cn)}.}
+\item{pm}{Proportion of M before spawning matrix; defaults to \code{hr_sam_pm(model_dat, cn)} (0).}
 
 \item{nm}{Natural mortality matrix; defaults to \code{hr_sam_nm(model_dat, minage, maxage)}.}
 }

@@ -9,7 +9,9 @@ hr_advice_data_prognosis(
   tac_hist,
   ref_points,
   stock_dev,
-  assessment_year
+  assessment_year,
+  fishing_pressure = c("HR", "F"),
+  value = NULL
 )
 }
 \arguments{
@@ -26,6 +28,12 @@ hr_advice_data_prognosis(
 (e.g. \code{"ssb"} and \code{"ssb_ratio"}).}
 
 \item{assessment_year}{Integer. The assessment year.}
+
+\item{fishing_pressure}{\code{"HR"} (harvest rate) or \code{"F"}: the
+column of the advice basis. Default \code{"HR"}.}
+
+\item{value}{The harvest rate or F of the advice. Default is
+\code{HR_mgt} or \code{F_mgt} from \code{ref_points}.}
 }
 \value{
 A one-row tibble with columns \code{assessment_year},

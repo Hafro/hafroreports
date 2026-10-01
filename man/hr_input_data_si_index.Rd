@@ -11,14 +11,22 @@ hr_input_data_si_index(
   strata_name = NULL,
   sampling_type = 30,
   sam_use_10_11_first_2_years = FALSE,
-  tow_number = 0:35,
+  tow_number = NULL,
   tgroup = NULL,
   regions = list(all = 101:115),
   lgroups = seq(0, 200, 5),
-  gear_group = list(Other = "Var", BMT = c("BMT", "NPT", "SHT", "PGT"), LLN = "LLN", DSE
-    = c("PSE", "DSE")),
+  gear_group = NULL,
   gear_id_filter = NULL,
-  scale_by_landings = FALSE
+  scale_by_landings = FALSE,
+  haul_scalar = NULL,
+  strata_stations = NULL,
+  maturity_measured = TRUE,
+  maturity_na = NULL,
+  ygroup = NULL,
+  gridcell_na = NULL,
+  sample_gear_na = NULL,
+  landings_gear_na = NULL,
+  landings_month_na = NULL
 )
 }
 \arguments{
@@ -40,14 +48,16 @@ survey scaling (passed to \code{pax::pax_si_scale_by_strata}). If
 filtering. Default is \code{30}.}
 
 \item{sam_use_10_11_first_2_years}{Logical. If \code{TRUE}, sampling types
-10 and 11 are additionally included for the first two years of data to
-improve age-1 estimates. Default is \code{FALSE}.}
+10 and 11 are additionally included in the age-length key for the first
+two years of data to improve age-1 estimates. Default is \code{FALSE}.}
 
-\item{tow_number}{Integer vector of valid tow numbers (NA coerced to 0).
-Default is \code{0:35}.}
+\item{tow_number}{Integer vector of valid tow numbers (NA coerced to 0), or
+\code{NULL} for no filtering. Use for surveys (e.g. \code{0:35} for the
+spring survey); for commercial samples \code{tow_number} is the haul
+number, which can exceed 35. Default is \code{NULL}.}
 
-\item{tgroup}{Integer or \code{NULL}. Tow group for length-distribution
-scaling. Default is \code{NULL}.}
+\item{tgroup}{Named list of months, e.g. \code{list(t1 = 1:6, t2 = 7:12)},
+or \code{NULL}. Default is \code{NULL}.}
 
 \item{regions}{Named list mapping region labels to integer MFDB area codes.
 Default is \code{list(all = 101:115)}.}
@@ -55,14 +65,47 @@ Default is \code{list(all = 101:115)}.}
 \item{lgroups}{Numeric vector of length group break points. Default is
 \code{seq(0, 200, 5)}.}
 
-\item{gear_group}{Named list mapping gear group labels to MFDB gear codes.
-Default groups are \code{Other}, \code{BMT}, \code{LLN}, and \code{DSE}.}
+\item{gear_group}{Named list mapping gear group labels to MFDB gear codes,
+or \code{NULL} for no gear grouping. Default is \code{NULL}.}
 
 \item{gear_id_filter}{Integer vector of gear IDs to include, or \code{NULL}
 for no filtering. Default is \code{NULL}.}
 
 \item{scale_by_landings}{Logical. If \code{TRUE}, indices are additionally
-scaled to match total landings. Default is \code{FALSE}.}
+scaled to match landings by gear group and time group. Default is
+\code{FALSE}.}
+
+\item{haul_scalar}{Data frame with columns \code{sample_id} and
+\code{scalar}, to down-weight individual (e.g. very large) hauls.
+Default \code{NULL}.}
+
+\item{strata_stations}{Data frame with columns \code{station} and
+\code{stratum}. If given, strata are assigned from it rather than from
+tow positions, see \code{\link{hr_si_scale_by_strata_stations}}.
+Default \code{NULL}.}
+
+\item{maturity_measured}{Logical. If \code{FALSE}, only the modelled
+maturity at length from \code{maturity_key} is used, not the measured
+maturity at age. Default \code{TRUE}.}
+
+\item{maturity_na}{Proportion mature for lengths with neither a measurement
+nor an estimate, or \code{NULL} to leave them out. Default \code{NULL}.}
+
+\item{ygroup}{Named list of years to pool in the age-length key, e.g.
+\code{list(past = 1980:1994)}, see \code{\link{hr_pool_years}}. Default
+\code{NULL}.}
+
+\item{gridcell_na}{Grid cell to give samples without a position. Without a
+position a sample gets no region, matches no age-length key cell and is
+dropped. Default \code{NULL}.}
+
+\item{sample_gear_na}{Gear code to give samples with unknown gear, when
+raising them (not in the age-length key). Default \code{NULL}.}
+
+\item{landings_gear_na, landings_month_na}{Gear code and month to give
+landings with unknown gear or month when \code{scale_by_landings = TRUE}.
+Landings without a month are otherwise left out of the scaling. Default
+\code{NULL}.}
 }
 \value{
 A grouped tibble with columns \code{year}, \code{age}, \code{n}
@@ -74,5 +117,5 @@ Derives age-structured survey abundance (thousands) and mean weight (g)
 from a pax database by applying a length distribution, an age–length key,
 optional strata scaling, and optional maturity weighting. The result is
 the primary model input table used by the SAM and MUPPET assessment
-workflows.
+workflows. Used for both surveys and commercial samples.
 }

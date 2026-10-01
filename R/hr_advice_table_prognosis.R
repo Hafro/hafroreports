@@ -17,19 +17,29 @@
 #' @return A one-row tibble with columns \code{assessment_year},
 #'   \code{basis.is}, \code{basis.en}, \code{HR}, \code{catch}, \code{ssb},
 #'   \code{ssb_change}, \code{tac_current}, and \code{tac_previous}.
+#' @param fishing_pressure \code{"HR"} (harvest rate) or \code{"F"}: the
+#'   column of the advice basis. Default \code{"HR"}.
+#' @param value The harvest rate or F of the advice. Default is
+#'   \code{HR_mgt} or \code{F_mgt} from \code{ref_points}.
 #' @export
 hr_advice_data_prognosis <- function(
   basis_table,
   tac_hist,
   ref_points,
   stock_dev,
-  assessment_year
+  assessment_year,
+  fishing_pressure = c("HR", "F"),
+  value = NULL
 ) {
-  tibble::tibble(
+  fishing_pressure <- match.arg(fishing_pressure)
+  if (is.null(value)) {
+    value <- ref_points[[paste0(fishing_pressure, "_mgt")]]
+  }
+  out <- tibble::tibble(
     assessment_year = assessment_year,
     basis.is = unlist(basis_table[1, "desc.is"]),
     basis.en = unlist(basis_table[1, "desc.en"]),
-    HR = ref_points$HR_mgt,
+    fishing_pressure = value,
     catch = tac_hist[tac_hist$assessment_year == assessment_year, "tac"],
     ssb = stock_dev[
       stock_dev$year == assessment_year + 2 & stock_dev$name == "ssb",
@@ -50,6 +60,8 @@ hr_advice_data_prognosis <- function(
       "tac"
     ]
   )
+  names(out)[names(out) == "fishing_pressure"] <- fishing_pressure
+  out
 }
 
 #' Format prognosis table for advice sheet
@@ -62,14 +74,14 @@ hr_advice_data_prognosis <- function(
 #' @param data_prognosis A data frame as returned by
 #'   \code{\link{hr_advice_data_prognosis}}, containing one or more rows
 #'   with columns \code{assessment_year}, \code{basis.is}, \code{basis.en},
-#'   \code{catch}, \code{HR}, \code{ssb}, \code{ssb_change},
+#'   \code{catch}, \code{HR} or \code{F}, \code{ssb}, \code{ssb_change},
 #'   \code{tac_current}, and \code{tac_previous}.
 #' @param assessment_year Integer. The assessment year row to display.
 #' @return A \code{flextable} object styled for inclusion in an advice sheet.
 #' @export
 hr_advice_table_prognosis <- function(data_prognosis, assessment_year) {
   # NSE variables
-  catch <- HR <- ssb <- ssb_change <- tac_current <- tac_previous <- tac_change <- advice_change <- NULL
+  catch <- HR <- F <- ssb <- ssb_change <- tac_current <- tac_previous <- tac_change <- advice_change <- NULL
   lang <- getOption("hr.lang", "en")
 
   if (any(!(c("tac_current", "tac_previous") %in% colnames(data_prognosis)))) {
@@ -89,7 +101,7 @@ hr_advice_table_prognosis <- function(data_prognosis, assessment_year) {
     dplyr::select(
       basis = as.symbol(paste0('basis.', lang)),
       catch,
-      HR,
+      fishing_pressure = dplyr::any_of(c("HR", "F")),
       ssb,
       ssb_change,
       tac_current,
@@ -133,12 +145,16 @@ hr_advice_table_prognosis <- function(data_prognosis, assessment_year) {
       )
     ) |>
     flextable::mk_par(
-      j = "HR",
+      j = "fishing_pressure",
       part = "header",
       value = flextable::as_paragraph(
         sprintf(
           '%s (%s)',
-          if (lang == 'is') 'Veiðihlutfall' else 'Harvest rate',
+          if ("F" %in% colnames(data_prognosis)) {
+            if (lang == 'is') 'Veiðidánartala' else 'Fishing mortality'
+          } else {
+            if (lang == 'is') 'Veiðihlutfall' else 'Harvest rate'
+          },
           assessment_year + 1
         )
       )

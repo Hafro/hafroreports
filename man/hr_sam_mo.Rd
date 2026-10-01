@@ -4,7 +4,7 @@
 \alias{hr_sam_mo}
 \title{Build SAM proportion mature matrix}
 \usage{
-hr_sam_mo(model_dat, minage, maxage)
+hr_sam_mo(model_dat, minage, maxage, na.fill = 1)
 }
 \arguments{
 \item{model_dat}{A data frame with columns \code{year}, \code{age},
@@ -13,6 +13,8 @@ and \code{maturity}.}
 \item{minage}{Minimum age to include.}
 
 \item{maxage}{Maximum age to include.}
+
+\item{na.fill}{Value for missing maturity. Default \code{1}.}
 }
 \value{
 A numeric matrix with years as rows and ages as columns.

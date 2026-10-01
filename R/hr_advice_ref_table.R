@@ -11,9 +11,20 @@
 #' @param ref_points_basis_table A data frame with columns \code{ref_point},
 #'   \code{render}, \code{approach.en}, \code{approach.is}, \code{basis.en},
 #'   and \code{basis.is} describing each reference point.
+#' @param biomass_multiplier Multiplier for the biomass reference points
+#'   (\code{B_*}, \code{*btrigger}), to show values given in thousand tonnes
+#'   in tonnes. Default \code{1000}; use \code{1} if they are already in
+#'   tonnes.
 #' @return A \code{flextable} object styled for inclusion in an advice sheet.
 #' @export
-hr_advice_ref_table <- function(ref_points, ref_points_basis_table) {
+hr_advice_ref_table <- function(
+  ref_points,
+  ref_points_basis_table,
+  biomass_multiplier = 1000
+) {
+  # Biomass reference points are kept in thousand tonnes for the figures;
+  # show them in tonnes
+  ref_points <- hr_ref_points_tonnes(ref_points, biomass_multiplier)
   # NSE variables
   ref_point <- value <- approach <- basis <- render <- NULL
   lang <- getOption("hr.lang", "en")
@@ -96,4 +107,23 @@ hr_advice_ref_table <- function(ref_points, ref_points_basis_table) {
     flextable::border(i = 4, j = 1, border.bottom = officer::fp_border()) |>
     flextable::fontsize(size = 9, part = "body") |>
     flextable::fontsize(size = 9, part = "header")
+}
+
+#' Biomass reference points in tonnes
+#'
+#' Reference points are usually kept with biomass in thousand tonnes, as the
+#' advice figures plot biomass in thousand tonnes. This converts the biomass
+#' reference points (names starting \code{B_} or ending \code{btrigger}) for
+#' tables or plots in tonnes, leaving fishing mortality and harvest rates as
+#' they are.
+#'
+#' @param ref_points Named list of reference points.
+#' @param multiplier Multiplier for the biomass reference points. Default
+#'   \code{1000}.
+#' @return \code{ref_points} with the biomass reference points multiplied.
+#' @export
+hr_ref_points_tonnes <- function(ref_points, multiplier = 1000) {
+  biomass <- grepl("^B_|btrigger$", names(ref_points))
+  ref_points[biomass] <- lapply(ref_points[biomass], function(x) multiplier * x)
+  ref_points
 }

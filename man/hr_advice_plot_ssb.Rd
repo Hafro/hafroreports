@@ -2,25 +2,33 @@
 % Please edit documentation in R/hr_advice_plot_ssb.R
 \name{hr_advice_plot_ssb}
 \alias{hr_advice_plot_ssb}
-\title{Plot SSB and reference biomass for advice sheet}
+\title{Plot spawning stock biomass for advice sheet}
 \usage{
-hr_advice_plot_ssb(data_assessment, assessment_year, ref_points)
+hr_advice_plot_ssb(
+  data_assessment,
+  assessment_year,
+  ref_points,
+  refbio_label = NULL
+)
 }
 \arguments{
-\item{data_assessment}{A long-format data frame as returned by
+\item{data_assessment}{Long-format assessment data as returned by
 \code{\link{hr_advice_data_assessment}}.}
 
-\item{assessment_year}{Integer. The assessment year to display.}
+\item{assessment_year}{Integer. The assessment year to plot.}
 
-\item{ref_points}{A named list or data frame with elements \code{B_lim},
-\code{B_pa}, and \code{MGT_btrigger} (in thousands of tonnes).}
+\item{ref_points}{Named list of reference points (biomass in thousand
+tonnes): \code{MGT_btrigger}, \code{B_lim}, \code{B_pa}.}
+
+\item{refbio_label}{Text added to the reference biomass legend entry, e.g.
+\code{"(B4+)"}. Default \code{NULL}.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.
 }
 \description{
-Creates an interactive line plot showing the spawning stock biomass (SSB)
-and reference biomass time series with confidence ribbons. Reference
-point lines for \code{B_lim}, \code{B_pa}, and \code{MGT_btrigger} are
-overlaid.
+Line plot with confidence bands of SSB and, if the stock has one, the
+reference biomass in the current assessment (thousand tonnes), with lines
+for MGT Btrigger and Blim. Series without values (e.g. the reference
+biomass of a stock with F-based advice) are left out.
 }

@@ -1,4 +1,8 @@
-#' Build SAM configuration for Icelandic haddock
+#' Build SAM configuration for Icelandic haddock (deprecated)
+#'
+#' Deprecated: a SAM configuration is stock-specific and belongs in the stock's
+#' repository (e.g. \code{had_sam_conf()} in 02-had-targets). Kept for
+#' backward compatibility.
 #'
 #' Creates a \code{stockassessment} configuration object for the Icelandic
 #' haddock stock assessment. Starts from the default configuration returned by
@@ -11,6 +15,7 @@
 #'   \code{\link[stockassessment]{sam.fit}}.
 #' @export
 hr_sam_conf <- function(dat) {
+  .Deprecated(msg = "hr_sam_conf() is the haddock configuration; define the stock's SAM configuration in its repository")
   within(stockassessment::defcon(dat), {
     maxAgePlusGroup = c(1, 1, 1)
     stockRecruitmentModelCode = 3

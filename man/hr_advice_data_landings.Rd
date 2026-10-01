@@ -8,9 +8,10 @@ hr_advice_data_landings(landings_by_gear)
 }
 \arguments{
 \item{landings_by_gear}{A data frame or lazy table with columns \code{year},
-\code{gear_name} (one of \code{"LLN"}, \code{"DSE"}, \code{"BMT"},
-\code{"Other"}), and \code{catch} (in grams or the unit used throughout
-the pax database).}
+\code{gear_name} (e.g. \code{"BMT"}, \code{"DSE"}, \code{"LLN"},
+\code{"GIL"}, \code{"HLN"}, \code{"Other"}, as produced by
+\code{pax::pax_landings_by_gear()} with the stock's gear groups), and
+\code{catch} (kg). Unknown gear names are shown under their own name.}
 }
 \value{
 A tibble with columns \code{year}, \code{gear_name},

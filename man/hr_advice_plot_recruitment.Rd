@@ -2,20 +2,27 @@
 % Please edit documentation in R/hr_advice_plot_recruitment.R
 \name{hr_advice_plot_recruitment}
 \alias{hr_advice_plot_recruitment}
-\title{Plot recruitment time series for advice sheet}
+\title{Plot recruitment for advice sheet}
 \usage{
-hr_advice_plot_recruitment(data_assessment, assessment_year)
+hr_advice_plot_recruitment(
+  data_assessment,
+  assessment_year,
+  recruitment_age = NULL
+)
 }
 \arguments{
-\item{data_assessment}{A long-format data frame as returned by
+\item{data_assessment}{Long-format assessment data as returned by
 \code{\link{hr_advice_data_assessment}}.}
 
-\item{assessment_year}{Integer. The assessment year to display.}
+\item{assessment_year}{Integer. The assessment year to plot.}
+
+\item{recruitment_age}{Recruitment age, shown in the title, or \code{NULL}
+for no age. Default \code{NULL}.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.
 }
 \description{
-Creates an interactive bar chart of age-1 recruitment with error bars
-showing the confidence interval, in millions of fish.
+Bar chart of recruitment (millions) with confidence intervals for the
+current assessment.
 }

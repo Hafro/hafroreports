@@ -11,6 +11,9 @@
 #' @param year_start Integer. First year to include. Default is \code{1000}.
 #' @param year_end Integer. Last year to include. Default is \code{9999}.
 #' @return A \code{ggplot2} plot object faceted by gear group.
+#' @param limit Share of the species in the catch above which records count
+#'   as directed (the dashed lines), passed to
+#'   \code{pax::pax_logbook_cpue_plot()}. Default \code{0.5}.
 #' @export
 hr_techreport_plot_cpue <- function(
   pcon,
@@ -21,7 +24,8 @@ hr_techreport_plot_cpue <- function(
     DSE = c('PSE', 'DSE')
   ),
   year_start = 1000,
-  year_end = 9999
+  year_end = 9999,
+  limit = 0.5
 ) {
   # NSE variables
   year <- tow_hooks <- tow_num_nets <- tow_time <- mfdb_gear_code <- catch <- eff_miss <- NULL
@@ -45,7 +49,7 @@ hr_techreport_plot_cpue <- function(
     dplyr::rename(mfdb_gear_code = gear_name) |>
     pax::pax_add_cpue()
 
-  pax::pax_logbook_cpue_plot(dat) +
+  pax::pax_logbook_cpue_plot(dat, limit = limit) +
     ggplot2::labs(
       y = hr_label("catch_per_unit_effort"),
       x = hr_label("year"),
@@ -59,7 +63,9 @@ hr_techreport_plot_cpue <- function(
           `BMT` = 'Bottom Trawl',
           `DSE` = 'Danish Seine',
           GIL = 'Gillnet',
-          LLN = 'Long Line'
+          LLN = 'Long Line',
+          HLN = 'Handline',
+          Other = 'Other'
         )
       ),
       ncol = 2

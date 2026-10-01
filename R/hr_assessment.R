@@ -29,19 +29,26 @@ hr_assessment_from_sag <- function(
   StockKeyLabel <- Year <- low_recruitment <- recruitment <- high_recruitment <- NULL
   low_SSB <- SSB <- high_SSB <- landings <- low_F <- high_F <- NULL
   customUnit <- customColumnId <- customName <- customValue <- NULL
-  year <- low_HR <- median_HR <- high_HR <- NULL
+  year <- low_HR <- median_HR <- high_HR <- median_refbio <- NULL
 
   assessment_keys <-
     icesSAG::getListStocks(assessment_year) |>
     dplyr::filter(StockKeyLabel == ices_stock_key_label) |>
     dplyr::pull('AssessmentKey')
 
-  icesSAG::getSummaryTable(assessment_keys) |>
-    dplyr::left_join(
-      icesSAG::getCustomColumns(assessment_keys) |>
-        dplyr::select(-c(customUnit, customColumnId)) |>
-        tidyr::pivot_wider(names_from = customName, values_from = customValue)
-    ) |>
+  out <- icesSAG::getSummaryTable(assessment_keys)
+  if (!is.null(ices_median_refbio)) {
+    # NB: Join only the reference biomass custom column, and only by year.
+    #     Submissions can have other custom columns (e.g. "F" for saithe 2025)
+    #     that would otherwise join on, or clash with, summary table columns
+    refbio <- icesSAG::getCustomColumns(assessment_keys) |>
+      dplyr::filter(customName == ices_median_refbio) |>
+      dplyr::select(Year, median_refbio = customValue)
+    out <- dplyr::left_join(out, refbio, by = 'Year')
+  } else {
+    out <- dplyr::mutate(out, median_refbio = NA_real_)
+  }
+  out |>
     dplyr::select(
       year = Year,
       low_recruitment = low_recruitment,
@@ -50,14 +57,11 @@ hr_assessment_from_sag <- function(
       low_SSB = low_SSB,
       median_SSB = SSB,
       high_SSB = high_SSB,
-      #low_refbio = CustomSeries3,
-      median_refbio = as.symbol(ices_median_refbio),
-      #high_refbio = CustomSeries4,
+      median_refbio,
       landings = landings,
       low_HR = low_F,
       median_HR = as.symbol("F"),
       high_HR = high_F
-      # median_F = CustomSeries2
     ) |>
     dplyr::mutate(
       species = .env$species,
@@ -66,6 +70,87 @@ hr_assessment_from_sag <- function(
       median_HR = ifelse(year == assessment_year, NA_real_, median_HR),
       high_HR = ifelse(year == assessment_year, NA_real_, high_HR)
     )
+}
+
+#' Assessment summary from a SAM fit
+#'
+#' Builds the current assessment's rows of the assessment history (the format
+#' of \code{\link{hr_assessment_template}}) from a SAM fit, so the history
+#' doesn't depend on ICES SAG. Recruitment, SSB and F (Fbar) come from the
+#' fit, the reference biomass and harvest rate from \code{SAMutils::rby.sam()}
+#' if \code{ref_bio_type} is given. F and the harvest rate are left empty in
+#' the assessment year (no catch data), as are landings.
+#'
+#' @param sam_fit A SAM fit (\code{sam_fit$fit} from
+#'   \code{SAMutils::full_sam_fit()}).
+#' @param input_data_landings Landings by year with columns \code{year} and
+#'   \code{catch} (kg), e.g. from \code{\link{hr_input_data_landings}}.
+#' @param species Species code.
+#' @param assessment_year Assessment year.
+#' @param ref_bio_type \code{NULL} (no reference biomass, e.g. for F-based
+#'   advice), \code{"length"} or \code{"age"} (passed to
+#'   \code{SAMutils::rby.sam()}). Default \code{NULL}.
+#' @return A tibble with the columns of \code{\link{hr_assessment_template}},
+#'   landings in tonnes.
+#' @export
+hr_assessment_from_fit <- function(
+  sam_fit,
+  input_data_landings,
+  species,
+  assessment_year,
+  ref_bio_type = NULL
+) {
+  # NSE variables
+  variable <- median <- lower <- upper <- year <- catch <- landings <- low <- high <- NULL
+
+  rby <- if (is.null(ref_bio_type)) {
+    SAMutils::rby.sam(sam_fit, run_ref_bio = FALSE)
+  } else {
+    SAMutils::rby.sam(sam_fit, ref_bio_type = ref_bio_type)
+  }
+  out <- rby |>
+    dplyr::filter(variable %in% c("rec", "ssb", "fbar", "ref_bio", "hr")) |>
+    dplyr::mutate(
+      variable = dplyr::recode(
+        variable,
+        rec = "recruitment",
+        ssb = "SSB",
+        fbar = "F",
+        ref_bio = "refbio",
+        hr = "HR"
+      )
+    ) |>
+    dplyr::rename(low = lower, high = upper) |>
+    tidyr::pivot_wider(
+      names_from = variable,
+      values_from = c(median, low, high)
+    ) |>
+    dplyr::left_join(
+      input_data_landings |>
+        dplyr::collect() |>
+        dplyr::transmute(year, landings = catch / 1e3),
+      by = "year"
+    ) |>
+    dplyr::mutate(
+      year = as.integer(year),
+      species = as.integer(.env$species),
+      assessment_year = as.integer(.env$assessment_year),
+      landings = ifelse(year == .env$assessment_year, NA_real_, landings)
+    )
+  # Columns the fit doesn't provide (e.g. reference biomass)
+  template <- hr_assessment_template()
+  for (col in setdiff(names(template), names(out))) {
+    out[[col]] <- NA_real_
+  }
+  out |>
+    dplyr::mutate(
+      # No catch data in the assessment year, so no F or harvest rate
+      dplyr::across(
+        dplyr::matches("_(HR|F)$"),
+        ~ ifelse(year == .env$assessment_year, NA_real_, .x)
+      )
+    ) |>
+    dplyr::select(dplyr::all_of(names(template)))
 }
 
 #' Create an empty assessment data template

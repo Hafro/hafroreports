@@ -4,7 +4,7 @@
 \alias{hr_sam_pf}
 \title{Build SAM proportion of F before spawning matrix}
 \usage{
-hr_sam_pf(model_dat, cn)
+hr_sam_pf(model_dat, cn, value = 0)
 }
 \arguments{
 \item{model_dat}{Unused; retained for consistency with other
@@ -12,12 +12,14 @@ hr_sam_pf(model_dat, cn)
 
 \item{cn}{The catch-at-age matrix returned by \code{\link{hr_sam_cn}},
 used to determine the required dimensions.}
+
+\item{value}{Proportion before spawning. Default \code{0}.}
 }
 \value{
-A numeric matrix of 0.4 with the same shape as \code{cn}.
+A numeric matrix of \code{value} with the same shape as \code{cn}.
 }
 \description{
 Creates a matrix with the same dimensions as the catch-at-age matrix,
-filled with 0.4, indicating that 40\\% of fishing mortality occurs
-before the spawning season.
+filled with \code{value}, the proportion of fishing mortality that occurs before
+spawning (e.g. 0.4 for F and 0.3 for M in the haddock assessment).
 }

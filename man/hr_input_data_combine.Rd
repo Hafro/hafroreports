@@ -7,12 +7,23 @@
 hr_input_data_combine(
   year_start,
   year_end,
-  age_start = 1,
-  age_end = max(input_data_comm_index$age),
+  age_start = 0,
+  age_end = NULL,
   input_data_comm_index,
   input_data_igfs_index,
   input_data_agfs_index,
-  input_data_landings
+  input_data_landings,
+  M = 0.2,
+  immature_below_age = NULL,
+  mature_above_age = NULL,
+  maturity_fixed = NULL,
+  maturity_fill_age_mean = TRUE,
+  maturity_mean_mature_above = NULL,
+  weight_fill_year = NULL,
+  weights_fixed = NULL,
+  stock_weight_smooth_above = NULL,
+  stock_weight_smooth_years = NULL,
+  maturity_smooth_years = NULL
 )
 }
 \arguments{
@@ -20,12 +31,14 @@ hr_input_data_combine(
 
 \item{year_end}{Integer. Last year to include.}
 
-\item{age_start}{Integer. Minimum age. Default is \code{1}.}
+\item{age_start}{Integer. Minimum age. Default is \code{0}.}
 
-\item{age_end}{Integer. Maximum age; defaults to the maximum age in
-\code{input_data_comm_index}.}
+\item{age_end}{Integer. Maximum age. Default \code{NULL} is the oldest age
+in the commercial and spring survey indices; the plus group is formed
+later (e.g. by \code{SAMutils::sam.input()}). Cutting ages here loses the
+older fish and inflates younger ages when scaling to landings.}
 
-\item{input_data_comm_index}{Tibble. Commercial survey index with columns
+\item{input_data_comm_index}{Tibble. Commercial index with columns
 \code{year}, \code{age}, \code{n} (catch numbers), and \code{mw}
 (mean weight).}
 
@@ -37,6 +50,34 @@ columns \code{year}, \code{age}, and \code{n}.}
 
 \item{input_data_landings}{Tibble. Annual total landings with columns
 \code{year} and \code{catch}.}
+
+\item{M}{Natural mortality, all ages. Default \code{0.2}.}
+
+\item{immature_below_age, mature_above_age}{Ages below / above which
+maturity is set to 0 / 1. Default \code{NULL}.}
+
+\item{maturity_fixed}{Data frame with columns \code{age}, \code{maturity}
+and \code{year_before}: maturity for years before \code{year_before}
+(e.g. before the spring survey started). Default \code{NULL}.}
+
+\item{maturity_fill_age_mean}{Logical. Fill missing maturity with the mean
+for the age over years. Default \code{TRUE}.}
+
+\item{maturity_mean_mature_above}{Ages above which fish count as mature when
+computing that mean. Default \code{NULL}.}
+
+\item{weight_fill_year}{Year whose weights fill missing catch and stock
+weights for the age (before the mean over years). Default \code{NULL}.}
+
+\item{weights_fixed}{Data frame with columns \code{age},
+\code{catch_weight} and \code{stock_weight} (g), applied after scaling to
+landings. Default \code{NULL}.}
+
+\item{stock_weight_smooth_above, stock_weight_smooth_years}{Running mean of
+stock weights for ages above \code{stock_weight_smooth_above}. Default
+\code{NULL}.}
+
+\item{maturity_smooth_years}{Running mean of maturity. Default \code{NULL}.}
 }
 \value{
 A tibble with columns \code{year}, \code{age}, \code{catch},
@@ -47,6 +88,25 @@ A tibble with columns \code{year}, \code{age}, \code{catch},
 Combines commercial catch-at-age, spring (IGFS/SMB) and autumn (AGFS/SMH)
 survey indices, and total landings into a single data frame suitable for
 passing to \code{\link{hr_sam_dat}} or \code{\link{hr_muppet_input_datafiles}}.
-Hard-coded stock weights and maturity ogives (for ages 1–14) are used to
-fill gaps before 1985 or when survey data are unavailable.
+Stock-specific rules for filling gaps and smoothing are set by the
+arguments; with the defaults only the joins, catch scaled to landings and
+natural mortality are applied.
+}
+\details{
+The steps, in order:
+\enumerate{
+\item maturity: \code{immature_below_age} / \code{mature_above_age},
+then \code{maturity_fixed}, then missing values from the mean for the
+age (\code{maturity_fill_age_mean})
+\item catch and stock weights: missing values from \code{weight_fill_year},
+then the mean over years for the age
+\item catch in numbers scaled so that catch x catch weight equals the
+landings each year
+\item \code{weights_fixed} (after scaling)
+\item running means: stock weights of ages above
+\code{stock_weight_smooth_above} over \code{stock_weight_smooth_years}
+years, maturity over \code{maturity_smooth_years} years (current and
+previous years, partial windows at the start)
+\item natural mortality \code{M}
+}
 }

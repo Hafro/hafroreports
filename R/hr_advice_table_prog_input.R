@@ -1,40 +1,65 @@
-#' Format prognosis input table for advice sheet
+#' Format forecast assumptions table for advice sheet
 #'
-#' Renders a formatted \code{flextable} summarising the key model inputs for
-#' the prognosis (SSB, recruitment, catch, harvest rate, reference biomass)
-#' with localised variable names, formatted values, and notes columns.
-#' Numeric formatting applies thousand separators to biomass and tonnage rows.
+#' Renders a formatted \code{flextable} showing the assumptions for the
+#' interim year and forecast: variable, value and notes. Row labels come from
+#' the \code{variable.en} / \code{variable.is} columns of
+#' \code{data_prog_input} if present, otherwise they are built from
+#' \code{name} (\code{ssb}, \code{rec}, \code{catch}, \code{HR}, \code{fbar},
+#' \code{refbio}) and \code{year}. Rows are shown in the order of
+#' \code{data_prog_input}, or of \code{order}.
 #'
-#' @param data_prog_input A data frame with columns \code{name} (one of
-#'   \code{"ssb"}, \code{"rec"}, \code{"catch"}, \code{"HR"},
-#'   \code{"refbio"}), \code{year}, \code{value}, \code{notes.en}, and
-#'   \code{notes.is}.
-#' @param assessment_year Integer. Included in variable labels as the
-#'   reference year.
+#' @param data_prog_input A data frame with columns \code{name}, \code{year},
+#'   \code{value}, \code{notes.en}, \code{notes.is}, and optionally
+#'   \code{variable.en}, \code{variable.is}.
+#' @param assessment_year Integer. The assessment year (unused, kept for
+#'   compatibility).
+#' @param recruitment_age Recruitment age for the built-in recruitment label.
+#'   Default \code{NULL} (no age).
+#' @param order Row indices to show, in order, e.g. \code{c(5, 3, 2, 4, 6, 1)}.
+#'   Default \code{NULL} (data order).
 #' @return A \code{flextable} object styled for inclusion in an advice sheet.
 #' @export
-hr_advice_table_prog_input <- function(data_prog_input, assessment_year) {
+hr_advice_table_prog_input <- function(
+  data_prog_input,
+  assessment_year,
+  recruitment_age = NULL,
+  order = NULL
+) {
   # NSE variables
   name <- year <- value <- NULL
   lang <- getOption("hr.lang", "en")
+  rec_is <- if (is.null(recruitment_age)) 'Nýliðun' else sprintf('Nýliðun %s %s', recruitment_age, if (recruitment_age == 1) 'árs' else 'ára')
+  rec_en <- if (is.null(recruitment_age)) 'Recruitment' else sprintf('Recruitment age %s', recruitment_age)
+
+  if (!all(c("variable.is", "variable.en") %in% colnames(data_prog_input))) {
+    data_prog_input <- data_prog_input |>
+      dplyr::mutate(
+        variable.is = dplyr::case_when(
+          name == 'ssb' ~ sprintf('Hrygningarstofn (%s)', year),
+          name == 'rec' ~ sprintf('%s (%s)', rec_is, year),
+          name == 'catch' ~ sprintf('Afli (%s)', year),
+          name == 'HR' ~ sprintf('Veiðihlutfall (%s)', year),
+          name == 'fbar' ~ sprintf('Veiðidánartala (%s)', year),
+          name == 'refbio' ~ sprintf('Viðmiðunarstofn (%s)', year)
+        ),
+        variable.en = dplyr::case_when(
+          name == 'ssb' ~ sprintf('SSB (%s)', year),
+          name == 'rec' ~ sprintf('%s (%s)', rec_en, year),
+          name == 'catch' ~ sprintf('Catch (%s)', year),
+          name == 'HR' ~ sprintf('Harvest rate (%s)', year),
+          name == 'fbar' ~ sprintf('Fishing mortality (%s)', year),
+          name == 'refbio' ~ sprintf('Reference biomass (%s)', year)
+        )
+      )
+  }
+  if (!is.null(order)) {
+    data_prog_input <- dplyr::slice(data_prog_input, order)
+  }
+  # Tonnes for biomass and catch rows
+  tonnes_rows <- which(data_prog_input$name %in% c('ssb', 'catch', 'refbio'))
+  number_rows <- which(data_prog_input$name %in% c('rec'))
 
   data_prog_input |>
-    dplyr::mutate(
-      variable.is = dplyr::case_when(
-        name == 'ssb' ~ sprintf('Hrygningarstofn (%s)', year),
-        name == 'rec' ~ sprintf('Nýliðun 1 árs (%s)', year),
-        name == 'catch' ~ sprintf('Afli (%s)', year),
-        name == 'HR' ~ sprintf('Veiðihlutfall (%s)', year),
-        name == 'refbio' ~ sprintf('Viðmiðunarstofn (%s)', year)
-      ),
-      variable.en = dplyr::case_when(
-        name == 'ssb' ~ sprintf('SSB (%s)', year),
-        name == 'rec' ~ sprintf('Recruitment age 1 (%s)', year),
-        name == 'catch' ~ sprintf('Catch (%s)', year),
-        name == 'HR' ~ sprintf('Harvest rate (%s)', year),
-        name == 'refbio' ~ sprintf('Viðmiðunarstofn (%s)', year)
-      ),
-    ) |>
     dplyr::select(
       variable = as.symbol(paste0('variable.', lang)),
       value,
@@ -47,7 +72,6 @@ hr_advice_table_prog_input <- function(data_prog_input, assessment_year) {
         hr_red_dot_number(round(value))
       )
     ) |>
-    dplyr::slice(5, 3, 2, 4, 6, 1) |>
     flextable::flextable() |>
     flextable::mk_par(
       j = "variable",
@@ -72,7 +96,7 @@ hr_advice_table_prog_input <- function(data_prog_input, assessment_year) {
     ) |>
     ftExtra::colformat_md() |>
     flextable::colformat_num(
-      i = c(2, 5),
+      i = tonnes_rows,
       j = 2,
       big.mark = "  ",
       decimal.mark = ".",
@@ -80,7 +104,7 @@ hr_advice_table_prog_input <- function(data_prog_input, assessment_year) {
       suffix = " t"
     ) |>
     flextable::colformat_num(
-      i = c(3, 4),
+      i = number_rows,
       j = 2,
       big.mark = "  ",
       decimal.mark = ".",

@@ -27,7 +27,7 @@ biomass		Biomass			Lífmassi
 mean_weight_g	"Mean weight (g)"	"Aflaþyngdir (g)"
 fproxy		"Fishing pressure proxy"	"Vísitala veiðihlutfalls"
 fbar		"Fishing mortality"	Veiðidánartala
-harvest_rate	"Harvest rate"		Veiðihlufall
+harvest_rate	"Harvest rate"		Veiðihlutfall
 recindex	Juvenile~index		Nýliðunarvísitala
 catches		Catches			Afli
 catch_at_age	"Catch at age"		"Aldursgreindur afli"
@@ -48,6 +48,8 @@ NE		"NE"			"NA"
 SE		"SE"			"SA"
 SW		"SW"			"SV"
 landings_kt	"Landings (in kt)"	"Landaður afli (kt)"
+landings_t	"Landings (tonnes)"	"Landaður afli (tonn)"
+recruitment	Recruitment	Nýliðun
 iceland		"Iceland"		"Ísland"
 other_country	"Other"			"Önnur lönd"
 pct_samples_landings	"Percent samples/landings"	"Hlutfall sýnatöku/landana"

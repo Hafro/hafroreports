@@ -9,7 +9,8 @@ hr_techreport_plot_cpue(
   gear_group = list(GIL = "GIL", BMT = c("BMT", "NPT", "SHT", "PGT", "DRD"), LLN =
     c("HLN", "LLN"), DSE = c("PSE", "DSE")),
   year_start = 1000,
-  year_end = 9999
+  year_end = 9999,
+  limit = 0.5
 )
 }
 \arguments{
@@ -22,6 +23,10 @@ and \code{DSE}.}
 \item{year_start}{Integer. First year to include. Default is \code{1000}.}
 
 \item{year_end}{Integer. Last year to include. Default is \code{9999}.}
+
+\item{limit}{Share of the species in the catch above which records count
+as directed (the dashed lines), passed to
+\code{pax::pax_logbook_cpue_plot()}. Default \code{0.5}.}
 }
 \value{
 A \code{ggplot2} plot object faceted by gear group.

@@ -35,7 +35,8 @@ hr_techreport_plot_landings_country <- function(
       )
     ) |>
     dplyr::group_by(year, country) |>
-    dplyr::summarize(catch = sum(catch, na.rm = TRUE) / 1e3) |>
+    # Landings are in kg, plot in thousand tonnes
+    dplyr::summarize(catch = sum(catch, na.rm = TRUE) / 1e6) |>
     dplyr::arrange(dplyr::desc(country))
 
   ggplot2::ggplot(dat, ggplot2::aes(year, catch, fill = country)) +

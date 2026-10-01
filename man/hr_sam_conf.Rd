@@ -2,7 +2,7 @@
 % Please edit documentation in R/hr_sam_conf.R
 \name{hr_sam_conf}
 \alias{hr_sam_conf}
-\title{Build SAM configuration for Icelandic haddock}
+\title{Build SAM configuration for Icelandic haddock (deprecated)}
 \usage{
 hr_sam_conf(dat)
 }
@@ -14,6 +14,11 @@ A SAM configuration list suitable for passing to
 \code{\link[stockassessment]{sam.fit}}.
 }
 \description{
+Deprecated: a SAM configuration is stock-specific and belongs in the stock's
+repository (e.g. \code{had_sam_conf()} in 02-had-targets). Kept for
+backward compatibility.
+}
+\details{
 Creates a \code{stockassessment} configuration object for the Icelandic
 haddock stock assessment. Starts from the default configuration returned by
 \code{\link[stockassessment]{defcon}} and applies haddock-specific settings

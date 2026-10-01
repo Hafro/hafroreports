@@ -4,7 +4,12 @@
 \alias{hr_techreport_table_boatsummary}
 \title{Format vessel and catch summary table by gear}
 \usage{
-hr_techreport_table_boatsummary(pcon, year_start = 1000, year_end = 9999)
+hr_techreport_table_boatsummary(
+  pcon,
+  year_start = 1000,
+  year_end = 9999,
+  gear_group = NULL
+)
 }
 \arguments{
 \item{pcon}{A database connection object compatible with \code{dplyr::tbl}.}
@@ -12,6 +17,9 @@ hr_techreport_table_boatsummary(pcon, year_start = 1000, year_end = 9999)
 \item{year_start}{Integer. First year to include. Default is \code{1000}.}
 
 \item{year_end}{Integer. Last year to include. Default is \code{9999}.}
+
+\item{gear_group}{Gear groups, as for \code{pax::pax_landings_by_gear()}.
+Default \code{NULL} uses its default groups.}
 }
 \value{
 A \code{gt} table object.
