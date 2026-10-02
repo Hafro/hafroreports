@@ -104,7 +104,8 @@ hr_advice_plot_ssb <- function(
     ) +
     ggplot2::annotate(
       "text",
-      x = 2012,
+      # Clear of the Btrigger label when they are at the same level
+      x = if (isTRUE(all.equal(btrigger, ref_points$B_pa))) 2017 else 2012,
       y = ref_points$B_pa * 1.2,
       label = hr_label("Bpa"),
       size = 2.5,
