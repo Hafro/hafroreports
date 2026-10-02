@@ -3,8 +3,8 @@
 #' Faceted line plot comparing the current assessment (red) with the
 #' assessments of the previous years (black) over the last 15 years: fishing
 #' pressure (harvest rate or F), SSB, the reference biomass (if the stock has
-#' one) and recruitment (current assessment only). Dashed lines show the
-#' reference points the stock has.
+#' one) and recruitment. Dashed lines show the reference points the stock
+#' has.
 #'
 #' @param data_assessment Long-format assessment data as returned by
 #'   \code{\link{hr_advice_data_assessment}}, with several assessment years.
@@ -13,18 +13,23 @@
 #' @param assessment_year Integer. The current assessment year.
 #' @param fishing_pressure \code{"HR"} (harvest rate) or \code{"F"}. Default
 #'   \code{"HR"}.
+#' @param recruitment_from First assessment year whose recruitment is shown,
+#'   e.g. the year the recruitment age changed (earlier assessments estimated
+#'   recruitment at another age). Default \code{NULL}, all assessments.
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
 #' @export
 hr_advice_plot_retro <- function(
   data_assessment,
   ref_points,
   assessment_year,
-  fishing_pressure = c("HR", "F")
+  fishing_pressure = c("HR", "F"),
+  recruitment_from = NULL
 ) {
   # NSE variables
   key <- year <- median <- label <- value <- facet <- label2 <- .data <- NULL
   lang <- getOption("hr.lang", "en")
   fishing_pressure <- match.arg(fishing_pressure)
+  rec_from <- if (is.null(recruitment_from)) -Inf else recruitment_from
 
   d <- data_assessment |>
     dplyr::filter(
@@ -33,7 +38,7 @@ hr_advice_plot_retro <- function(
       year >= .env$assessment_year - 15
     ) |>
     dplyr::filter(
-      !(key == 'recruitment' & assessment_year < .env$assessment_year)
+      key != 'recruitment' | assessment_year >= rec_from
     ) |>
     dplyr::group_by(key) |>
     dplyr::filter(any(!is.na(median))) |>

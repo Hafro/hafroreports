@@ -8,7 +8,8 @@ hr_advice_plot_retro(
   data_assessment,
   ref_points,
   assessment_year,
-  fishing_pressure = c("HR", "F")
+  fishing_pressure = c("HR", "F"),
+  recruitment_from = NULL
 )
 }
 \arguments{
@@ -22,6 +23,10 @@ tonnes).}
 
 \item{fishing_pressure}{\code{"HR"} (harvest rate) or \code{"F"}. Default
 \code{"HR"}.}
+
+\item{recruitment_from}{First assessment year whose recruitment is shown,
+e.g. the year the recruitment age changed (earlier assessments estimated
+recruitment at another age). Default \code{NULL}, all assessments.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.
@@ -30,6 +35,6 @@ A \code{ggplot2} / \code{ggiraph} plot object.
 Faceted line plot comparing the current assessment (red) with the
 assessments of the previous years (black) over the last 15 years: fishing
 pressure (harvest rate or F), SSB, the reference biomass (if the stock has
-one) and recruitment (current assessment only). Dashed lines show the
-reference points the stock has.
+one) and recruitment. Dashed lines show the reference points the stock
+has.
 }
