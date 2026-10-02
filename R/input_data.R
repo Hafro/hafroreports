@@ -388,12 +388,16 @@ hr_pool_years <- function(tbl, ygroup) {
 #'   the key is built from the samples' otoliths.
 #' @param key_year Named vector mapping each year (names) to the year of the
 #'   key it uses (values), e.g. a pooled or another survey's key. Years not
-#'   in it are dropped. Not with \code{ygroup}. Default \code{NULL}.
+#'   in it are dropped. The key years can be numbers or labels (e.g.
+#'   \code{"past"}), as in the key's \code{ygroup}. Not with \code{ygroup}.
+#'   Default \code{NULL}.
 #' @param landings_area_like SQL LIKE pattern of the ICES areas of the
 #'   landings to scale to (\code{scale_by_landings = TRUE}), when the pax
 #'   database holds landings from more areas. Default \code{NULL}, all.
 #' @param plus_group Ages above this are summed into it. Default
 #'   \code{NULL}.
+#' @param mean_length If \code{TRUE}, also the mean length at age
+#'   (\code{ml}). Default \code{FALSE}.
 #' @return A grouped tibble with columns \code{year}, \code{age}, \code{n}
 #'   (abundance in thousands), \code{mw} (mean weight in grams), and
 #'   optionally \code{mat} (proportion mature).
@@ -426,7 +430,8 @@ hr_input_data_si_index <- function(
   alk = NULL,
   key_year = NULL,
   landings_area_like = NULL,
-  plus_group = NULL
+  plus_group = NULL,
+  mean_length = FALSE
 ) {
   # NSE variables
   si_abund <- si_biomass <- mat_p <- mat_p_est <- year <- age <- NULL
@@ -532,7 +537,7 @@ hr_input_data_si_index <- function(
     # Each year uses the key of its key year; years without one are dropped
     key_map <- data.frame(
       year = as.numeric(names(key_year)),
-      key_label = as.numeric(unname(key_year))
+      key_label = unname(key_year)
     )
     at_age <- at_age |>
       dplyr::inner_join(pax::pax_temptbl(pcon, key_map), by = "year") |>
@@ -626,13 +631,17 @@ hr_input_data_si_index <- function(
       age = ifelse(age > local(plus_group), local(plus_group), age)
     )
   }
+  summaries <- list(
+    n = quote(sum(si_abund) / 1000),
+    mw = quote(1000 * sum(si_biomass) / sum(si_abund))
+  )
+  if (isTRUE(mean_length)) {
+    summaries$ml <- quote(sum(si_abund * length) / sum(si_abund))
+  }
+  summaries$mat <- mat_c
   out <- at_age |>
     dplyr::group_by(year, age) |>
-    dplyr::summarise(
-      n = sum(si_abund) / 1000,
-      mw = 1000 * sum(si_biomass) / sum(si_abund),
-      mat = {{ mat_c }}
-    )
+    dplyr::summarise(!!!summaries)
   return(out)
 }
 
