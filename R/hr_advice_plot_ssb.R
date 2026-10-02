@@ -9,7 +9,8 @@
 #'   \code{\link{hr_advice_data_assessment}}.
 #' @param assessment_year Integer. The assessment year to plot.
 #' @param ref_points Named list of reference points (biomass in thousand
-#'   tonnes): \code{MGT_btrigger}, \code{B_lim}, \code{B_pa}.
+#'   tonnes): \code{MGT_btrigger} (or \code{MSY_btrigger} if there is no
+#'   management plan), \code{B_lim}, \code{B_pa}.
 #' @param refbio_label Text added to the reference biomass legend entry, e.g.
 #'   \code{"(B4+)"}. Default \code{NULL}.
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
@@ -48,6 +49,15 @@ hr_advice_plot_ssb <- function(
     labels$label
   )
 
+  # MGT Btrigger if there is a management plan, else MSY Btrigger
+  if (!is.null(ref_points$MGT_btrigger)) {
+    btrigger <- ref_points$MGT_btrigger
+    btrigger_label <- "Btrigger"
+  } else {
+    btrigger <- ref_points$MSY_btrigger
+    btrigger_label <- "MSYBtrigger"
+  }
+
   ggplot2::ggplot(d, ggplot2::aes(x = year, y = median / 1000)) +
     ggiraph::geom_point_interactive(
       ggplot2::aes(
@@ -75,7 +85,7 @@ hr_advice_plot_ssb <- function(
     ggplot2::scale_color_manual(values = colours, labels = legend_labels) +
     ggplot2::scale_fill_manual(values = colours, labels = legend_labels) +
     ggplot2::geom_hline(
-      yintercept = ref_points$MGT_btrigger,
+      yintercept = btrigger,
       linetype = "dashed",
       linewidth = 0.4
     ) +
@@ -87,8 +97,8 @@ hr_advice_plot_ssb <- function(
     ggplot2::annotate(
       "text",
       x = 2008,
-      y = ref_points$MGT_btrigger * 1.2,
-      label = hr_label("Btrigger"),
+      y = btrigger * 1.2,
+      label = hr_label(btrigger_label),
       size = 2.5,
       parse = TRUE
     ) +

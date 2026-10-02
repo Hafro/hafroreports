@@ -61,6 +61,7 @@ hr_advice_data_landings <- function(landings_by_gear) {
 #' @param data_landings A data frame as returned by
 #'   \code{\link{hr_advice_data_landings}}.
 #' @param assessment_year Integer. Used to set the x-axis upper limit.
+#' @param year_start First year on the x axis. Default 1978.
 #' @param legend_position Legend position inside the panel. Default
 #'   \code{c(0.35, 0.85)}.
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
@@ -68,7 +69,8 @@ hr_advice_data_landings <- function(landings_by_gear) {
 hr_advice_plot_landings <- function(
   data_landings,
   assessment_year,
-  legend_position = c(0.35, 0.85)
+  legend_position = c(0.35, 0.85),
+  year_start = 1978
 ) {
   # NSE variables
   year <- fill <- tonnes <- ymax <- ymin <- .data <- NULL
@@ -124,7 +126,7 @@ hr_advice_plot_landings <- function(
       title = hr_label("catches", bold = TRUE)
     ) +
     hr_astand_theme(legend.position = legend_position) +
-    hr_astand_x_scale(5, 0, limits = c(1978, assessment_year - 0.5)) +
+    hr_astand_x_scale(5, 0, limits = c(year_start, assessment_year - 0.5)) +
     hr_advice_y_scale() +
     ggplot2::theme(
       strip.text = ggplot2::element_text(face = "bold"), # Facet titles

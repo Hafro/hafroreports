@@ -7,7 +7,8 @@
 hr_advice_plot_landings(
   data_landings,
   assessment_year,
-  legend_position = c(0.35, 0.85)
+  legend_position = c(0.35, 0.85),
+  year_start = 1978
 )
 }
 \arguments{
@@ -18,6 +19,8 @@ hr_advice_plot_landings(
 
 \item{legend_position}{Legend position inside the panel. Default
 \code{c(0.35, 0.85)}.}
+
+\item{year_start}{First year on the x axis. Default 1978.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.

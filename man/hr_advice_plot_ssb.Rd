@@ -18,7 +18,8 @@ hr_advice_plot_ssb(
 \item{assessment_year}{Integer. The assessment year to plot.}
 
 \item{ref_points}{Named list of reference points (biomass in thousand
-tonnes): \code{MGT_btrigger}, \code{B_lim}, \code{B_pa}.}
+tonnes): \code{MGT_btrigger} (or \code{MSY_btrigger} if there is no
+management plan), \code{B_lim}, \code{B_pa}.}
 
 \item{refbio_label}{Text added to the reference biomass legend entry, e.g.
 \code{"(B4+)"}. Default \code{NULL}.}
