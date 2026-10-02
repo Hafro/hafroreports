@@ -78,6 +78,8 @@ hr_advice_plot_landings <- function(
   label_col <- paste0("gear.", lang)
 
   stacked <- data_landings |>
+    # Years outside the axis would still set the y scale
+    dplyr::filter(year >= year_start) |>
     dplyr::mutate(fill = .data[[label_col]]) |>
     dplyr::arrange(year, fill) |>
     dplyr::group_by(year) |>
