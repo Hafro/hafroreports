@@ -7,7 +7,8 @@
 hr_advice_table_tac(
   data_tac,
   columns = c("advice_period", "advice", "tac", "icelandic", "foreign", "total"),
-  footnotes = NULL
+  footnotes = NULL,
+  headers = NULL
 )
 }
 \arguments{
@@ -21,7 +22,15 @@ with columns \code{advice_period}, \code{advice}, \code{tac},
 function of the number of rows), \code{j} (column name or number),
 \code{en} and \code{is} (text), e.g.
 \code{list(list(i = 32:36, j = "advice", en = "40 \% harvest control rule", is = "40 \% aflaregla"))}.
-Rows outside the table are ignored. Default \code{NULL}.}
+Rows outside the table are ignored. A footnote with \code{part =
+"header"} is attached to the column headers instead (\code{i} is then
+ignored). Default \code{NULL}.}
+
+\item{headers}{Named list of column headers for columns of \code{data_tac}
+other than the standard six (or to replace their headers), each
+\code{c(en = ..., is = ...)}, e.g. \code{list(catch_14 = c(en = "Catches
+in East Greenland waters", is = "Afli við Austur-Grænland"))}. Default
+\code{NULL}.}
 }
 \value{
 A \code{flextable} object styled for inclusion in an advice sheet.

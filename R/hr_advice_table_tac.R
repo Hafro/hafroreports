@@ -94,16 +94,24 @@ hr_advice_data_tac <- function(
 #'   function of the number of rows), \code{j} (column name or number),
 #'   \code{en} and \code{is} (text), e.g.
 #'   \code{list(list(i = 32:36, j = "advice", en = "40 \% harvest control rule", is = "40 \% aflaregla"))}.
-#'   Rows outside the table are ignored. Default \code{NULL}.
+#'   Rows outside the table are ignored. A footnote with \code{part =
+#'   "header"} is attached to the column headers instead (\code{i} is then
+#'   ignored). Default \code{NULL}.
+#' @param headers Named list of column headers for columns of \code{data_tac}
+#'   other than the standard six (or to replace their headers), each
+#'   \code{c(en = ..., is = ...)}, e.g. \code{list(catch_14 = c(en = "Catches
+#'   in East Greenland waters", is = "Afli við Austur-Grænland"))}. Default
+#'   \code{NULL}.
 #' @return A \code{flextable} object styled for inclusion in an advice sheet.
 #' @export
 hr_advice_table_tac <- function(
   data_tac,
   columns = c("advice_period", "advice", "tac", "icelandic", "foreign", "total"),
-  footnotes = NULL
+  footnotes = NULL,
+  headers = NULL
 ) {
   lang <- getOption("hr.lang", "en")
-  headers <- list(
+  default_headers <- list(
     advice_period = c(en = 'Fishing year', is = "Fiskveiðiár"),
     advice = c(en = 'Recommended TAC', is = "Tillaga"),
     tac = c(en = "National TAC", is = "Aflamark"),
@@ -111,6 +119,7 @@ hr_advice_table_tac <- function(
     foreign = c(en = "Catches other nations", is = "Afli annarra þjóða"),
     total = c(en = "Total catch", is = "Afli alls")
   )
+  headers <- utils::modifyList(default_headers, as.list(headers))
   data_tac <- data_tac[, columns, drop = FALSE]
   n_rows <- nrow(data_tac)
   width <- 9 / length(columns) ### Total width of table in advice sheet is 9
@@ -161,8 +170,13 @@ hr_advice_table_tac <- function(
     symbol <- symbol + 1
   }
   for (fn in footnotes) {
-    rows <- if (is.function(fn$i)) fn$i(n_rows) else fn$i
-    rows <- rows[rows >= 1 & rows <= n_rows]
+    part <- if (is.null(fn$part)) "body" else fn$part
+    if (part == "header") {
+      rows <- 1
+    } else {
+      rows <- if (is.function(fn$i)) fn$i(n_rows) else fn$i
+      rows <- rows[rows >= 1 & rows <= n_rows]
+    }
     if (!length(rows)) next
     ft <- flextable::footnote(
       ft,
@@ -170,7 +184,7 @@ hr_advice_table_tac <- function(
       j = fn$j,
       value = flextable::as_paragraph(fn[[lang]]),
       ref_symbols = paste0(symbol, ") "),
-      part = "body"
+      part = part
     )
     symbol <- symbol + 1
   }
