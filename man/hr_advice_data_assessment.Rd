@@ -4,12 +4,17 @@
 \alias{hr_advice_data_assessment}
 \title{Reshape wide assessment data into long format}
 \usage{
-hr_advice_data_assessment(assessment)
+hr_advice_data_assessment(assessment, labels = NULL)
 }
 \arguments{
 \item{assessment}{A wide-format tibble with columns \code{year},
 \code{species}, \code{assessment_year}, and columns named using the
 pattern \code{<stat>_<key>} (e.g. \code{median_SSB}, \code{low_HR}).}
+
+\item{labels}{Labels replacing the default ones, e.g. for an index-based
+(category 3) stock \code{list(en = c(recruitment = "Juvenile index"),
+is = c(recruitment = "Nýliðunarvísitala"))}, named by key. Default
+\code{NULL}.}
 }
 \value{
 A long-format tibble with columns \code{year}, \code{species},

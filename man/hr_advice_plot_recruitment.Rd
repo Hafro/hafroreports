@@ -7,7 +7,8 @@
 hr_advice_plot_recruitment(
   data_assessment,
   assessment_year,
-  recruitment_age = NULL
+  recruitment_age = NULL,
+  title = NULL
 )
 }
 \arguments{
@@ -18,6 +19,9 @@ hr_advice_plot_recruitment(
 
 \item{recruitment_age}{Recruitment age, shown in the title, or \code{NULL}
 for no age. Default \code{NULL}.}
+
+\item{title}{Plot title, e.g. \code{hr_label("recindex", bold = TRUE)} for
+a juvenile survey index. Default: recruitment (at age).}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.

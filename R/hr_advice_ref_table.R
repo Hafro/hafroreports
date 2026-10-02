@@ -103,8 +103,13 @@ hr_advice_ref_table <- function(
       border.bottom = officer::fp_border(),
       part = "body"
     ) |>
-    flextable::border(i = 2, j = 1, border.bottom = officer::fp_border()) |>
-    flextable::border(i = 4, j = 1, border.bottom = officer::fp_border()) |>
+    # Lines under the approach groups of the usual layout (rows 2 and 4), as
+    # far as the table has rows (e.g. two for a category 3 stock)
+    flextable::border(
+      i = intersect(c(2, 4), seq_len(nrow(ref_table))),
+      j = 1,
+      border.bottom = officer::fp_border()
+    ) |>
     flextable::fontsize(size = 9, part = "body") |>
     flextable::fontsize(size = 9, part = "header")
 }

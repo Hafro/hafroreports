@@ -33,5 +33,6 @@ Line plot with confidence band of the harvest rate (\code{"HR"}) or fishing
 mortality (\code{"F"}) in the current assessment, with dashed lines for the
 management, MSY and precautionary reference points the stock has
 (\code{HR_mgt}, \code{HR_msy}, \code{HR_pa} or \code{F_mgt}, \code{F_msy},
-\code{F_pa} in \code{ref_points}).
+\code{F_pa} in \code{ref_points}), and for category 3 stocks the MSY
+proxy harvest rate (\code{HR_msy_proxy}).
 }

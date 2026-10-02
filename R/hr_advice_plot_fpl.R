@@ -4,7 +4,8 @@
 #' mortality (\code{"F"}) in the current assessment, with dashed lines for the
 #' management, MSY and precautionary reference points the stock has
 #' (\code{HR_mgt}, \code{HR_msy}, \code{HR_pa} or \code{F_mgt}, \code{F_msy},
-#' \code{F_pa} in \code{ref_points}).
+#' \code{F_pa} in \code{ref_points}), and for category 3 stocks the MSY
+#' proxy harvest rate (\code{HR_msy_proxy}).
 #'
 #' @param data_assessment Long-format assessment data as returned by
 #'   \code{\link{hr_advice_data_assessment}}.
@@ -93,8 +94,8 @@ hr_advice_plot_fpl <- function(
 #'   a plotmath \code{label}.
 #' @noRd
 advice_ref_lines <- function(ref_points, fishing_pressure) {
-  keys <- paste0(fishing_pressure, c("_mgt", "_msy", "_pa"))
-  labels <- paste0(fishing_pressure, c("mgt", "msy", "pa"))
+  keys <- paste0(fishing_pressure, c("_mgt", "_msy", "_pa", "_msy_proxy"))
+  labels <- paste0(fishing_pressure, c("mgt", "msy", "pa", "msy_proxy"))
   value <- vapply(keys, function(k) {
     v <- ref_points[[k]]
     if (is.null(v) || length(v) != 1) NA_real_ else as.numeric(v)

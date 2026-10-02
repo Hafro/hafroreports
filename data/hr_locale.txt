@@ -67,3 +67,6 @@ between_years		"Between years"			"Milli ára"
 between_species		"Between species"		"Tegundatilfærsla"
 quota_period		"Quota period"			"Fiskveiðiár"
 transfers_in_thous_t	"Transfers (in thousand t)"	"Kvótatilfærsla (í kt)"
+hr_proxy	"Harvest rate proxy"		"Vísitala veiðihlutfalls"
+HRmsy_proxy	HR[MSY~proxy]		HR[MSY~proxy]
+Fmsy_proxy	F[MSY~proxy]		F[MSY~proxy]

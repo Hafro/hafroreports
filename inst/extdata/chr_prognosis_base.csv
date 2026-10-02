@@ -1,0 +1,15 @@
+label,chr_desc.is,chr_desc.en,component
+**A~y~**,Ráðgjöf fyrir {tyr-1}/{tyr},Catch advice for {tyr-1}/{tyr},previous_catch_advice
+,*Lífmassavísitala*,*Biomass index*,
+,Vísitala (I~{tyr}~),Latest index value (I~{tyr}~),biomass_index
+,*Vísitala veiðihlutfalls*,*Harvest rate proxy*,
+HR~MSY proxy~,"Veiðiálag miðað við hámarksafrakstur (meðaltal afla í hlutfalli við lífmassavísitölu fyrir ár þar sem f > 1, þar sem f = L~mean~ / L~F = M~)","MSY proxy harvest rate (average of the ratio of catch to biomass index for the years for which f > 1, where f = L~mean~ / L~F = M~)",Fmsy_proxy
+,*Gátmörk*,*Biomass safeguard*,
+,Aðgerðarmörk vísitölu (I~trigger~ = I~loss~\*1.4),Index trigger value (I~trigger~ = I~loss~\*1.4),Itrigger
+**b**,"Vísitala í hlutfalli við aðgerðamörk, min(I~{tyr}~ / I~trigger~, 1)","Index relative to trigger value, min(I~{tyr}~ / I~trigger~, 1)",biomass_safeguard
+,*Varúðarlækkun til þess að tryggja að hrygningarstofn fari ekki undir gátmörk (B~lim~) með 95 % líkum*,*Precautionary multiplier to maintain biomass above B~lim~ with 95% probability*,
+**m**,margfaldari (byggður á lífssögu),Multiplier (generic multiplier based on life history),multiplier
+,Reiknuð ráðgjöf,Advice calculation,initial_catch_advice
+,"Sveiflujöfnun (+20 % / -30 % borið saman við A~y~, aðeins beitt ef b ≥ 1)","Stability clause (+20% / -30% compared to A~y~, only applied if b ≥ 1)",stability_clause_applied
+,Ráðgjöf fyrir {tyr}/{tyr+1},Catch advice for {tyr}/{tyr+1},catch_advice
+,\% breyting á ráðgjöf,% advice change,advice_change

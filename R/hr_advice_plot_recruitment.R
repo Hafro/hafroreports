@@ -8,14 +8,18 @@
 #' @param assessment A wide-format tibble with columns \code{year},
 #'   \code{species}, \code{assessment_year}, and columns named using the
 #'   pattern \code{<stat>_<key>} (e.g. \code{median_SSB}, \code{low_HR}).
+#' @param labels Labels replacing the default ones, e.g. for an index-based
+#'   (category 3) stock \code{list(en = c(recruitment = "Juvenile index"),
+#'   is = c(recruitment = "Nýliðunarvísitala"))}, named by key. Default
+#'   \code{NULL}.
 #' @return A long-format tibble with columns \code{year}, \code{species},
 #'   \code{assessment_year}, \code{key}, \code{low}, \code{median},
 #'   \code{high}, \code{label.is}, and \code{label.en}.
 #' @export
-hr_advice_data_assessment <- function(assessment) {
+hr_advice_data_assessment <- function(assessment, labels = NULL) {
   # NSE variables
   key <- value <- year <- species <- assessment_year <- stat <- NULL
-  assessment |>
+  out <- assessment |>
     tidyr::gather(key, value, -c(year, species, assessment_year)) |>
     dplyr::filter(key != 'landings') |>
     tidyr::separate(key, c('stat', 'key')) |>
@@ -58,6 +62,19 @@ hr_advice_data_assessment <- function(assessment) {
         )
       )
     )
+  for (lang in names(labels)) {
+    col <- paste0("label.", lang)
+    old <- as.character(out[[col]])
+    keys <- intersect(names(labels[[lang]]), out$key)
+    for (k in keys) {
+      old[out$key == k] <- labels[[lang]][[k]]
+    }
+    out[[col]] <- ordered(old, levels = unique(c(
+      unname(unlist(labels[[lang]][keys])),
+      levels(out[[col]])
+    )))
+  }
+  out
 }
 #' Plot recruitment for advice sheet
 #'
@@ -69,12 +86,15 @@ hr_advice_data_assessment <- function(assessment) {
 #' @param assessment_year Integer. The assessment year to plot.
 #' @param recruitment_age Recruitment age, shown in the title, or \code{NULL}
 #'   for no age. Default \code{NULL}.
+#' @param title Plot title, e.g. \code{hr_label("recindex", bold = TRUE)} for
+#'   a juvenile survey index. Default: recruitment (at age).
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
 #' @export
 hr_advice_plot_recruitment <- function(
   data_assessment,
   assessment_year,
-  recruitment_age = NULL
+  recruitment_age = NULL,
+  title = NULL
 ) {
   # NSE variables
   key <- low <- median <- high <- year <- NULL
@@ -115,7 +135,9 @@ hr_advice_plot_recruitment <- function(
     hr_astand_theme() +
     ggplot2::labs(
       y = hr_label("millions", bold = TRUE),
-      title = if (is.null(recruitment_age)) {
+      title = if (!is.null(title)) {
+        title
+      } else if (is.null(recruitment_age)) {
         hr_label("recruitment", bold = TRUE)
       } else {
         hr_label("recruitment_age", recruitment_age, bold = TRUE)
