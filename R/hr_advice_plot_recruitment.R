@@ -86,7 +86,7 @@ hr_advice_data_assessment <- function(assessment, labels = NULL) {
 #' @param assessment_year Integer. The assessment year to plot.
 #' @param recruitment_age Recruitment age, shown in the title, or \code{NULL}
 #'   for no age. Default \code{NULL}.
-#' @param title Plot title, e.g. \code{hr_label("recindex", bold = TRUE)} for
+#' @param title Plot title, e.g. \code{hr_label("juvenile_index", bold = TRUE)} for
 #'   a juvenile survey index. Default: recruitment (at age).
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
 #' @export

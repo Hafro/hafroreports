@@ -20,7 +20,7 @@ hr_advice_plot_recruitment(
 \item{recruitment_age}{Recruitment age, shown in the title, or \code{NULL}
 for no age. Default \code{NULL}.}
 
-\item{title}{Plot title, e.g. \code{hr_label("recindex", bold = TRUE)} for
+\item{title}{Plot title, e.g. \code{hr_label("juvenile_index", bold = TRUE)} for
 a juvenile survey index. Default: recruitment (at age).}
 }
 \value{

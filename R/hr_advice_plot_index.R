@@ -84,5 +84,5 @@ hr_advice_plot_index <- function(
     ) +
     hr_advice_y_scale() +
     hr_astand_theme(legend.position = "none") +
-    hr_astand_x_scale(5, 1)
+    hr_astand_x_scale(5, 0)
 }
