@@ -40,7 +40,8 @@ hr_input_data_si_index(
 \item{pcon}{A database connection object compatible with \code{dplyr::tbl}.}
 
 \item{lw_key}{Data frame with columns \code{species}, \code{length}, and
-\code{weight} for joining weight-at-length. If \code{NULL}, weights are
+\code{weight} for joining weight-at-length, and optionally \code{region}
+for weights by region (of \code{regions}). If \code{NULL}, weights are
 derived directly from the \code{ldist} table.}
 
 \item{maturity_key}{Output of \code{\link{hr_input_data_maturity_key}}, used

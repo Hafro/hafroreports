@@ -321,7 +321,8 @@ hr_pool_years <- function(tbl, ygroup) {
 #'
 #' @param pcon A database connection object compatible with \code{dplyr::tbl}.
 #' @param lw_key Data frame with columns \code{species}, \code{length}, and
-#'   \code{weight} for joining weight-at-length. If \code{NULL}, weights are
+#'   \code{weight} for joining weight-at-length, and optionally \code{region}
+#'   for weights by region (of \code{regions}). If \code{NULL}, weights are
 #'   derived directly from the \code{ldist} table.
 #' @param maturity_key Output of \code{\link{hr_input_data_maturity_key}}, used
 #'   to compute maturity-weighted biomass. If \code{NULL}, no maturity column
@@ -444,7 +445,22 @@ hr_input_data_si_index <- function(
   }
 
   ldist <- dplyr::tbl(pcon, "ldist")
-  if (!is.null(lw_key)) {
+  if (!is.null(lw_key) && "region" %in% colnames(lw_key)) {
+    # Weights by region: the region of each sample's station
+    ldist <- ldist |>
+      dplyr::left_join(
+        dplyr::tbl(pcon, "station") |>
+          dplyr::select(sample_id, gridcell) |>
+          pax::pax_add_regions(regions = regions) |>
+          dplyr::select(sample_id, region),
+        by = "sample_id"
+      ) |>
+      dplyr::left_join(
+        pax::pax_temptbl(pcon, lw_key),
+        by = c("species", "length", "region")
+      ) |>
+      dplyr::select(-region)
+  } else if (!is.null(lw_key)) {
     ldist <- dplyr::left_join(
       ldist,
       pax::pax_temptbl(pcon, lw_key),
