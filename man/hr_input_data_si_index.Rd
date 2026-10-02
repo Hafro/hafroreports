@@ -26,7 +26,13 @@ hr_input_data_si_index(
   gridcell_na = NULL,
   sample_gear_na = NULL,
   landings_gear_na = NULL,
-  landings_month_na = NULL
+  landings_month_na = NULL,
+  ygroup_alk = ygroup,
+  alk_age_max = NULL,
+  alk = NULL,
+  key_year = NULL,
+  landings_area_like = NULL,
+  plus_group = NULL
 )
 }
 \arguments{
@@ -105,6 +111,31 @@ raising them (not in the age-length key). Default \code{NULL}.}
 \item{landings_gear_na, landings_month_na}{Gear code and month to give
 landings with unknown gear or month when \code{scale_by_landings = TRUE}.
 Landings without a month are otherwise left out of the scaling. Default
+\code{NULL}.}
+
+\item{ygroup_alk}{Named list of years to pool when building the age-length
+key, when it differs from \code{ygroup} (the pools the index uses).
+Default \code{ygroup}.}
+
+\item{alk_age_max}{Otoliths older than this are left out of the
+age-length key. Default \code{NULL}, all.}
+
+\item{alk}{A precomputed age-length key (as \code{pax::pax_ldist_alk()}:
+columns \code{ygroup} for the key year, \code{lgroup}, \code{age},
+\code{agep} and the grouping columns \code{region}, \code{gear_name},
+\code{tgroup}, \code{species}), for keys this function can't build
+(blended, borrowed from other years, shifted ages). Default \code{NULL},
+the key is built from the samples' otoliths.}
+
+\item{key_year}{Named vector mapping each year (names) to the year of the
+key it uses (values), e.g. a pooled or another survey's key. Years not
+in it are dropped. Not with \code{ygroup}. Default \code{NULL}.}
+
+\item{landings_area_like}{SQL LIKE pattern of the ICES areas of the
+landings to scale to (\code{scale_by_landings = TRUE}), when the pax
+database holds landings from more areas. Default \code{NULL}, all.}
+
+\item{plus_group}{Ages above this are summed into it. Default
 \code{NULL}.}
 }
 \value{

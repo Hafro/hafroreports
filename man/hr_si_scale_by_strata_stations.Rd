@@ -4,7 +4,7 @@
 \alias{hr_si_scale_by_strata_stations}
 \title{Scale survey abundance to strata using a station list}
 \usage{
-hr_si_scale_by_strata_stations(tbl, strata_stations, strata_name)
+hr_si_scale_by_strata_stations(tbl, strata_stations, strata_name = NULL)
 }
 \arguments{
 \item{tbl}{Output of \code{pax::pax_si_by_length()}.}

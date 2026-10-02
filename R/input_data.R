@@ -229,30 +229,33 @@ hr_input_data_maturity_key <- function(
 #' @return \code{tbl} with \code{si_abund} and \code{si_biomass} scaled to
 #'   the stratum area.
 #' @export
-hr_si_scale_by_strata_stations <- function(tbl, strata_stations, strata_name) {
+hr_si_scale_by_strata_stations <- function(tbl, strata_stations, strata_name = NULL) {
   # NSE variables
   sample_id <- station <- gridcell <- species <- year <- length <- NULL
   tow_depth <- stratum <- sampling_type <- area <- rall_area <- NULL
   si_abund <- si_biomass <- NULL
 
   pcon <- dbplyr::remote_con(tbl)
-  strata_area <- dplyr::tbl(pcon, strata_name) |>
-    dplyr::select(stratum, rall_area) |>
-    dplyr::collect() |>
-    dplyr::mutate(
-      # Convert km^2 (reitmapping units) to square nautical miles (tow area units)
-      area = dplyr::coalesce(rall_area, 0) / 1.852^2
-    ) |>
-    dplyr::select(stratum, area)
+  if ("area" %in% colnames(strata_stations)) {
+    # Stratum areas given with the stations (square nautical miles)
+    stations_area <- dplyr::distinct(strata_stations, station, stratum, area)
+  } else {
+    strata_area <- dplyr::tbl(pcon, strata_name) |>
+      dplyr::select(stratum, rall_area) |>
+      dplyr::collect() |>
+      dplyr::mutate(
+        # Convert km^2 (reitmapping units) to square nautical miles (tow area units)
+        area = dplyr::coalesce(rall_area, 0) / 1.852^2
+      ) |>
+      dplyr::select(stratum, area)
+    stations_area <- strata_stations |>
+      dplyr::distinct(station, stratum) |>
+      dplyr::left_join(strata_area, by = "stratum")
+  }
 
   tbl |>
     dplyr::left_join(
-      pax::pax_temptbl(
-        pcon,
-        strata_stations |>
-          dplyr::distinct(station, stratum) |>
-          dplyr::left_join(strata_area, by = "stratum")
-      ),
+      pax::pax_temptbl(pcon, stations_area),
       by = "station"
     ) |>
     dplyr::mutate(area = dplyr::coalesce(area, 0)) |>
@@ -372,6 +375,25 @@ hr_pool_years <- function(tbl, ygroup) {
 #'   landings with unknown gear or month when \code{scale_by_landings = TRUE}.
 #'   Landings without a month are otherwise left out of the scaling. Default
 #'   \code{NULL}.
+#' @param ygroup_alk Named list of years to pool when building the age-length
+#'   key, when it differs from \code{ygroup} (the pools the index uses).
+#'   Default \code{ygroup}.
+#' @param alk_age_max Otoliths older than this are left out of the
+#'   age-length key. Default \code{NULL}, all.
+#' @param alk A precomputed age-length key (as \code{pax::pax_ldist_alk()}:
+#'   columns \code{ygroup} for the key year, \code{lgroup}, \code{age},
+#'   \code{agep} and the grouping columns \code{region}, \code{gear_name},
+#'   \code{tgroup}, \code{species}), for keys this function can't build
+#'   (blended, borrowed from other years, shifted ages). Default \code{NULL},
+#'   the key is built from the samples' otoliths.
+#' @param key_year Named vector mapping each year (names) to the year of the
+#'   key it uses (values), e.g. a pooled or another survey's key. Years not
+#'   in it are dropped. Not with \code{ygroup}. Default \code{NULL}.
+#' @param landings_area_like SQL LIKE pattern of the ICES areas of the
+#'   landings to scale to (\code{scale_by_landings = TRUE}), when the pax
+#'   database holds landings from more areas. Default \code{NULL}, all.
+#' @param plus_group Ages above this are summed into it. Default
+#'   \code{NULL}.
 #' @return A grouped tibble with columns \code{year}, \code{age}, \code{n}
 #'   (abundance in thousands), \code{mw} (mean weight in grams), and
 #'   optionally \code{mat} (proportion mature).
@@ -398,12 +420,23 @@ hr_input_data_si_index <- function(
   gridcell_na = NULL,
   sample_gear_na = NULL,
   landings_gear_na = NULL,
-  landings_month_na = NULL
+  landings_month_na = NULL,
+  ygroup_alk = ygroup,
+  alk_age_max = NULL,
+  alk = NULL,
+  key_year = NULL,
+  landings_area_like = NULL,
+  plus_group = NULL
 ) {
   # NSE variables
   si_abund <- si_biomass <- mat_p <- mat_p_est <- year <- age <- NULL
   coalesce <- gear_id <- scalar <- year_orig <- mfdb_gear_code <- NULL
-  gridcell <- month <- NULL
+  gridcell <- month <- key_label <- ices_area <- sample_id <- NULL
+  species <- count <- weight <- NULL
+
+  if (!is.null(key_year) && !is.null(ygroup)) {
+    stop("Give ygroup or key_year, not both")
+  }
 
   ldist <- dplyr::tbl(pcon, "ldist")
   if (!is.null(lw_key)) {
@@ -424,6 +457,17 @@ hr_input_data_si_index <- function(
     )
   }
 
+  if (is.null(alk)) {
+  aldist_tbl <- dplyr::tbl(pcon, "aldist")
+  if (!is.null(alk_age_max)) {
+    aldist_tbl <- dplyr::filter(aldist_tbl, is.na(age) | age <= local(alk_age_max))
+  }
+  aldist_tbl <- aldist_tbl |>
+    dplyr::group_by(sample_id, species, length, age) |>
+    dplyr::summarize(
+      count = sum(count, na.rm = TRUE),
+      weight = sum(weight * count, na.rm = TRUE) / sum(count, na.rm = TRUE)
+    )
   alk <- dplyr::tbl(pcon, "station")
   if (isTRUE(sam_use_10_11_first_2_years)) {
     # NB: SAM is sensitive to the first 2 years in age 1, use sampling_types 10 & 11 to increase reported data
@@ -440,14 +484,16 @@ hr_input_data_si_index <- function(
     alk <- dplyr::filter(alk, sampling_type %in% local(sampling_type))
   }
   alk <- alk |>
-    hr_pool_years(ygroup) |>
+    hr_pool_years(ygroup_alk) |>
     station_filter() |>
     pax::pax_ldist_alk(
       lgroups = lgroups,
       tgroup = tgroup,
       regions = regions,
-      gear_group = gear_group
+      gear_group = gear_group,
+      aldist_tbl = aldist_tbl
     )
+  }
 
   at_age <- dplyr::tbl(pcon, "station") |>
     dplyr::filter(sampling_type %in% local(sampling_type)) |>
@@ -482,6 +528,17 @@ hr_input_data_si_index <- function(
       dplyr::mutate(year_orig = year) |>
       hr_pool_years(ygroup)
   }
+  if (!is.null(key_year)) {
+    # Each year uses the key of its key year; years without one are dropped
+    key_map <- data.frame(
+      year = as.numeric(names(key_year)),
+      key_label = as.numeric(unname(key_year))
+    )
+    at_age <- at_age |>
+      dplyr::inner_join(pax::pax_temptbl(pcon, key_map), by = "year") |>
+      dplyr::mutate(year_orig = year, year = key_label) |>
+      dplyr::select(-key_label)
+  }
   at_age <- pax::pax_si_scale_by_alk(
     at_age,
     lgroups = lgroups,
@@ -490,13 +547,19 @@ hr_input_data_si_index <- function(
     gear_group = gear_group,
     alk = alk
   )
-  if (!is.null(ygroup)) {
+  if (!is.null(ygroup) || !is.null(key_year)) {
     at_age <- at_age |>
       dplyr::mutate(year = year_orig) |>
       dplyr::select(-year_orig)
   }
   if (isTRUE(scale_by_landings)) {
     landings_tbl <- dplyr::tbl(pcon, "landings")
+    if (!is.null(landings_area_like)) {
+      landings_tbl <- dplyr::filter(
+        landings_tbl,
+        ices_area %like% local(landings_area_like)
+      )
+    }
     if (!is.null(landings_gear_na)) {
       landings_tbl <- dplyr::mutate(
         landings_tbl,
@@ -557,6 +620,12 @@ hr_input_data_si_index <- function(
     mat_c <- NA
   }
 
+  if (!is.null(plus_group)) {
+    at_age <- dplyr::mutate(
+      at_age,
+      age = ifelse(age > local(plus_group), local(plus_group), age)
+    )
+  }
   out <- at_age |>
     dplyr::group_by(year, age) |>
     dplyr::summarise(
