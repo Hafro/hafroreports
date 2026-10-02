@@ -90,10 +90,11 @@ hr_advice_table_prognosis <- function(data_prognosis, assessment_year) {
     )
   }
 
-  tac_previous <- data_prognosis[
+  # The previous TAC of the first (advice) row, for the footnote
+  tac_previous <- unlist(data_prognosis[
     data_prognosis$assessment_year == assessment_year,
     'tac_previous'
-  ]
+  ])[1]
 
   data_prognosis |>
     dplyr::filter(assessment_year == assessment_year) |>
