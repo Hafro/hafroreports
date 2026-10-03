@@ -1,0 +1,20 @@
+label,rfb_desc.is,rfb_desc.en,component
+**A~y~**,Ráðgjöf fyrir {tyr-1}/{tyr},Catch advice for {tyr-1}/{tyr},previous_catch_advice
+,*Breytingar í stofni*,*Stock biomass trend*,
+,Vísitala A ({tyr-1}-{tyr}),Index A ({tyr-1}-{tyr}),index_A
+,Vísitala B ({tyr-4}-{tyr-2}),Index B ({tyr-4}-{tyr-2}),index_B
+**r**,Hlutfall vísitölu (A/B),Stock biomass trend (index ratio A/B),index_ratio
+,*Vísitala veiðihlutfalls*,*Fishing pressure proxy*,
+,Meðallengd í afla(L~mean~ = L~{tyr-1}~),Mean catch length (L~mean~ = L~{tyr-1}~),mean_catch_length
+,Lengd við kjörsókn (L~F=M~),MSY proxy length (L~F=M~),msy_proxy_length
+**f**,Vísitala veiðihlutfalls (L~F=M~ / L~mean~),Fishing pressure proxy (L~F=M~ / L~mean~),fpp_ratio_inv
+,*Gátmörk*,*Biomass safeguard*,
+,Vísitala seinasta árs (I~{tyr}~),Last index value (I~{tyr}~),last_index_value
+,Aðgerðarmörk vísitölu (I~trigger~ = I~loss~\*1.4),Index trigger value (I~trigger~ = I~loss~\*1.4),Itrigger
+**b**,"Vísitala í hlutfalli við aðgerðamörk, min(I~{tyr}~ / I~trigger~, 1)","Index relative to trigger value, min(I~{tyr}~ / I~trigger~, 1)",biomass_safeguard
+,*Varúðarlækkun til þess að tryggja að hrygningarstofn fari ekki undir gátmörk (B~lim~) með 95 % líkum*,*Precautionary multiplier to maintain biomass above B~lim~ with 95% probability*,
+**m**,Margfaldari (byggður á lífssögu),Multiplier (generic multiplier based on life history),multiplier
+,Reiknuð ráðgjöf,Advice calculation,initial_catch_advice
+,"Sveiflujöfnun (+20 % / -30 % borið saman við A~y~, aðeins beitt ef b > 1)","Stability clause (+20% / -30% compared to A~y~, only applied if b > 1)",stability_clause_applied
+,Ráðgjöf fyrir {tyr}/{tyr+1} og {tyr+1}/{tyr+2},Catch advice for {tyr}/{tyr+1} and {tyr+1}/{tyr+2},catch_advice
+,\% breyting á ráðgjöf,% advice change,advice_change

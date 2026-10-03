@@ -25,15 +25,80 @@ hr_advice_table_chr <- function(
     show_col_types = FALSE
   )
 ) {
+  advice_table_dls(
+    chr_prognosis,
+    assessment_year,
+    base = chr_prognosis_base,
+    desc_prefix = "chr_desc",
+    advice_formula = list(
+      en = "A~y+1~ = I~y~ × HR~MSY\\ proxy~ × b × m, limited by stability clause",
+      is = "A~y+1~ = I~y~ × HR~MSY\\ proxy~ × b × m, takmarkað með sveiflujöfnun"
+    )
+  )
+}
+
+#' Format the rfb (ratio, f, b) advice calculation table
+#'
+#' Table of the category 3 rfb rule (ICES method 2.1): the previous advice,
+#' the index ratio, the fishing pressure proxy from mean catch length, the
+#' biomass safeguard, the precautionary multiplier, the stability clause and
+#' the advice. As \code{tidypax:::rfb_prognosis_table()}, from the output of
+#' \code{dlsrules::rfb_rule()} instead of a file.
+#'
+#' @param rfb_prognosis Data frame with columns \code{component} and
+#'   \code{value} (the output of \code{dlsrules::rfb_rule()}).
+#' @param assessment_year Integer. The assessment year, used in the row
+#'   descriptions.
+#' @param biannual \code{TRUE} (default) if the advice is for two fishing
+#'   years, as the rfb rule usually is.
+#' @param rfb_prognosis_base Data frame with the row layout: \code{label},
+#'   \code{rfb_desc.en}, \code{rfb_desc.is} and \code{component}. Default:
+#'   the tidypax layout, bundled with the package.
+#' @return A \code{flextable} object styled for inclusion in an advice sheet.
+#' @export
+hr_advice_table_rfb <- function(
+  rfb_prognosis,
+  assessment_year,
+  biannual = TRUE,
+  rfb_prognosis_base = readr::read_csv(
+    system.file("extdata", "rfb_prognosis_base.csv", package = "hafroreports"),
+    show_col_types = FALSE
+  )
+) {
+  if (!biannual) {
+    advice <- trimws(rfb_prognosis_base$component) == "catch_advice"
+    rfb_prognosis_base$rfb_desc.is[advice] <- "Ráðgjöf fyrir {tyr}/{tyr+1}"
+    rfb_prognosis_base$rfb_desc.en[advice] <- "Catch advice for {tyr}/{tyr+1}"
+  }
+  advice_table_dls(
+    rfb_prognosis,
+    assessment_year,
+    base = rfb_prognosis_base,
+    desc_prefix = "rfb_desc",
+    advice_formula = list(en = "A~y~ × r × 1/f × b × m", is = "A~y~ × r × 1/f × b × m")
+  )
+}
+
+#' Advice calculation table of a dlsrules rule
+#'
+#' @param prognosis Data frame with \code{component} and \code{value}.
+#' @param assessment_year Assessment year, for \code{\{tyr\}} in the
+#'   descriptions.
+#' @param base Row layout with \code{label}, \code{<desc_prefix>.en},
+#'   \code{<desc_prefix>.is} and \code{component} (\code{NA} for headings).
+#' @param desc_prefix Prefix of the description columns.
+#' @param advice_formula Footnote on the advice calculation row, by language.
+#' @noRd
+advice_table_dls <- function(prognosis, assessment_year, base, desc_prefix, advice_formula) {
   # NSE variables
   component <- label <- chr_desc <- value <- NULL
   lang <- getOption("hr.lang", "en")
   tyr <- assessment_year
 
-  values <- chr_prognosis |>
+  values <- prognosis |>
     dplyr::select(component, value) |>
     dplyr::mutate(component = trimws(component))
-  base <- chr_prognosis_base |>
+  base <- base |>
     dplyr::mutate(component = trimws(component), order = dplyr::row_number())
   # Match case-insensitively (fproxy_rule() names, or lower case as the old
   # chr_prognosis.csv)
@@ -43,7 +108,7 @@ hr_advice_table_chr <- function(
     dplyr::arrange(order) |>
     dplyr::select(
       label,
-      chr_desc = rlang::sym(paste0('chr_desc.', lang)),
+      chr_desc = rlang::sym(paste0(desc_prefix, '.', lang)),
       value
     ) |>
     dplyr::mutate(
@@ -93,13 +158,7 @@ hr_advice_table_chr <- function(
     flextable::footnote(
       j = 1,
       i = row_advice,
-      value = ftExtra::as_paragraph_md(
-        if (lang == 'is') {
-          'A~y+1~ = I~y~ × HR~MSY\\ proxy~ × b × m, takmarkað með sveiflujöfnun'
-        } else {
-          "A~y+1~ = I~y~ × HR~MSY\\ proxy~ × b × m, limited by stability clause"
-        }
-      ),
+      value = ftExtra::as_paragraph_md(advice_formula[[lang]]),
       ref_symbols = "1) ",
       part = "body"
     ) |>
