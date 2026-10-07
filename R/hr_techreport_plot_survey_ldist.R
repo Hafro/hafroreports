@@ -7,10 +7,11 @@ dat_ldist_by_year <- function(
 
   dplyr::tbl(pcon, "station") |>
     dplyr::filter(sampling_type %in% .env$sampling_type) |>
+    # NB: The ldist table is already raised to the counted fish
+    #     (pax_mar_ldist()), so it is not scaled again
     dplyr::left_join(
       dplyr::tbl(pcon, "ldist") |>
-        pax::pax_ldist_scale_round() |>
-        pax::pax_ldist_scale_abund(),
+        pax::pax_ldist_scale_round(),
       by = "sample_id"
     ) |>
     dplyr::group_by(species, year, sex, length, mfdb_gear_code) |>

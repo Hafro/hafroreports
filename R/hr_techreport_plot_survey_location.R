@@ -28,10 +28,11 @@ hr_techreport_plot_survey_location <- function(
         year == .env$assessment_year |
         sampling_type == 35 && year == (.env$assessment_year - 1)
     ) |>
+    # NB: The ldist table is already raised to the counted fish
+    #     (pax_mar_ldist()), so it is not scaled again
     dplyr::left_join(
       dplyr::tbl(pcon, "ldist") |>
-        pax::pax_ldist_scale_round() |>
-        pax::pax_ldist_scale_abund()
+        pax::pax_ldist_scale_round()
     ) |>
     pax::pax_ldist_add_weight() |>
     dplyr::mutate(lat = round(begin_lat, 1), lon = round(begin_lon, 1)) |>
