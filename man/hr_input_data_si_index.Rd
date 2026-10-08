@@ -105,7 +105,8 @@ nor an estimate, or \code{NULL} to leave them out. Default \code{NULL}.}
 
 \item{gridcell_na}{Grid cell to give samples without a position. Without a
 position a sample gets no region, matches no age-length key cell and is
-dropped. Default \code{NULL}.}
+dropped (with a message giving the number of samples). Default
+\code{NULL}.}
 
 \item{sample_gear_na}{Gear code to give samples with unknown gear, when
 raising them (not in the age-length key). Default \code{NULL}.}

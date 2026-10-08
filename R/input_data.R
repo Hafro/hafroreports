@@ -369,7 +369,8 @@ hr_pool_years <- function(tbl, ygroup) {
 #'   \code{NULL}.
 #' @param gridcell_na Grid cell to give samples without a position. Without a
 #'   position a sample gets no region, matches no age-length key cell and is
-#'   dropped. Default \code{NULL}.
+#'   dropped (with a message giving the number of samples). Default
+#'   \code{NULL}.
 #' @param sample_gear_na Gear code to give samples with unknown gear, when
 #'   raising them (not in the age-length key). Default \code{NULL}.
 #' @param landings_gear_na,landings_month_na Gear code and month to give
@@ -438,7 +439,7 @@ hr_input_data_si_index <- function(
   si_abund <- si_biomass <- mat_p <- mat_p_est <- year <- age <- NULL
   coalesce <- gear_id <- scalar <- year_orig <- mfdb_gear_code <- NULL
   gridcell <- month <- key_label <- ices_area <- sample_id <- NULL
-  species <- count <- weight <- NULL
+  species <- count <- weight <- n <- NULL
 
   if (!is.null(key_year) && !is.null(ygroup)) {
     stop("Give ygroup or key_year, not both")
@@ -529,6 +530,21 @@ hr_input_data_si_index <- function(
     )
   }
   at_age <- pax::pax_si_by_length(at_age, ldist = ldist)
+  if (is.null(gridcell_na)) {
+    n_no_gridcell <- at_age |>
+      dplyr::filter(is.na(gridcell), si_abund > 0) |>
+      dplyr::distinct(sample_id) |>
+      dplyr::count() |>
+      dplyr::pull(n)
+    if (n_no_gridcell > 0) {
+      message(
+        n_no_gridcell,
+        " samples without a grid cell (no position) match no region and are ",
+        "left out. Give them one with gridcell_na, or import the stations ",
+        "with pax::pax_from_mar(gridcell_from_position = TRUE)"
+      )
+    }
+  }
 
   if (!is.null(haul_scalar)) {
     at_age <- at_age |>
