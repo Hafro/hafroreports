@@ -7,7 +7,8 @@
 hr_techreport_plot_survey_byarea(
   pcon,
   regions = list(W = 101, NW = 102, NE = c(103, 104, 105), SE = c(107, 106), SW = 108,
-    Other = pax::pax_add_other())
+    Other = pax::pax_add_other()),
+  strata_stations = NULL
 )
 }
 \arguments{
@@ -16,6 +17,13 @@ hr_techreport_plot_survey_byarea(
 \item{regions}{Named list mapping region labels to integer MFDB area codes.
 Default regions are W (101), NW (102), NE (103–105), SE (106–107),
 SW (108), and Other (all remaining).}
+
+\item{strata_stations}{Fixed station list (columns \code{sampling_type},
+\code{station} and \code{stratum}), e.g.
+\code{dplyr::tbl(pcon, "strata_stations") |>
+dplyr::filter(stratification == "new_strata")}. If given, stations get
+their stratum from it as in the survey indices, not from the tow
+position. Default \code{NULL}, strata from tow positions.}
 }
 \value{
 A \code{ggplot2} / \code{patchwork} plot object split by survey.

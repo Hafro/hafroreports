@@ -4,7 +4,12 @@
 \alias{hr_techreport_plot_lbindex}
 \title{Plot length-based survey biomass index}
 \usage{
-hr_techreport_plot_lbindex(pcon, length_range, var = "si_biomass")
+hr_techreport_plot_lbindex(
+  pcon,
+  length_range,
+  var = "si_biomass",
+  strata_stations = NULL
+)
 }
 \arguments{
 \item{pcon}{A database connection object compatible with \code{dplyr::tbl}.}
@@ -14,6 +19,13 @@ and maximum length (in cm) to include in the index.}
 
 \item{var}{Character. Name of the survey index variable to plot. Default
 is \code{"si_biomass"}; \code{"si_abund"} can also be used.}
+
+\item{strata_stations}{Fixed station list (columns \code{sampling_type},
+\code{station} and \code{stratum}), e.g.
+\code{dplyr::tbl(pcon, "strata_stations") |>
+dplyr::filter(stratification == "new_strata")}. If given, stations get
+their stratum from it as in the survey indices, not from the tow
+position. Default \code{NULL}, strata from tow positions.}
 }
 \value{
 A \code{ggplot2} plot object.

@@ -10,12 +10,19 @@
 #'   and maximum length (in cm) to include in the index.
 #' @param var Character. Name of the survey index variable to plot. Default
 #'   is \code{"si_biomass"}; \code{"si_abund"} can also be used.
+#' @param strata_stations Fixed station list (columns \code{sampling_type},
+#'   \code{station} and \code{stratum}), e.g.
+#'   \code{dplyr::tbl(pcon, "strata_stations") |>
+#'   dplyr::filter(stratification == "new_strata")}. If given, stations get
+#'   their stratum from it as in the survey indices, not from the tow
+#'   position. Default \code{NULL}, strata from tow positions.
 #' @return A \code{ggplot2} plot object.
 #' @export
 hr_techreport_plot_lbindex <- function(
   pcon,
   length_range,
-  var = "si_biomass"
+  var = "si_biomass",
+  strata_stations = NULL
 ) {
   # NSE variables
   year <- ovar <- ovar_cv <- NULL
@@ -37,7 +44,10 @@ hr_techreport_plot_lbindex <- function(
         !(year %in% .env$skip_years)
       ) |>
       pax::pax_si_by_length() |>
-      pax::pax_si_scale_by_strata(stratification) |>
+      pax::pax_si_scale_by_strata(
+        stratification,
+        strata_stations = strata_stations
+      ) |>
       pax::pax_si_strata_summary(length_range = length_range) |>
       pax::pax_si_year_summary() |>
       dplyr::mutate(
