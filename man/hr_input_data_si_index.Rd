@@ -74,7 +74,9 @@ Default is \code{list(all = 101:115)}.}
 \code{seq(0, 200, 5)}.}
 
 \item{gear_group}{Named list mapping gear group labels to MFDB gear codes,
-or \code{NULL} for no gear grouping. Default is \code{NULL}.}
+or \code{NULL} for no gear grouping. Samples with other gears are left
+out (with a message) unless a group is \code{pax::pax_add_other()}.
+Default is \code{NULL}.}
 
 \item{gear_id_filter}{Integer vector of gear IDs to include, or \code{NULL}
 for no filtering. Default is \code{NULL}.}

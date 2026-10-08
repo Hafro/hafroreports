@@ -346,7 +346,9 @@ hr_pool_years <- function(tbl, ygroup) {
 #' @param lgroups Numeric vector of length group break points. Default is
 #'   \code{seq(0, 200, 5)}.
 #' @param gear_group Named list mapping gear group labels to MFDB gear codes,
-#'   or \code{NULL} for no gear grouping. Default is \code{NULL}.
+#'   or \code{NULL} for no gear grouping. Samples with other gears are left
+#'   out (with a message) unless a group is \code{pax::pax_add_other()}.
+#'   Default is \code{NULL}.
 #' @param gear_id_filter Integer vector of gear IDs to include, or \code{NULL}
 #'   for no filtering. Default is \code{NULL}.
 #' @param scale_by_landings Logical. If \code{TRUE}, indices are additionally
@@ -542,6 +544,25 @@ hr_input_data_si_index <- function(
         " samples without a grid cell (no position) match no region and are ",
         "left out. Give them one with gridcell_na, or import the stations ",
         "with pax::pax_from_mar(gridcell_from_position = TRUE)"
+      )
+    }
+  }
+  if (!is.null(gear_group) && !any(lengths(gear_group) == 0)) {
+    gear_codes <- unlist(gear_group)
+    n_no_gear_group <- at_age |>
+      dplyr::filter(
+        si_abund > 0,
+        !(mfdb_gear_code %in% local(gear_codes[!is.na(gear_codes)])),
+        local(!anyNA(gear_codes)) | !is.na(mfdb_gear_code)
+      ) |>
+      dplyr::distinct(sample_id) |>
+      dplyr::count() |>
+      dplyr::pull(n)
+    if (n_no_gear_group > 0) {
+      message(
+        n_no_gear_group,
+        " samples with a gear outside gear_group match no key cell and are ",
+        "left out. Add a default group with pax::pax_add_other()"
       )
     }
   }
