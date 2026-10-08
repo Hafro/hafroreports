@@ -9,7 +9,12 @@ hr_muppet_input_datafiles(
   year_start,
   year_end,
   age_end,
-  age_start = 1
+  age_start = 1,
+  haddock_fills = TRUE,
+  smb_year_start = 1985,
+  smh_year_start = 1996,
+  survey_ages = 1:13,
+  smh_skip_years = 2011
 )
 }
 \arguments{
@@ -26,6 +31,19 @@ weight are set to \code{-1} for this year as the data are incomplete.}
 \item{age_end}{Integer. Maximum age to include.}
 
 \item{age_start}{Integer. Minimum age to include. Default is \code{1}.}
+
+\item{haddock_fills}{If \code{TRUE} (default), missing stock weights and
+maturity are filled with fixed haddock values by age, and missing catch
+weights with 4000 g (age 2: 600 g). \code{FALSE} writes them as
+missing (-1), e.g. for another stock whose input data are complete.}
+
+\item{smb_year_start, smh_year_start}{First years of the spring and autumn
+survey files. Default \code{1985} and \code{1996}.}
+
+\item{survey_ages}{Ages of the survey files. Default \code{1:13}.}
+
+\item{smh_skip_years}{Years of the autumn survey written as missing.
+Default \code{2011} (no survey).}
 }
 \value{
 A named list of character strings, each being the formatted

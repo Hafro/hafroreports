@@ -15,6 +15,15 @@
 #'   weight are set to \code{-1} for this year as the data are incomplete.
 #' @param age_end Integer. Maximum age to include.
 #' @param age_start Integer. Minimum age to include. Default is \code{1}.
+#' @param haddock_fills If \code{TRUE} (default), missing stock weights and
+#'   maturity are filled with fixed haddock values by age, and missing catch
+#'   weights with 4000 g (age 2: 600 g). \code{FALSE} writes them as
+#'   missing (-1), e.g. for another stock whose input data are complete.
+#' @param smb_year_start,smh_year_start First years of the spring and autumn
+#'   survey files. Default \code{1985} and \code{1996}.
+#' @param survey_ages Ages of the survey files. Default \code{1:13}.
+#' @param smh_skip_years Years of the autumn survey written as missing.
+#'   Default \code{2011} (no survey).
 #' @return A named list of character strings, each being the formatted
 #'   content of a MUPPET input file. Names are the file paths relative to
 #'   the MUPPET run directory.
@@ -24,7 +33,12 @@ hr_muppet_input_datafiles <- function(
   year_start,
   year_end,
   age_end,
-  age_start = 1
+  age_start = 1,
+  haddock_fills = TRUE,
+  smb_year_start = 1985,
+  smh_year_start = 1996,
+  survey_ages = 1:13,
+  smh_skip_years = 2011
 ) {
   # NSE variables
   year <- age <- catch <- stock_weight <- ws <- maturity <- ms <- NULL
@@ -78,9 +92,16 @@ hr_muppet_input_datafiles <- function(
         1
       )
     )) |>
+    (function(x) {
+      if (isTRUE(haddock_fills)) {
+        return(x)
+      }
+      dplyr::mutate(x, ws = NA_real_, ms = NA_real_)
+    })() |>
     dplyr::mutate(
       catch = tidyr::replace_na(catch, 0),
       catch_weight = dplyr::case_when(
+        !local(haddock_fills) ~ catch_weight,
         age == 1 ~ -1,
         is.na(catch_weight) & age > 2 ~ 4000,
         (is.na(catch_weight) | catch_weight >= 4000) & age == 2 ~ 600,
@@ -128,7 +149,7 @@ hr_muppet_input_datafiles <- function(
   out_files[['Files/marsurveydata.dat']] <- dat |>
     dplyr::select(year, age, smb) |>
     dplyr::mutate(smb = round(smb, 3), smb = ifelse(smb == -1, 0, smb)) |>
-    dplyr::filter(year > 1984, age %in% 1:13) |>
+    dplyr::filter(year >= smb_year_start, age %in% survey_ages) |>
     readr::format_delim(
       col_names = FALSE,
       delim = '\t'
@@ -137,8 +158,8 @@ hr_muppet_input_datafiles <- function(
   out_files[["Files/autsurveydata.dat"]] <- dat |>
     dplyr::select(year, age, smh) |>
     dplyr::mutate(smh = round(smh, 3), smh = ifelse(smh == -1, 0, smh)) |>
-    dplyr::filter(year > 1995, age %in% 1:13) |>
-    dplyr::mutate(smh = ifelse(year == 2011, -1, smh)) |>
+    dplyr::filter(year >= smh_year_start, age %in% survey_ages) |>
+    dplyr::mutate(smh = ifelse(year %in% smh_skip_years, -1, smh)) |>
     readr::format_delim(
       col_names = FALSE,
       delim = '\t'
