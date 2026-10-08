@@ -61,6 +61,7 @@ hr_techreport_plot_cpue <- function(
       labeller = ggplot2::labeller(
         mfdb_gear_code = c(
           `BMT` = 'Bottom Trawl',
+          NPT = 'Nephrops Trawl',
           `DSE` = 'Danish Seine',
           GIL = 'Gillnet',
           LLN = 'Long Line',

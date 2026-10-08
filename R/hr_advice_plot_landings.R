@@ -6,6 +6,7 @@ advice_gear_groups <- tibble::tribble(
   "DSE", "Demersal seine", "Dragnót", "navajowhite3",
   "GIL", "Gillnet", "Net", "tomato3",
   "HLN", "Handline", "Handfæri", "darkseagreen4",
+  "NPT", "Nephrops trawl", "Humarvarpa", "khaki3",
   "BMT", "Bottom trawl", "Botnvarpa", "steelblue3",
   "Other", "Other and undefined gear", "Annað og óskilgreint", "black"
 )
@@ -17,8 +18,9 @@ advice_gear_groups <- tibble::tribble(
 #' factors in the display order used by advice sheet figures.
 #'
 #' @param landings_by_gear A data frame or lazy table with columns \code{year},
-#'   \code{gear_name} (e.g. \code{"BMT"}, \code{"DSE"}, \code{"LLN"},
-#'   \code{"GIL"}, \code{"HLN"}, \code{"Other"}, as produced by
+#'   \code{gear_name} (e.g. \code{"BMT"}, \code{"NPT"} (Nephrops trawl),
+#'   \code{"DSE"}, \code{"LLN"}, \code{"GIL"}, \code{"HLN"},
+#'   \code{"Other"}, as produced by
 #'   \code{pax::pax_landings_by_gear()} with the stock's gear groups), and
 #'   \code{catch} (kg). Unknown gear names are shown under their own name.
 #' @return A tibble with columns \code{year}, \code{gear_name},

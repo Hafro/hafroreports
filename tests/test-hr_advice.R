@@ -92,3 +92,16 @@ ok_group("hr_advice_ref_table / hr_advice_basis_table: relative stocks", {
   )
   ok(inherits(ft, "flextable"), "Basis table with markdown")
 })
+
+ok_group("hr_advice_data_landings: Nephrops trawl", {
+  out <- hr_advice_data_landings(data.frame(
+    year = 2020,
+    gear_name = c("BMT", "NPT", "LLN"),
+    catch = 1e6
+  ))
+  ok(
+    ut_cmp_equal(levels(out$gear.en), c("Longline", "Nephrops trawl", "Bottom trawl")),
+    "NPT has a label and its place in the stacking order"
+  )
+  ok("Humarvarpa" %in% levels(out$gear.is), "Icelandic label")
+})
