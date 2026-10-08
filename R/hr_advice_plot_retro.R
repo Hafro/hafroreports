@@ -22,6 +22,9 @@
 #' @param show_lim If \code{TRUE}, also draw the limit reference point of
 #'   the fishing pressure (\code{F_lim} or \code{HR_lim}). Default
 #'   \code{FALSE}.
+#' @param panel_order Keys in the order of the panels, e.g.
+#'   \code{c("F", "recruitment", "SSB")}, the same in every language.
+#'   Default \code{NULL}: alphabetical by label, as before.
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
 #' @export
 hr_advice_plot_retro <- function(
@@ -31,7 +34,8 @@ hr_advice_plot_retro <- function(
   fishing_pressure = c("HR", "F"),
   recruitment_from = NULL,
   biomass_scale = 1000,
-  show_lim = FALSE
+  show_lim = FALSE,
+  panel_order = NULL
 ) {
   # NSE variables
   key <- year <- median <- label <- value <- facet <- label2 <- .data <- NULL
@@ -57,6 +61,10 @@ hr_advice_plot_retro <- function(
       median = ifelse(key == fishing_pressure, median, median / biomass_scale)
     )
   label_of <- function(k) unique(d$label[d$key == k])
+  if (!is.null(panel_order)) {
+    keys <- c(intersect(panel_order, unique(d$key)), setdiff(unique(d$key), panel_order))
+    panel_levels <- unique(unlist(lapply(keys, label_of)))
+  }
   n_years <- nlevels(droplevels(d$assessment_year))
 
   fp_refs <- advice_ref_lines(ref_points, fishing_pressure, show_lim = show_lim)
@@ -73,6 +81,13 @@ hr_advice_plot_retro <- function(
       dplyr::filter(!is.na(value)) |>
       dplyr::rename(label2 = label, label = facet) |>
       dplyr::mutate(year = assessment_year - 14 + 3 * (dplyr::row_number() - 1) %% 4)
+  }
+
+  if (!is.null(panel_order)) {
+    d$label <- factor(d$label, levels = panel_levels)
+    if (!is.null(refs) && nrow(refs)) {
+      refs$label <- factor(refs$label, levels = panel_levels)
+    }
   }
 
   ggplot2::ggplot(d, ggplot2::aes(

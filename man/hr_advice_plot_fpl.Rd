@@ -10,7 +10,9 @@ hr_advice_plot_fpl(
   ref_points,
   fishing_pressure = c("HR", "F"),
   title = NULL,
-  show_lim = FALSE
+  show_lim = FALSE,
+  points = FALSE,
+  y_label = ""
 )
 }
 \arguments{
@@ -29,6 +31,11 @@ hr_advice_plot_fpl(
 \item{show_lim}{If \code{TRUE}, also draw the limit reference point
 (\code{F_lim} or \code{HR_lim}), as for relative (F/F_MSY) stocks.
 Default \code{FALSE}.}
+
+\item{points}{If \code{TRUE}, also draw the yearly values as points, so
+single years of a series with gaps show. Default \code{FALSE}.}
+
+\item{y_label}{Y axis label. Default none.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.

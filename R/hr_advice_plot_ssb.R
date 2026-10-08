@@ -56,13 +56,18 @@ hr_advice_plot_ssb <- function(
     labels$label
   )
 
-  # MGT Btrigger if there is a management plan, else MSY Btrigger
-  if (!is.null(ref_points$MGT_btrigger)) {
+  # MGT Btrigger if there is a management plan, else MSY Btrigger. NB: NA
+  #     counts as missing (no line, no label)
+  has <- function(x) length(x) == 1 && !is.na(x)
+  if (has(ref_points$MGT_btrigger)) {
     btrigger <- ref_points$MGT_btrigger
     btrigger_label <- "Btrigger"
-  } else {
+  } else if (has(ref_points$MSY_btrigger)) {
     btrigger <- ref_points$MSY_btrigger
     btrigger_label <- "MSYBtrigger"
+  } else {
+    btrigger <- NULL
+    btrigger_label <- NULL
   }
 
   if (is.null(y_label)) {
@@ -103,28 +108,32 @@ hr_advice_plot_ssb <- function(
     ) +
     ggplot2::scale_color_manual(values = colours, labels = legend_labels) +
     ggplot2::scale_fill_manual(values = colours, labels = legend_labels) +
-    ggplot2::geom_hline(
-      yintercept = btrigger,
-      linetype = "dashed",
-      linewidth = 0.4
-    ) +
+    (if (!is.null(btrigger)) {
+      ggplot2::geom_hline(
+        yintercept = btrigger,
+        linetype = "dashed",
+        linewidth = 0.4
+      )
+    }) +
     ggplot2::geom_hline(
       yintercept = ref_points$B_lim,
       linetype = "solid",
       linewidth = 0.4
     ) +
-    ggplot2::annotate(
-      "text",
-      x = 2008,
-      y = btrigger * 1.2,
-      label = hr_label(btrigger_label),
-      size = 2.5,
-      parse = TRUE
-    ) +
+    (if (!is.null(btrigger)) {
+      ggplot2::annotate(
+        "text",
+        x = 2008,
+        y = btrigger * 1.2,
+        label = hr_label(btrigger_label),
+        size = 2.5,
+        parse = TRUE
+      )
+    }) +
     ggplot2::annotate(
       "text",
       # Clear of the Btrigger label when they are at the same level
-      x = if (isTRUE(all.equal(btrigger, ref_points$B_pa))) 2017 else 2012,
+      x = if (!is.null(btrigger) && isTRUE(all.equal(btrigger, ref_points$B_pa))) 2017 else 2012,
       y = ref_points$B_pa * 1.2,
       label = hr_label("Bpa"),
       size = 2.5,

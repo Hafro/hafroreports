@@ -11,7 +11,8 @@ hr_advice_plot_retro(
   fishing_pressure = c("HR", "F"),
   recruitment_from = NULL,
   biomass_scale = 1000,
-  show_lim = FALSE
+  show_lim = FALSE,
+  panel_order = NULL
 )
 }
 \arguments{
@@ -37,6 +38,10 @@ recruitment at another age). Default \code{NULL}, all assessments.}
 \item{show_lim}{If \code{TRUE}, also draw the limit reference point of
 the fishing pressure (\code{F_lim} or \code{HR_lim}). Default
 \code{FALSE}.}
+
+\item{panel_order}{Keys in the order of the panels, e.g.
+\code{c("F", "recruitment", "SSB")}, the same in every language.
+Default \code{NULL}: alphabetical by label, as before.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.

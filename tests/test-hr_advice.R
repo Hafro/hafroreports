@@ -122,3 +122,40 @@ ok_group("hr_advice_plot_index: index A and B", {
   b0 <- ggplot2::ggplot_build(hr_advice_plot_index(d, 2025))
   ok(ut_cmp_equal(length(b0$data), length(b$data) - 1), "Default: no lines, as before")
 })
+
+ok_group("hr_advice_plot_fpl: points and y label", {
+  b <- ggplot2::ggplot_build(
+    hr_advice_plot_fpl(ut_assessment(), 2025, ref_rel, "F", points = TRUE, y_label = "F")
+  )
+  ok(any(vapply(b$plot$layers, function(l) inherits(l$geom, "GeomPoint") && !inherits(l$geom, "GeomInteractivePoint"), logical(1))), "Visible points")
+  ok(ut_cmp_equal(b$plot$labels$y, "F"), "Y label")
+})
+
+ok_group("hr_advice_plot_retro: panel order", {
+  p <- hr_advice_plot_retro(ut_assessment(), ref_rel, 2025, "F", biomass_scale = 1, panel_order = c("SSB", "F"))
+  ok(ut_cmp_equal(levels(p$data$label), c("Biomass", "Fishing mortality")), "Panels in the given order")
+  p <- hr_advice_plot_retro(ut_assessment(), ref_rel, 2025, "F", biomass_scale = 1, panel_order = c("F", "SSB"))
+  ok(ut_cmp_equal(levels(p$data$label), c("Fishing mortality", "Biomass")), "...whatever the alphabet says")
+})
+
+ok_group("hr_advice_plot_ssb: NA Btrigger", {
+  p <- hr_advice_plot_ssb(
+    ut_assessment(), 2025,
+    list(MGT_btrigger = NA, MSY_btrigger = 0.5, B_lim = 0.3, B_pa = 0.4),
+    biomass_scale = 1
+  )
+  hl <- unlist(lapply(ggplot2::ggplot_build(p)$data, function(x) x$yintercept))
+  ok(ut_cmp_equal(sort(hl), c(0.3, 0.5)), "NA MGT Btrigger: MSY Btrigger drawn instead")
+  p <- hr_advice_plot_ssb(ut_assessment(), 2025, list(MGT_btrigger = NA, B_lim = 0.3), biomass_scale = 1)
+  hl <- unlist(lapply(ggplot2::ggplot_build(p)$data, function(x) x$yintercept))
+  ok(ut_cmp_equal(hl, 0.3), "No Btrigger: only B_lim")
+})
+
+ok_group("hr_advice_plot_recruitment: scale", {
+  d <- data.frame(year = 2000:2005, key = "recruitment", assessment_year = 2025,
+    median = 500, low = 400, high = 600, label.en = "Juvenile index", label.is = "x")
+  b <- ggplot2::ggplot_build(hr_advice_plot_recruitment(d, 2025, scale = 1))
+  ok(ut_cmp_equal(unique(b$data[[1]]$y), 500), "Index as it is")
+  b <- ggplot2::ggplot_build(hr_advice_plot_recruitment(d, 2025))
+  ok(ut_cmp_equal(unique(b$data[[1]]$y), 0.5), "Default: thousands to millions, as before")
+})

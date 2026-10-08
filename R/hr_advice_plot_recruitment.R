@@ -88,17 +88,27 @@ hr_advice_data_assessment <- function(assessment, labels = NULL) {
 #'   for no age. Default \code{NULL}.
 #' @param title Plot title, e.g. \code{hr_label("juvenile_index", bold = TRUE)} for
 #'   a juvenile survey index. Default: recruitment (at age).
+#' @param scale Divisor of the recruitment: \code{1e3} (default) for
+#'   thousands shown in millions; e.g. \code{1} for an index shown as it is.
+#' @param y_label Y axis label. Default millions, or none when \code{scale}
+#'   is not \code{1e3}.
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
 #' @export
 hr_advice_plot_recruitment <- function(
   data_assessment,
   assessment_year,
   recruitment_age = NULL,
-  title = NULL
+  title = NULL,
+  scale = 1e3,
+  y_label = NULL
 ) {
   # NSE variables
   key <- low <- median <- high <- year <- NULL
   lang <- getOption("hr.lang", "en")
+  millions <- isTRUE(scale == 1e3)
+  if (is.null(y_label)) {
+    y_label <- if (millions) hr_label("millions", bold = TRUE) else ''
+  }
 
   data_assessment |>
     dplyr::filter(
@@ -106,9 +116,9 @@ hr_advice_plot_recruitment <- function(
       assessment_year == .env$assessment_year
     ) |>
     dplyr::mutate(
-      low = low / 1e3,
-      median = median / 1e3,
-      high = high / 1e3
+      low = low / scale,
+      median = median / scale,
+      high = high / scale
     ) |>
     ggplot2::ggplot(ggplot2::aes(year, median)) +
     ggiraph::geom_bar_interactive(
@@ -119,7 +129,7 @@ hr_advice_plot_recruitment <- function(
           eval(rlang::sym(paste('label', lang, sep = '.'))),
           ':',
           round(median),
-          if (lang == 'is') 'millj.' else 'mill.',
+          if (!millions) '' else if (lang == 'is') 'millj.' else 'mill.',
           '\n',
           hr_label("year"),
           ':',
@@ -134,7 +144,7 @@ hr_advice_plot_recruitment <- function(
     ) +
     hr_astand_theme() +
     ggplot2::labs(
-      y = hr_label("millions", bold = TRUE),
+      y = y_label,
       title = if (!is.null(title)) {
         title
       } else if (is.null(recruitment_age)) {

@@ -17,6 +17,9 @@
 #' @param show_lim If \code{TRUE}, also draw the limit reference point
 #'   (\code{F_lim} or \code{HR_lim}), as for relative (F/F_MSY) stocks.
 #'   Default \code{FALSE}.
+#' @param points If \code{TRUE}, also draw the yearly values as points, so
+#'   single years of a series with gaps show. Default \code{FALSE}.
+#' @param y_label Y axis label. Default none.
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
 #' @export
 hr_advice_plot_fpl <- function(
@@ -25,7 +28,9 @@ hr_advice_plot_fpl <- function(
   ref_points,
   fishing_pressure = c("HR", "F"),
   title = NULL,
-  show_lim = FALSE
+  show_lim = FALSE,
+  points = FALSE,
+  y_label = ''
 ) {
   # NSE variables
   key <- year <- median <- low <- high <- value <- label_year <- label <- NULL
@@ -59,6 +64,7 @@ hr_advice_plot_fpl <- function(
       alpha = 0
     ) +
     ggiraph::geom_line_interactive(linewidth = 0.5, col = 'tomato') +
+    (if (isTRUE(points)) ggplot2::geom_point(col = 'tomato', size = 1)) +
     ggplot2::geom_ribbon(
       ggplot2::aes(ymin = low, ymax = high),
       fill = 'tomato',
@@ -66,7 +72,7 @@ hr_advice_plot_fpl <- function(
     ) +
     hr_astand_theme(legend.position = c(0.75, 0.90)) +
     ggplot2::labs(
-      y = '',
+      y = y_label,
       title = if (is.null(title)) {
         hr_label(if (fishing_pressure == "HR") "harvest_rate" else "fbar", bold = TRUE)
       } else {

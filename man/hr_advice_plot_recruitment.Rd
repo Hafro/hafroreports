@@ -8,7 +8,9 @@ hr_advice_plot_recruitment(
   data_assessment,
   assessment_year,
   recruitment_age = NULL,
-  title = NULL
+  title = NULL,
+  scale = 1000,
+  y_label = NULL
 )
 }
 \arguments{
@@ -22,6 +24,12 @@ for no age. Default \code{NULL}.}
 
 \item{title}{Plot title, e.g. \code{hr_label("juvenile_index", bold = TRUE)} for
 a juvenile survey index. Default: recruitment (at age).}
+
+\item{scale}{Divisor of the recruitment: \code{1e3} (default) for
+thousands shown in millions; e.g. \code{1} for an index shown as it is.}
+
+\item{y_label}{Y axis label. Default millions, or none when \code{scale}
+is not \code{1e3}.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.
