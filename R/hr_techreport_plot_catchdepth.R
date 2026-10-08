@@ -11,23 +11,31 @@
 #' @param year_start Integer. First year to include. Default is \code{1000}
 #'   (no lower limit).
 #' @param year_end Integer. Last year to include. Default is \code{9999}.
+#' @param mfdb_gear_code Gear codes of the logbook records to include, e.g.
+#'   \code{c("BMT", "DSE")}. Default \code{NULL}, all gears.
 #' @return A \code{ggplot2} / \code{patchwork} plot object.
 #' @export
 hr_techreport_plot_catchdepth <- function(
   pcon,
   depth_class = c(0, 100, 200, 300),
   year_start = 1000,
-  year_end = 9999
+  year_end = 9999,
+  mfdb_gear_code = NULL
 ) {
   # NSE variables
   year <- ocean_depth_class <- catch <- group <- NULL
   lang <- getOption("hr.lang", "en")
+  gears <- mfdb_gear_code
 
-  dplyr::tbl(pcon, "logbook") |>
+  logbook <- dplyr::tbl(pcon, "logbook") |>
     dplyr::filter(
       year >= year_start,
       year <= year_end
-    ) |>
+    )
+  if (!is.null(gears)) {
+    logbook <- dplyr::filter(logbook, mfdb_gear_code %in% local(gears))
+  }
+  logbook |>
     pax::pax_add_ocean_depth_class(breaks = depth_class) |>
     dplyr::group_by(year, ocean_depth_class) |>
     dplyr::summarise(val = sum(catch, na.rm = TRUE) / 1e6) |>

@@ -8,7 +8,8 @@ hr_techreport_plot_catchdepth(
   pcon,
   depth_class = c(0, 100, 200, 300),
   year_start = 1000,
-  year_end = 9999
+  year_end = 9999,
+  mfdb_gear_code = NULL
 )
 }
 \arguments{
@@ -20,6 +21,9 @@ hr_techreport_plot_catchdepth(
 (no lower limit).}
 
 \item{year_end}{Integer. Last year to include. Default is \code{9999}.}
+
+\item{mfdb_gear_code}{Gear codes of the logbook records to include, e.g.
+\code{c("BMT", "DSE")}. Default \code{NULL}, all gears.}
 }
 \value{
 A \code{ggplot2} / \code{patchwork} plot object.
