@@ -8,7 +8,8 @@ hr_advice_table_tac(
   data_tac,
   columns = c("advice_period", "advice", "tac", "icelandic", "foreign", "total"),
   footnotes = NULL,
-  headers = NULL
+  headers = NULL,
+  foreign_footnote = TRUE
 )
 }
 \arguments{
@@ -31,6 +32,10 @@ other than the standard six (or to replace their headers), each
 \code{c(en = ..., is = ...)}, e.g. \code{list(catch_14 = c(en = "Catches
 in East Greenland waters", is = "Afli við Austur-Grænland"))}. Default
 \code{NULL}.}
+
+\item{foreign_footnote}{If \code{TRUE} (default), the note that foreign
+landings before 2014 are by calendar year (haddock) is attached to the
+\code{foreign} and \code{total} headers.}
 }
 \value{
 A \code{flextable} object styled for inclusion in an advice sheet.

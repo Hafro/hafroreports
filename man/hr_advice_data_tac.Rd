@@ -4,7 +4,12 @@
 \alias{hr_advice_data_tac}
 \title{Assemble TAC and landings history for advice sheet}
 \usage{
-hr_advice_data_tac(advice_hist, tac_hist, landings_by_fishing_year_country)
+hr_advice_data_tac(
+  advice_hist,
+  tac_hist,
+  landings_by_fishing_year_country,
+  advice_col = "advice"
+)
 }
 \arguments{
 \item{advice_hist}{A data frame with columns \code{assessment_year} and
@@ -16,6 +21,11 @@ hr_advice_data_tac(advice_hist, tac_hist, landings_by_fishing_year_country)
 
 \item{landings_by_fishing_year_country}{A data frame with columns
 \code{fishing_year}, \code{country}, and \code{catch} (in kg).}
+
+\item{advice_col}{Column of \code{advice_hist} shown as the advice, or the
+stem of a column per language, e.g. \code{"advice_basis"} for text
+advice in \code{advice_basis.en} / \code{advice_basis.is} ("No
+targeted fisheries"). Default \code{"advice"}.}
 }
 \value{
 A tibble with columns \code{advice_period}, \code{advice},

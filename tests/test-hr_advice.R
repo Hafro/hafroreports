@@ -159,3 +159,24 @@ ok_group("hr_advice_plot_recruitment: scale", {
   b <- ggplot2::ggplot_build(hr_advice_plot_recruitment(d, 2025))
   ok(ut_cmp_equal(unique(b$data[[1]]$y), 0.5), "Default: thousands to millions, as before")
 })
+
+ok_group("hr_advice_data_tac / hr_advice_table_tac: text advice, no foreign footnote", {
+  d <- hr_advice_data_tac(
+    advice_hist = data.frame(
+      assessment_year = 2025,
+      advice_period = "2025/2026",
+      advice_basis.en = "No targeted fisheries",
+      advice_basis.is = "Engar beinar veiðar"
+    ),
+    tac_hist = data.frame(assessment_year = 2025, tac = NA),
+    landings_by_fishing_year_country = data.frame(
+      fishing_year = "2025/2026", country = c("Iceland", "Norway"), catch = 1e5
+    ),
+    advice_col = "advice_basis"
+  )
+  ok(ut_cmp_equal(d$advice, "No targeted fisheries"), "Text advice in the language")
+  ft <- hr_advice_table_tac(d, foreign_footnote = FALSE)
+  ok(nrow(ft$footer$dataset) == 0, "No footnote")
+  ft <- hr_advice_table_tac(d)
+  ok(nrow(ft$footer$dataset) == 1, "Default: the foreign landings footnote, as before")
+})

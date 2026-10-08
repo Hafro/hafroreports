@@ -12,6 +12,10 @@
 #'   \code{tac} (national TAC in tonnes).
 #' @param landings_by_fishing_year_country A data frame with columns
 #'   \code{fishing_year}, \code{country}, and \code{catch} (in kg).
+#' @param advice_col Column of \code{advice_hist} shown as the advice, or the
+#'   stem of a column per language, e.g. \code{"advice_basis"} for text
+#'   advice in \code{advice_basis.en} / \code{advice_basis.is} ("No
+#'   targeted fisheries"). Default \code{"advice"}.
 #' @return A tibble with columns \code{advice_period}, \code{advice},
 #'   \code{tac}, \code{icelandic} (Icelandic catch in thousands of tonnes),
 #'   \code{foreign}, and \code{total}.
@@ -19,8 +23,14 @@
 hr_advice_data_tac <- function(
   advice_hist,
   tac_hist,
-  landings_by_fishing_year_country
+  landings_by_fishing_year_country,
+  advice_col = "advice"
 ) {
+  lang <- getOption("hr.lang", "en")
+  if (!(advice_col %in% colnames(advice_hist))) {
+    advice_col <- paste0(advice_col, ".", lang)
+  }
+  advice_hist$advice <- advice_hist[[advice_col]]
   # NSE variables
   fishing_year <- country <- catch <- icelandic <- foreign <- total <- advice_period <- NULL
   advice <- tac <- NULL
@@ -109,13 +119,17 @@ hr_advice_data_tac <- function(
 #'   \code{c(en = ..., is = ...)}, e.g. \code{list(catch_14 = c(en = "Catches
 #'   in East Greenland waters", is = "Afli við Austur-Grænland"))}. Default
 #'   \code{NULL}.
+#' @param foreign_footnote If \code{TRUE} (default), the note that foreign
+#'   landings before 2014 are by calendar year (haddock) is attached to the
+#'   \code{foreign} and \code{total} headers.
 #' @return A \code{flextable} object styled for inclusion in an advice sheet.
 #' @export
 hr_advice_table_tac <- function(
   data_tac,
   columns = c("advice_period", "advice", "tac", "icelandic", "foreign", "total"),
   footnotes = NULL,
-  headers = NULL
+  headers = NULL,
+  foreign_footnote = TRUE
 ) {
   lang <- getOption("hr.lang", "en")
   default_headers <- list(
@@ -159,7 +173,7 @@ hr_advice_table_tac <- function(
 
   symbol <- 1
   foreign_cols <- intersect(c("foreign", "total"), columns)
-  if ("foreign" %in% columns) {
+  if (isTRUE(foreign_footnote) && "foreign" %in% columns) {
     ft <- flextable::footnote(
       ft,
       j = foreign_cols,
