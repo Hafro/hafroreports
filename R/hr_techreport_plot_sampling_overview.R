@@ -17,6 +17,12 @@
 #'   \code{BMT}, \code{LLN}, and \code{DSE}.
 #' @param year_start Integer. First year to include. Default is \code{1000}.
 #' @param year_end Integer. Last year to include. Default is \code{9999}.
+#' @param landings_tbl The landings to use, e.g. without released fish.
+#'   Default the \code{landings} table of \code{pcon}.
+#' @param ices_area_like SQL LIKE pattern of the ICES areas of the landings,
+#'   e.g. \code{"5a\%"}. Default \code{NULL}, all areas.
+#' @param country Countries of the landings, e.g. \code{"Iceland"}. Default
+#'   \code{NULL}, all.
 #' @return A \code{ggplot2} plot object.
 #' @export
 hr_techreport_plot_sampling_overview <- function(
@@ -29,8 +35,24 @@ hr_techreport_plot_sampling_overview <- function(
     DSE = "DSE"
   ),
   year_start = 1000,
-  year_end = 9999
+  year_end = 9999,
+  landings_tbl = dplyr::tbl(pcon, "landings"),
+  ices_area_like = NULL,
+  country = NULL
 ) {
+  ices_area <- NULL
+  countries <- country
+  country <- NULL
+  if (!is.null(ices_area_like)) {
+    landings_tbl <- dplyr::filter(
+      landings_tbl,
+      ices_area %like% local(ices_area_like)
+    )
+  }
+  if (!is.null(countries)) {
+    landings_tbl <- dplyr::filter(landings_tbl, country %in% local(countries))
+  }
+
   # NSE variables
   year <- NULL
   month <- NULL
@@ -69,7 +91,7 @@ hr_techreport_plot_sampling_overview <- function(
     dplyr::group_by(gear_name, year, month) |>
     dplyr::mutate(n = sum(n), pp = sum(p)) |>
     dplyr::full_join(
-      dplyr::tbl(pcon, "landings") |>
+      landings_tbl |>
         dplyr::filter(
           year >= year_start,
           year <= year_end,
@@ -92,6 +114,9 @@ hr_techreport_plot_sampling_overview <- function(
   ggplot2::ggplot(dat, ggplot2::aes(month, p.lnd)) +
     ggplot2::geom_bar(
       ggplot2::aes(y = p, fill = sampling_type_desc),
+      # Months with landings but no samples have no sampling type: no bar,
+      # and no "NA" legend entry
+      data = dat[!is.na(dat$sampling_type_desc), ],
       stat = 'identity'
     ) +
     ggplot2::geom_text(ggplot2::aes(y = pp + 0.05, label = n)) +

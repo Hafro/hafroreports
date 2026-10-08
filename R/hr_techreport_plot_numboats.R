@@ -8,18 +8,38 @@
 #' @param pcon A database connection object compatible with \code{dplyr::tbl}.
 #' @param year_start Integer. First year to include. Default is \code{1000}.
 #' @param year_end Integer. Last year to include. Default is \code{9999}.
+#' @param landings_tbl The landings to use, e.g. without released fish.
+#'   Default the \code{landings} table of \code{pcon}.
+#' @param ices_area_like SQL LIKE pattern of the ICES areas of the landings,
+#'   e.g. \code{"5a\%"}. Default \code{NULL}, all areas.
+#' @param country Countries of the landings, e.g. \code{"Iceland"}. Default
+#'   \code{NULL}, all.
 #' @return A \code{patchwork} plot object.
 #' @export
 hr_techreport_plot_numboats <- function(
   pcon,
   year_start = 1000,
-  year_end = 9999
+  year_end = 9999,
+  landings_tbl = dplyr::tbl(pcon, "landings"),
+  ices_area_like = NULL,
+  country = NULL
 ) {
   # NSE variables
-  year <- catch <- n <- NULL
+  year <- catch <- n <- ices_area <- NULL
   lang <- getOption("hr.lang", "en")
+  countries <- country
+  country <- NULL
+  if (!is.null(ices_area_like)) {
+    landings_tbl <- dplyr::filter(
+      landings_tbl,
+      ices_area %like% local(ices_area_like)
+    )
+  }
+  if (!is.null(countries)) {
+    landings_tbl <- dplyr::filter(landings_tbl, country %in% local(countries))
+  }
 
-  tbl <- dplyr::tbl(pcon, "landings") |>
+  tbl <- landings_tbl |>
     dplyr::filter(year >= year_start, year <= year_end) |>
     pax::pax_landings_significantboats_summary()
 

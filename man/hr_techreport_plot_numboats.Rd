@@ -4,7 +4,14 @@
 \alias{hr_techreport_plot_numboats}
 \title{Plot number of vessels accounting for 95\% of catch}
 \usage{
-hr_techreport_plot_numboats(pcon, year_start = 1000, year_end = 9999)
+hr_techreport_plot_numboats(
+  pcon,
+  year_start = 1000,
+  year_end = 9999,
+  landings_tbl = dplyr::tbl(pcon, "landings"),
+  ices_area_like = NULL,
+  country = NULL
+)
 }
 \arguments{
 \item{pcon}{A database connection object compatible with \code{dplyr::tbl}.}
@@ -12,6 +19,15 @@ hr_techreport_plot_numboats(pcon, year_start = 1000, year_end = 9999)
 \item{year_start}{Integer. First year to include. Default is \code{1000}.}
 
 \item{year_end}{Integer. Last year to include. Default is \code{9999}.}
+
+\item{landings_tbl}{The landings to use, e.g. without released fish.
+Default the \code{landings} table of \code{pcon}.}
+
+\item{ices_area_like}{SQL LIKE pattern of the ICES areas of the landings,
+e.g. \code{"5a\%"}. Default \code{NULL}, all areas.}
+
+\item{country}{Countries of the landings, e.g. \code{"Iceland"}. Default
+\code{NULL}, all.}
 }
 \value{
 A \code{patchwork} plot object.
