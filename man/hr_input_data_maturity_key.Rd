@@ -16,7 +16,10 @@ hr_input_data_maturity_key(
   immature_below = NULL,
   predict_lgroups = lgroups[lgroups > 0],
   predict_years = NULL,
-  copy_years = NULL
+  copy_years = NULL,
+  aged_only = TRUE,
+  tow_number = NULL,
+  gear_id_filter = NULL
 )
 }
 \arguments{
@@ -56,8 +59,18 @@ Default \code{NULL} is all years in the data; years without data are
 dropped.}
 
 \item{copy_years}{Named vector to fill years without data from another
-year's predictions, e.g. \code{c("1985" = 1987, "1986" = 1987)}.
-Only with \code{by_year = TRUE}. Default \code{NULL}.}
+year's predictions, e.g. \code{c("1985" = 1987, "1986" = 1987)}, or a
+named list to fill them with the mean of several years' predictions,
+e.g. \code{list("1985" = 2000:2002)}. Only with \code{by_year = TRUE}.
+Default \code{NULL}.}
+
+\item{aged_only}{If \code{TRUE} (default), the model is fitted to aged fish
+only. \code{FALSE} also uses otoliths with a maturity stage but no age.
+The measured maturity at age is from aged fish either way.}
+
+\item{tow_number, gear_id_filter}{Tow numbers (missing counts as 0) and
+gear ids of the stations to use, e.g. the index stations of the survey.
+Default \code{NULL}, all.}
 }
 \value{
 A tibble with columns \code{year}, \code{lgroup}, \code{age},

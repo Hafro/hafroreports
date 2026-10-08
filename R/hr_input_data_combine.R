@@ -52,6 +52,16 @@
 #'   computing that mean. Default \code{NULL}.
 #' @param weight_fill_year Year whose weights fill missing catch and stock
 #'   weights for the age (before the mean over years). Default \code{NULL}.
+#' @param catch_weight_fill_year,stock_weight_fill_year The same for catch
+#'   and stock weights separately. Default \code{weight_fill_year}.
+#' @param catch_weight_fill_mean,stock_weight_fill_mean Fill (remaining)
+#'   missing catch / stock weights with the mean over years for the age.
+#'   \code{FALSE} leaves them missing (e.g. for SAM to fill). Default
+#'   \code{TRUE}.
+#' @param stock_survey Survey index giving the stock weights and maturity:
+#'   \code{"igfs"} (spring, default) or \code{"agfs"} (autumn; then
+#'   \code{input_data_agfs_index} needs \code{mw} and \code{mat}).
+#'   The other index gives only its numbers.
 #' @param weights_fixed Data frame with columns \code{age},
 #'   \code{catch_weight} and \code{stock_weight} (g), applied after scaling to
 #'   landings. Default \code{NULL}.
@@ -82,8 +92,14 @@ hr_input_data_combine <- function(
   weights_fixed = NULL,
   stock_weight_smooth_above = NULL,
   stock_weight_smooth_years = NULL,
-  maturity_smooth_years = NULL
+  maturity_smooth_years = NULL,
+  catch_weight_fill_year = weight_fill_year,
+  stock_weight_fill_year = weight_fill_year,
+  catch_weight_fill_mean = TRUE,
+  stock_weight_fill_mean = TRUE,
+  stock_survey = c("igfs", "agfs")
 ) {
+  stock_survey <- match.arg(stock_survey)
   # NSE variables
   n <- mw <- mat <- lnd <- mat_mean <- year_before <- maturity_fixed_value <- NULL
   year <- age <- catch <- catch_weight <- stock_weight <- maturity <- NULL
@@ -97,19 +113,29 @@ hr_input_data_combine <- function(
       numeric(1)
     )
   }
-  fill_weight <- function(w, year) {
-    if (!is.null(weight_fill_year)) {
-      w <- dplyr::coalesce(w, w[year == weight_fill_year][1])
+  fill_weight <- function(w, year, fill_year, fill_mean) {
+    if (!is.null(fill_year)) {
+      w <- dplyr::coalesce(w, w[year == fill_year][1])
     }
-    dplyr::coalesce(w, mean(w, na.rm = TRUE))
+    if (isTRUE(fill_mean)) {
+      w <- dplyr::coalesce(w, mean(w, na.rm = TRUE))
+    }
+    w
   }
 
   input_data_comm_index <- dplyr::collect(input_data_comm_index)
   input_data_igfs_index <- dplyr::collect(input_data_igfs_index)
+  input_data_agfs_index <- dplyr::collect(input_data_agfs_index)
+  # The survey giving stock weights and maturity
+  stock_index <- if (stock_survey == "igfs") {
+    input_data_igfs_index
+  } else {
+    input_data_agfs_index
+  }
   if (is.null(age_end)) {
     age_end <- max(input_data_comm_index$age, input_data_igfs_index$age)
   }
-  mean_mat <- input_data_igfs_index |>
+  mean_mat <- stock_index |>
     dplyr::mutate(
       mat = if (is.null(maturity_mean_mature_above)) {
         mat
@@ -130,14 +156,15 @@ hr_input_data_combine <- function(
       by = c('year', 'age')
     ) |>
     dplyr::left_join(
-      input_data_igfs_index |>
-        dplyr::select(year, age, smb = n, stock_weight = mw, maturity = mat),
+      input_data_igfs_index |> dplyr::select(year, age, smb = n),
       by = c('year', 'age')
     ) |>
     dplyr::left_join(
-      input_data_agfs_index |>
-        dplyr::collect() |>
-        dplyr::select(year, age, smh = n),
+      stock_index |> dplyr::select(year, age, stock_weight = mw, maturity = mat),
+      by = c('year', 'age')
+    ) |>
+    dplyr::left_join(
+      input_data_agfs_index |> dplyr::select(year, age, smh = n),
       by = c('year', 'age')
     ) |>
     dplyr::left_join(
@@ -179,8 +206,18 @@ hr_input_data_combine <- function(
   out <- out |>
     dplyr::group_by(age) |>
     dplyr::mutate(
-      catch_weight = fill_weight(catch_weight, year),
-      stock_weight = fill_weight(stock_weight, year),
+      catch_weight = fill_weight(
+        catch_weight,
+        year,
+        catch_weight_fill_year,
+        catch_weight_fill_mean
+      ),
+      stock_weight = fill_weight(
+        stock_weight,
+        year,
+        stock_weight_fill_year,
+        stock_weight_fill_mean
+      ),
       catch = tidyr::replace_na(catch, 0)
     ) |>
     dplyr::group_by(year) |>

@@ -23,7 +23,12 @@ hr_input_data_combine(
   weights_fixed = NULL,
   stock_weight_smooth_above = NULL,
   stock_weight_smooth_years = NULL,
-  maturity_smooth_years = NULL
+  maturity_smooth_years = NULL,
+  catch_weight_fill_year = weight_fill_year,
+  stock_weight_fill_year = weight_fill_year,
+  catch_weight_fill_mean = TRUE,
+  stock_weight_fill_mean = TRUE,
+  stock_survey = c("igfs", "agfs")
 )
 }
 \arguments{
@@ -78,6 +83,19 @@ stock weights for ages above \code{stock_weight_smooth_above}. Default
 \code{NULL}.}
 
 \item{maturity_smooth_years}{Running mean of maturity. Default \code{NULL}.}
+
+\item{catch_weight_fill_year, stock_weight_fill_year}{The same for catch
+and stock weights separately. Default \code{weight_fill_year}.}
+
+\item{catch_weight_fill_mean, stock_weight_fill_mean}{Fill (remaining)
+missing catch / stock weights with the mean over years for the age.
+\code{FALSE} leaves them missing (e.g. for SAM to fill). Default
+\code{TRUE}.}
+
+\item{stock_survey}{Survey index giving the stock weights and maturity:
+\code{"igfs"} (spring, default) or \code{"agfs"} (autumn; then
+\code{input_data_agfs_index} needs \code{mw} and \code{mat}).
+The other index gives only its numbers.}
 }
 \value{
 A tibble with columns \code{year}, \code{age}, \code{catch},

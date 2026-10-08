@@ -98,8 +98,16 @@ hr_input_data_lw <- function(
 #'   Default \code{NULL} is all years in the data; years without data are
 #'   dropped.
 #' @param copy_years Named vector to fill years without data from another
-#'   year's predictions, e.g. \code{c("1985" = 1987, "1986" = 1987)}.
-#'   Only with \code{by_year = TRUE}. Default \code{NULL}.
+#'   year's predictions, e.g. \code{c("1985" = 1987, "1986" = 1987)}, or a
+#'   named list to fill them with the mean of several years' predictions,
+#'   e.g. \code{list("1985" = 2000:2002)}. Only with \code{by_year = TRUE}.
+#'   Default \code{NULL}.
+#' @param aged_only If \code{TRUE} (default), the model is fitted to aged fish
+#'   only. \code{FALSE} also uses otoliths with a maturity stage but no age.
+#'   The measured maturity at age is from aged fish either way.
+#' @param tow_number,gear_id_filter Tow numbers (missing counts as 0) and
+#'   gear ids of the stations to use, e.g. the index stations of the survey.
+#'   Default \code{NULL}, all.
 #' @return A tibble with columns \code{year}, \code{lgroup}, \code{age},
 #'   \code{region}, and \code{mat_p}. Rows with \code{age = NA} are
 #'   model predictions.
@@ -116,22 +124,38 @@ hr_input_data_maturity_key <- function(
   immature_below = NULL,
   predict_lgroups = lgroups[lgroups > 0],
   predict_years = NULL,
-  copy_years = NULL
+  copy_years = NULL,
+  aged_only = TRUE,
+  tow_number = NULL,
+  gear_id_filter = NULL
 ) {
   # NSE variables
   measurement_type <- age <- maturity_stage <- mat <- year <- lgroup <- region <- mat_p <- NULL
+  gear_id <- NULL
 
   measurements <- dplyr::tbl(pcon, "measurement") |>
     dplyr::filter(
       measurement_type == "OTOL",
-      !is.na(age),
       !is.na(maturity_stage)
     )
+  if (isTRUE(aged_only)) {
+    measurements <- dplyr::filter(measurements, !is.na(age))
+  }
   if (!is.null(sex)) {
     measurements <- dplyr::filter(measurements, sex %in% local(sex))
   }
-  mat_length <- dplyr::tbl(pcon, "station") |>
-    dplyr::filter(sampling_type %in% local(sampling_type)) |>
+  stations <- dplyr::tbl(pcon, "station") |>
+    dplyr::filter(sampling_type %in% local(sampling_type))
+  if (!is.null(tow_number)) {
+    stations <- dplyr::filter(
+      stations,
+      dplyr::coalesce(tow_number, 0) %in% local(tow_number)
+    )
+  }
+  if (!is.null(gear_id_filter)) {
+    stations <- dplyr::filter(stations, gear_id %in% local(gear_id_filter))
+  }
+  mat_length <- stations |>
     dplyr::inner_join(
       measurements |>
         dplyr::mutate(mat = ifelse(maturity_stage == 1, 0, 1))
@@ -185,10 +209,13 @@ hr_input_data_maturity_key <- function(
     ) |>
       modelr::add_predictions(mat_model, type = 'response', var = 'mat_p')
     for (target in names(copy_years)) {
+      # One year's predictions, or the mean of several years'
       mat_filler <- dplyr::bind_rows(
         mat_filler,
         mat_filler |>
-          dplyr::filter(year == copy_years[[target]]) |>
+          dplyr::filter(year %in% copy_years[[target]]) |>
+          dplyr::group_by(lgroup, region) |>
+          dplyr::summarise(mat_p = mean(mat_p), .groups = "drop") |>
           dplyr::mutate(year = as.numeric(target))
       )
     }
@@ -204,6 +231,8 @@ hr_input_data_maturity_key <- function(
   # Combine measurements & estimates, with age = NA signifying the estimates
   dplyr::bind_rows(
     mat_length |>
+      # Measured maturity at age: aged fish only (age NA marks estimates)
+      dplyr::filter(!is.na(age)) |>
       dplyr::group_by(year, lgroup, age, region) |>
       dplyr::summarise(mat_p = mean(mat)) |>
       dplyr::collect() |>
@@ -375,6 +404,11 @@ hr_pool_years <- function(tbl, ygroup) {
 #'   \code{NULL}.
 #' @param sample_gear_na Gear code to give samples with unknown gear, when
 #'   raising them (not in the age-length key). Default \code{NULL}.
+#' @param gear_group_alk Gear groups of the age-length key, when they differ
+#'   from \code{gear_group} (which then only groups the raising to
+#'   landings). Default \code{gear_group}.
+#' @param sample_gear_na_alk Gear code to give samples with unknown gear in
+#'   the age-length key. Default \code{NULL}.
 #' @param landings_gear_na,landings_month_na Gear code and month to give
 #'   landings with unknown gear or month when \code{scale_by_landings = TRUE}.
 #'   Landings without a month are otherwise left out of the scaling. Default
@@ -435,13 +469,15 @@ hr_input_data_si_index <- function(
   key_year = NULL,
   landings_area_like = NULL,
   plus_group = NULL,
-  mean_length = FALSE
+  mean_length = FALSE,
+  gear_group_alk = gear_group,
+  sample_gear_na_alk = NULL
 ) {
   # NSE variables
   si_abund <- si_biomass <- mat_p <- mat_p_est <- year <- age <- NULL
   coalesce <- gear_id <- scalar <- year_orig <- mfdb_gear_code <- NULL
   gridcell <- month <- key_label <- ices_area <- sample_id <- NULL
-  species <- count <- weight <- n <- NULL
+  species <- count <- weight <- n <- gear_name <- NULL
 
   if (!is.null(key_year) && !is.null(ygroup)) {
     stop("Give ygroup or key_year, not both")
@@ -507,6 +543,12 @@ hr_input_data_si_index <- function(
   } else {
     alk <- dplyr::filter(alk, sampling_type %in% local(sampling_type))
   }
+  if (!is.null(sample_gear_na_alk)) {
+    alk <- dplyr::mutate(
+      alk,
+      mfdb_gear_code = coalesce(mfdb_gear_code, local(sample_gear_na_alk))
+    )
+  }
   alk <- alk |>
     hr_pool_years(ygroup_alk) |>
     station_filter() |>
@@ -514,7 +556,7 @@ hr_input_data_si_index <- function(
       lgroups = lgroups,
       tgroup = tgroup,
       regions = regions,
-      gear_group = gear_group,
+      gear_group = gear_group_alk,
       aldist_tbl = aldist_tbl
     )
   }
@@ -602,9 +644,15 @@ hr_input_data_si_index <- function(
     lgroups = lgroups,
     tgroup = tgroup,
     regions = regions,
-    gear_group = gear_group,
+    gear_group = gear_group_alk,
     alk = alk
   )
+  if (!identical(gear_group_alk, gear_group)) {
+    # Key gear groups differ from the raising gear groups
+    at_age <- at_age |>
+      dplyr::select(-gear_name) |>
+      pax::pax_add_gear_group(gear_group)
+  }
   if (!is.null(ygroup) || !is.null(key_year)) {
     at_age <- at_age |>
       dplyr::mutate(year = year_orig) |>

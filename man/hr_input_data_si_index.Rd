@@ -33,7 +33,9 @@ hr_input_data_si_index(
   key_year = NULL,
   landings_area_like = NULL,
   plus_group = NULL,
-  mean_length = FALSE
+  mean_length = FALSE,
+  gear_group_alk = gear_group,
+  sample_gear_na_alk = NULL
 )
 }
 \arguments{
@@ -147,6 +149,13 @@ database holds landings from more areas. Default \code{NULL}, all.}
 
 \item{mean_length}{If \code{TRUE}, also the mean length at age
 (\code{ml}). Default \code{FALSE}.}
+
+\item{gear_group_alk}{Gear groups of the age-length key, when they differ
+from \code{gear_group} (which then only groups the raising to
+landings). Default \code{gear_group}.}
+
+\item{sample_gear_na_alk}{Gear code to give samples with unknown gear in
+the age-length key. Default \code{NULL}.}
 }
 \value{
 A grouped tibble with columns \code{year}, \code{age}, \code{n}
