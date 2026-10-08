@@ -8,7 +8,8 @@ hr_techreport_table_boatsummary(
   pcon,
   year_start = 1000,
   year_end = 9999,
-  gear_group = NULL
+  gear_group = NULL,
+  ices_area_like = NULL
 )
 }
 \arguments{
@@ -20,6 +21,10 @@ hr_techreport_table_boatsummary(
 
 \item{gear_group}{Gear groups, as for \code{pax::pax_landings_by_gear()}.
 Default \code{NULL} uses its default groups.}
+
+\item{ices_area_like}{SQL LIKE pattern of the ICES areas to include, e.g.
+\code{"5a\%"}. Default \code{NULL}, all areas in the landings table.
+The areas are pooled: a vessel landing in several areas counts once.}
 }
 \value{
 A \code{gt} table object.
