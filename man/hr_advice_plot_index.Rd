@@ -9,7 +9,8 @@ hr_advice_plot_index(
   assessment_year,
   ref_points = NULL,
   key = "SSB",
-  title = NULL
+  title = NULL,
+  index_ab = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,10 @@ tonnes, or \code{NULL} for no line.}
 \code{"SSB"}.}
 
 \item{title}{Plot title. Default: biomass index.}
+
+\item{index_ab}{If \code{TRUE}, draw the mean index of the last two years
+to \code{assessment_year} (index A) and of the three years before (index
+B) as red lines, as in the rfb rule (r = A / B). Default \code{FALSE}.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.

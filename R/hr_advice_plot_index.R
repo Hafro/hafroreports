@@ -13,6 +13,9 @@
 #' @param key Key of the index in \code{data_assessment}. Default
 #'   \code{"SSB"}.
 #' @param title Plot title. Default: biomass index.
+#' @param index_ab If \code{TRUE}, draw the mean index of the last two years
+#'   to \code{assessment_year} (index A) and of the three years before (index
+#'   B) as red lines, as in the rfb rule (r = A / B). Default \code{FALSE}.
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
 #' @export
 hr_advice_plot_index <- function(
@@ -20,10 +23,11 @@ hr_advice_plot_index <- function(
   assessment_year,
   ref_points = NULL,
   key = "SSB",
-  title = NULL
+  title = NULL,
+  index_ab = FALSE
 ) {
   # NSE variables
-  year <- median <- low <- high <- label <- .data <- NULL
+  year <- median <- low <- high <- label <- .data <- group <- avg <- NULL
   lang <- getOption("hr.lang", "en")
 
   d <- data_assessment |>
@@ -75,6 +79,25 @@ hr_advice_plot_index <- function(
         label = hr_label("Itrigger"),
         size = 2.5,
         parse = TRUE
+      )
+  }
+  if (isTRUE(index_ab)) {
+    avg <- d |>
+      dplyr::filter(
+        year <= .env$assessment_year,
+        year > .env$assessment_year - 5
+      ) |>
+      dplyr::mutate(group = ifelse(year > .env$assessment_year - 2, "A", "B")) |>
+      dplyr::group_by(group) |>
+      dplyr::mutate(avg = mean(median)) |>
+      dplyr::ungroup()
+    p <- p +
+      ggplot2::geom_line(
+        data = avg,
+        ggplot2::aes(x = year, y = avg / 1000, group = group),
+        colour = "red3",
+        linewidth = 0.75,
+        inherit.aes = FALSE
       )
   }
   p +

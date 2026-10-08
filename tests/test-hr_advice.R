@@ -105,3 +105,20 @@ ok_group("hr_advice_data_landings: Nephrops trawl", {
   )
   ok("Humarvarpa" %in% levels(out$gear.is), "Icelandic label")
 })
+
+ok_group("hr_advice_plot_index: index A and B", {
+  d <- data.frame(year = 2015:2025, key = "SSB", assessment_year = 2025)
+  d$median <- seq(1000, 11000, by = 1000)
+  d$low <- d$median
+  d$high <- d$median
+  d$label.en <- "Index"
+  d$label.is <- "Vísitala"
+  b <- ggplot2::ggplot_build(hr_advice_plot_index(d, 2025, index_ab = TRUE))
+  ab <- b$data[[length(b$data)]]
+  ok(
+    ut_cmp_equal(sort(unique(ab$y)), c(8, 10.5)),
+    "Index B = mean of 2021-2023, index A = mean of 2024-2025 (thousand t)"
+  )
+  b0 <- ggplot2::ggplot_build(hr_advice_plot_index(d, 2025))
+  ok(ut_cmp_equal(length(b0$data), length(b$data) - 1), "Default: no lines, as before")
+})
