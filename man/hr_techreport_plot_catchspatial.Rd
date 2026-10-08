@@ -4,7 +4,13 @@
 \alias{hr_techreport_plot_catchspatial}
 \title{Plot spatial distribution of catch}
 \usage{
-hr_techreport_plot_catchspatial(pcon, years, low_res = TRUE)
+hr_techreport_plot_catchspatial(
+  pcon,
+  years,
+  low_res = TRUE,
+  breaks = c(0, 1, 2, seq(3, 20, by = 3), 40, 60),
+  na.fill = -50
+)
 }
 \arguments{
 \item{pcon}{A database connection object compatible with \code{dplyr::tbl}.}
@@ -13,6 +19,13 @@ hr_techreport_plot_catchspatial(pcon, years, low_res = TRUE)
 
 \item{low_res}{Logical. If \code{TRUE} (the default), uses a lower
 resolution base map (faster to render).}
+
+\item{breaks}{Colour breaks of the catch (t/nm²). The default (0 to 60
+t/nm²) suits the large stocks; a stock with small catches per area
+needs finer breaks, e.g. \code{seq(0, 0.5, by = 0.1)}.}
+
+\item{na.fill}{Value given to cells without catch, see
+\code{pax::pax_map_layer_catch()}. Default \code{-50}.}
 }
 \value{
 A \code{ggplot2} plot object.

@@ -9,12 +9,19 @@
 #' @param years Integer vector of years to map.
 #' @param low_res Logical. If \code{TRUE} (the default), uses a lower
 #'   resolution base map (faster to render).
+#' @param breaks Colour breaks of the catch (t/nm²). The default (0 to 60
+#'   t/nm²) suits the large stocks; a stock with small catches per area
+#'   needs finer breaks, e.g. \code{seq(0, 0.5, by = 0.1)}.
+#' @param na.fill Value given to cells without catch, see
+#'   \code{pax::pax_map_layer_catch()}. Default \code{-50}.
 #' @return A \code{ggplot2} plot object.
 #' @export
 hr_techreport_plot_catchspatial <- function(
   pcon,
   years,
-  low_res = TRUE
+  low_res = TRUE,
+  breaks = c(0, 1, 2, seq(3, 20, by = 3), 40, 60),
+  na.fill = -50
 ) {
   # NSE variables
   year <- lat <- lon <- catch <- tow_area <- tow_time <- NULL
@@ -34,8 +41,8 @@ hr_techreport_plot_catchspatial <- function(
     pax::pax_map_layer_catch(
       catch_by_location,
       alpha = 1,
-      na.fill = -50,
-      breaks = c(0, 1, 2, seq(3, 20, by = 3), 40, 60)
+      na.fill = na.fill,
+      breaks = breaks
     ) +
     hr_theme_crayola_fill() +
     ggplot2::theme(legend.position = c(0.8, 0.2))
