@@ -9,7 +9,8 @@ hr_advice_plot_fpl(
   assessment_year,
   ref_points,
   fishing_pressure = c("HR", "F"),
-  title = NULL
+  title = NULL,
+  show_lim = FALSE
 )
 }
 \arguments{
@@ -24,6 +25,10 @@ hr_advice_plot_fpl(
 \code{"HR"}.}
 
 \item{title}{Plot title. Default: harvest rate, or fishing mortality.}
+
+\item{show_lim}{If \code{TRUE}, also draw the limit reference point
+(\code{F_lim} or \code{HR_lim}), as for relative (F/F_MSY) stocks.
+Default \code{FALSE}.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.

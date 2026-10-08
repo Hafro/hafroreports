@@ -5,15 +5,22 @@
 #'
 #' @param basis_data A data frame with columns named using language suffixes
 #'   (e.g., `desc.en`, `desc.is`) containing the basis text for advice.
+#' @param markdown If \code{TRUE}, render markdown in the text (e.g.
+#'   \code{F~MSY~} as a subscript) with \code{ftExtra::colformat_md()}.
+#'   Default \code{FALSE}.
 #' @return A \code{flextable} object with two columns styled for inclusion in
 #'   an advice sheet.
 #' @export
-hr_advice_basis_table <- function(basis_data) {
+hr_advice_basis_table <- function(basis_data, markdown = FALSE) {
   lang <- getOption("hr.lang", "en")
 
-  basis_data |>
+  ft <- basis_data |>
     dplyr::select(dplyr::contains(lang)) |>
-    flextable::flextable() |>
+    flextable::flextable()
+  if (isTRUE(markdown)) {
+    ft <- ftExtra::colformat_md(ft)
+  }
+  ft |>
     flextable::valign(j = 1:2, valign = "top", part = "body") |>
     flextable::bg(j = 1, bg = "#DEEAF6", part = "body") |>
     flextable::delete_part(part = "header") |>

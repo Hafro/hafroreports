@@ -4,11 +4,15 @@
 \alias{hr_advice_basis_table}
 \title{Format advice basis table}
 \usage{
-hr_advice_basis_table(basis_data)
+hr_advice_basis_table(basis_data, markdown = FALSE)
 }
 \arguments{
 \item{basis_data}{A data frame with columns named using language suffixes
 (e.g., \code{desc.en}, \code{desc.is}) containing the basis text for advice.}
+
+\item{markdown}{If \code{TRUE}, render markdown in the text (e.g.
+\code{F~MSY~} as a subscript) with \code{ftExtra::colformat_md()}.
+Default \code{FALSE}.}
 }
 \value{
 A \code{flextable} object with two columns styled for inclusion in

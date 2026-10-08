@@ -8,7 +8,9 @@ hr_advice_plot_ssb(
   data_assessment,
   assessment_year,
   ref_points,
-  refbio_label = NULL
+  refbio_label = NULL,
+  biomass_scale = 1000,
+  y_label = NULL
 )
 }
 \arguments{
@@ -23,6 +25,13 @@ management plan), \code{B_lim}, \code{B_pa}.}
 
 \item{refbio_label}{Text added to the reference biomass legend entry, e.g.
 \code{"(B4+)"}. Default \code{NULL}.}
+
+\item{biomass_scale}{Divisor of the biomass (and its reference points'
+units): \code{1000} (default) for biomass in tonnes shown in thousand
+tonnes, \code{1} for relative biomass (B/B_MSY) shown as it is.}
+
+\item{y_label}{Y axis label. Default thousand tonnes, or B/B_MSY when
+\code{biomass_scale = 1}.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.

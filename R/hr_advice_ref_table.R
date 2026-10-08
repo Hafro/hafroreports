@@ -15,12 +15,16 @@
 #'   (\code{B_*}, \code{*btrigger}), to show values given in thousand tonnes
 #'   in tonnes. Default \code{1000}; use \code{1} if they are already in
 #'   tonnes.
+#' @param round_values If \code{TRUE} (default), values of 1 and over are
+#'   rounded to whole numbers (tonnes). \code{FALSE} shows them as they are,
+#'   e.g. for relative reference points (F_lim = 1.7 F_MSY).
 #' @return A \code{flextable} object styled for inclusion in an advice sheet.
 #' @export
 hr_advice_ref_table <- function(
   ref_points,
   ref_points_basis_table,
-  biomass_multiplier = 1000
+  biomass_multiplier = 1000,
+  round_values = TRUE
 ) {
   # Biomass reference points are kept in thousand tonnes for the figures;
   # show them in tonnes
@@ -48,7 +52,11 @@ hr_advice_ref_table <- function(
         approach == dplyr::lag(approach) ~ '',
         TRUE ~ approach
       ),
-      value = ifelse(value < 1, value, hr_red_dot_number(round(value)))
+      value = if (isTRUE(round_values)) {
+        ifelse(value < 1, value, hr_red_dot_number(round(value)))
+      } else {
+        format(value, drop0trailing = TRUE, trim = TRUE)
+      }
     )
 
   flextable::flextable(ref_table) |>

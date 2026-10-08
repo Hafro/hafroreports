@@ -16,6 +16,12 @@
 #' @param recruitment_from First assessment year whose recruitment is shown,
 #'   e.g. the year the recruitment age changed (earlier assessments estimated
 #'   recruitment at another age). Default \code{NULL}, all assessments.
+#' @param biomass_scale Divisor of the biomass and recruitment: \code{1000}
+#'   (default) for thousand tonnes (millions), \code{1} for relative biomass
+#'   (B/B_MSY) shown as it is.
+#' @param show_lim If \code{TRUE}, also draw the limit reference point of
+#'   the fishing pressure (\code{F_lim} or \code{HR_lim}). Default
+#'   \code{FALSE}.
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
 #' @export
 hr_advice_plot_retro <- function(
@@ -23,7 +29,9 @@ hr_advice_plot_retro <- function(
   ref_points,
   assessment_year,
   fishing_pressure = c("HR", "F"),
-  recruitment_from = NULL
+  recruitment_from = NULL,
+  biomass_scale = 1000,
+  show_lim = FALSE
 ) {
   # NSE variables
   key <- year <- median <- label <- value <- facet <- label2 <- .data <- NULL
@@ -46,12 +54,12 @@ hr_advice_plot_retro <- function(
     dplyr::mutate(
       label = as.character(.data[[paste('label', lang, sep = '.')]]),
       assessment_year = as.ordered(assessment_year),
-      median = ifelse(key == fishing_pressure, median, median / 1e3)
+      median = ifelse(key == fishing_pressure, median, median / biomass_scale)
     )
   label_of <- function(k) unique(d$label[d$key == k])
   n_years <- nlevels(droplevels(d$assessment_year))
 
-  fp_refs <- advice_ref_lines(ref_points, fishing_pressure)
+  fp_refs <- advice_ref_lines(ref_points, fishing_pressure, show_lim = show_lim)
   b_refs <- tibble::tibble(
     value = c(ref_points$B_pa, ref_points$B_lim),
     label = c(hr_label("Bpa"), hr_label("Blim"))

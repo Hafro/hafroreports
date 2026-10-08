@@ -13,13 +13,20 @@
 #'   management plan), \code{B_lim}, \code{B_pa}.
 #' @param refbio_label Text added to the reference biomass legend entry, e.g.
 #'   \code{"(B4+)"}. Default \code{NULL}.
+#' @param biomass_scale Divisor of the biomass (and its reference points'
+#'   units): \code{1000} (default) for biomass in tonnes shown in thousand
+#'   tonnes, \code{1} for relative biomass (B/B_MSY) shown as it is.
+#' @param y_label Y axis label. Default thousand tonnes, or B/B_MSY when
+#'   \code{biomass_scale = 1}.
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
 #' @export
 hr_advice_plot_ssb <- function(
   data_assessment,
   assessment_year,
   ref_points,
-  refbio_label = NULL
+  refbio_label = NULL,
+  biomass_scale = 1000,
+  y_label = NULL
 ) {
   # NSE variables
   key <- year <- median <- label <- low <- high <- .data <- NULL
@@ -58,14 +65,22 @@ hr_advice_plot_ssb <- function(
     btrigger_label <- "MSYBtrigger"
   }
 
-  ggplot2::ggplot(d, ggplot2::aes(x = year, y = median / 1000)) +
+  if (is.null(y_label)) {
+    y_label <- if (biomass_scale == 1) {
+      expression(bold('B/B'[MSY]))
+    } else {
+      hr_label("thousand_tonnes", bold = TRUE)
+    }
+  }
+
+  ggplot2::ggplot(d, ggplot2::aes(x = year, y = median / biomass_scale)) +
     ggiraph::geom_point_interactive(
       ggplot2::aes(
         tooltip = paste(
           label,
           ':',
-          round(median),
-          't',
+          if (biomass_scale == 1) round(median, 3) else round(median),
+          if (biomass_scale == 1) '' else 't',
           '\n',
           hr_label("year"),
           ':',
@@ -79,7 +94,11 @@ hr_advice_plot_ssb <- function(
     ) +
     ggplot2::geom_line(ggplot2::aes(color = label), linewidth = 0.5) +
     ggplot2::geom_ribbon(
-      ggplot2::aes(ymin = low / 1000, ymax = high / 1000, fill = label),
+      ggplot2::aes(
+        ymin = low / biomass_scale,
+        ymax = high / biomass_scale,
+        fill = label
+      ),
       alpha = 0.4
     ) +
     ggplot2::scale_color_manual(values = colours, labels = legend_labels) +
@@ -121,7 +140,7 @@ hr_advice_plot_ssb <- function(
     ) +
     ggplot2::labs(
       title = hr_label("biomass", bold = TRUE),
-      y = hr_label("thousand_tonnes", bold = TRUE)
+      y = y_label
     ) +
     hr_advice_y_scale() +
     hr_astand_theme(

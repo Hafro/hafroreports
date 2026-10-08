@@ -9,7 +9,9 @@ hr_advice_plot_retro(
   ref_points,
   assessment_year,
   fishing_pressure = c("HR", "F"),
-  recruitment_from = NULL
+  recruitment_from = NULL,
+  biomass_scale = 1000,
+  show_lim = FALSE
 )
 }
 \arguments{
@@ -27,6 +29,14 @@ tonnes).}
 \item{recruitment_from}{First assessment year whose recruitment is shown,
 e.g. the year the recruitment age changed (earlier assessments estimated
 recruitment at another age). Default \code{NULL}, all assessments.}
+
+\item{biomass_scale}{Divisor of the biomass and recruitment: \code{1000}
+(default) for thousand tonnes (millions), \code{1} for relative biomass
+(B/B_MSY) shown as it is.}
+
+\item{show_lim}{If \code{TRUE}, also draw the limit reference point of
+the fishing pressure (\code{F_lim} or \code{HR_lim}). Default
+\code{FALSE}.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.
