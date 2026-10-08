@@ -10,7 +10,10 @@ hr_techreport_plot_cpue(
     c("HLN", "LLN"), DSE = c("PSE", "DSE")),
   year_start = 1000,
   year_end = 9999,
-  limit = 0.5
+  limit = 0.5,
+  effort_na = 1,
+  drop_no_effort = TRUE,
+  hooks_na = 10000
 )
 }
 \arguments{
@@ -27,6 +30,20 @@ and \code{DSE}.}
 \item{limit}{Share of the species in the catch above which records count
 as directed (the dashed lines), passed to
 \code{pax::pax_logbook_cpue_plot()}. Default \code{0.5}.}
+
+\item{effort_na}{Effort of records with no tow time, hooks or nets (a
+bottom trawl haul without tow time), passed to
+\code{pax::pax_add_cpue()}. Default \code{1} (one hour); \code{NULL}
+leaves them out.}
+
+\item{drop_no_effort}{If \code{TRUE} (default), records with none of
+hooks, nets or tow time are left out before \code{effort_na} applies
+(Danish seine records count as one set).}
+
+\item{hooks_na}{Number of hooks given to records without, of any gear.
+Default \code{10000}, as before: a bottom trawl haul without tow time
+then has an effort of 10. \code{NULL} leaves them without hooks, so
+\code{effort_na} applies.}
 }
 \value{
 A \code{ggplot2} plot object faceted by gear group.
