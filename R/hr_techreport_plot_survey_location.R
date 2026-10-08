@@ -22,31 +22,7 @@ hr_techreport_plot_survey_location <- function(
   begin_lat <- begin_lon <- NULL
   coalesce <- NULL
 
-  dat <- dplyr::tbl(pcon, "station") |>
-    dplyr::filter(
-      sampling_type == 30 &&
-        year == .env$assessment_year |
-        sampling_type == 35 && year == (.env$assessment_year - 1)
-    ) |>
-    # NB: The ldist table is already raised to the counted fish
-    #     (pax_mar_ldist()), so it is not scaled again
-    dplyr::left_join(
-      dplyr::tbl(pcon, "ldist") |>
-        pax::pax_ldist_scale_round()
-    ) |>
-    pax::pax_ldist_add_weight() |>
-    dplyr::mutate(lat = round(begin_lat, 1), lon = round(begin_lon, 1)) |>
-    dplyr::group_by(sample_id, lat, lon, year, sampling_type, species) |>
-    dplyr::summarize(
-      bio = sum(
-        abs(coalesce(count, 0) * weight) /
-          abs(coalesce(tow_length, 4)),
-        na.rm = TRUE
-      ) /
-        1e5
-    ) |>
-    dplyr::mutate(zero_station = ifelse(bio == 0, 'Zero catch', 'Non zero')) |>
-    dplyr::ungroup()
+  dat <- dat_survey_location(pcon, assessment_year)
 
   pax::pax_map_base() |>
     pax::pax_map_layer_depth(dplyr::tbl(pcon, "ocean_depth")) +
@@ -71,4 +47,43 @@ hr_techreport_plot_survey_location <- function(
       ggplot2::aes(label = survey),
       data = tibble::tibble(sampling_type = c(30, 35), survey = c('SMB', 'SMH'))
     )
+}
+
+# Survey catch (kg per nautical mile towed) by station: SMB of
+# assessment_year and SMH of the year before
+dat_survey_location <- function(pcon, assessment_year) {
+  # NSE variables
+  sampling_type <- year <- lat <- lon <- bio <- zero_station <- NULL
+  species <- sample_id <- count <- weight <- tow_length <- NULL
+  begin_lat <- begin_lon <- NULL
+  coalesce <- NULL
+
+  dat <- dplyr::tbl(pcon, "station") |>
+    dplyr::filter(
+      sampling_type == 30 &&
+        year == .env$assessment_year |
+        sampling_type == 35 && year == (.env$assessment_year - 1)
+    ) |>
+    # NB: The ldist table is already raised to the counted fish
+    #     (pax_mar_ldist()), so it is not scaled again
+    dplyr::left_join(
+      dplyr::tbl(pcon, "ldist") |>
+        pax::pax_ldist_scale_round()
+    ) |>
+    pax::pax_ldist_add_weight() |>
+    dplyr::mutate(lat = round(begin_lat, 1), lon = round(begin_lon, 1)) |>
+    dplyr::group_by(sample_id, lat, lon, year, sampling_type, species) |>
+    dplyr::summarize(
+      bio = sum(
+        abs(coalesce(count, 0) * weight) /
+          abs(coalesce(tow_length, 4)),
+        na.rm = TRUE
+      ) /
+        # weight in g, so kg/nm (this was 1e5, i.e. 100 kg/nm)
+        1e3
+    ) |>
+    dplyr::mutate(zero_station = ifelse(bio == 0, 'Zero catch', 'Non zero')) |>
+    dplyr::ungroup()
+
+  dat
 }

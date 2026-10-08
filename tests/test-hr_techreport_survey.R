@@ -67,3 +67,18 @@ ok_group("dat_ldist_by_year: survey ldist not raised a second time", {
   ok(ut_cmp_equal(out$n, c(20, 30)), "Counts as in ldist")
   DBI::dbDisconnect(pcon)
 })
+
+ok_group("dat_survey_location: kg per nautical mile, ldist not raised twice", {
+  pcon <- ut_pcon()
+  out <- hafroreports:::dat_survey_location(pcon, 2019) |>
+    dplyr::arrange(sample_id) |>
+    dplyr::collect()
+  ok(
+    ut_cmp_equal(
+      out$bio,
+      c(20 * 0.01 * 40^3 + 20 * 0.01 * 50^3, 10 * 0.01 * 50^3) / 4 / 1e3
+    ),
+    "Biomass per station in kg/nm"
+  )
+  DBI::dbDisconnect(pcon)
+})
