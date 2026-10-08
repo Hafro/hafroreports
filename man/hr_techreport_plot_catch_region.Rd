@@ -9,7 +9,8 @@ hr_techreport_plot_catch_region(
   depth_class = c(0, 100, 200, 300),
   regions = list(W = 101, NW = 102, NE = c(103, 104, 105), SE = c(107, 106), SW = 108),
   year_start = 1000,
-  year_end = 9999
+  year_end = 9999,
+  keep_order = FALSE
 )
 }
 \arguments{
@@ -19,11 +20,16 @@ hr_techreport_plot_catch_region(
 
 \item{regions}{Named list mapping region labels to integer MFDB area codes.
 Default regions are W (101), NW (102), NE (103–105), SE (106–107),
-SW (108)}
+SW (108). The names are the labels, translated by \code{hr_label()}
+if they are known keys (e.g. \code{"NW"} is \code{"NV"} in Icelandic).}
 
 \item{year_start}{Integer. First year to include. Default is \code{1000}.}
 
 \item{year_end}{Integer. Last year to include. Default is \code{9999}.}
+
+\item{keep_order}{If \code{TRUE}, the regions are stacked and listed in
+the order of \code{regions}, other last. Default \code{FALSE},
+alphabetical order of the labels.}
 }
 \value{
 A \code{ggplot2} / \code{patchwork} plot object.

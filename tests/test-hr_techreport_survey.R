@@ -82,3 +82,27 @@ ok_group("dat_survey_location: kg per nautical mile, ldist not raised twice", {
   )
   DBI::dbDisconnect(pcon)
 })
+
+ok_group("region_labels / region_order", {
+  options(hr.lang = "is")
+  ok(
+    ut_cmp_equal(
+      hafroreports:::region_labels(list(W = 101, NW = 102, Faxafloi = 109, Other = NULL)),
+      c("V", "NV", "Faxafloi", "Önnur")
+    ),
+    "Known keys translated, other names kept"
+  )
+  options(hr.lang = "en")
+  d <- data.frame(group = c("W", "NE", "Other", "Breidafjordur"), val = 1)
+  ok(
+    ut_cmp_equal(
+      levels(hafroreports:::region_order(d, c("W", "Breidafjordur", "NE"), TRUE)$group),
+      c("W", "Breidafjordur", "NE", "Other")
+    ),
+    "keep_order: order of regions, other last"
+  )
+  ok(
+    ut_cmp_equal(hafroreports:::region_order(d, c("W", "NE"), FALSE), d),
+    "Default: unchanged (alphabetical in the plot)"
+  )
+})

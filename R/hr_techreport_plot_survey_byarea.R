@@ -9,13 +9,17 @@
 #' @param pcon A database connection object compatible with \code{dplyr::tbl}.
 #' @param regions Named list mapping region labels to integer MFDB area codes.
 #'   Default regions are W (101), NW (102), NE (103–105), SE (106–107),
-#'   SW (108), and Other (all remaining).
+#'   SW (108), and Other (all remaining). The names are the labels,
+#'   translated by \code{hr_label()} if they are known keys.
 #' @param strata_stations Fixed station list (columns \code{sampling_type},
 #'   \code{station} and \code{stratum}), e.g.
 #'   \code{dplyr::tbl(pcon, "strata_stations") |>
 #'   dplyr::filter(stratification == "new_strata")}. If given, stations get
 #'   their stratum from it as in the survey indices, not from the tow
 #'   position. Default \code{NULL}, strata from tow positions.
+#' @param keep_order If \code{TRUE}, the regions are stacked and listed in
+#'   the order of \code{regions}. Default \code{FALSE}, alphabetical order
+#'   of the labels.
 #' @return A \code{ggplot2} / \code{patchwork} plot object split by survey.
 #' @export
 hr_techreport_plot_survey_byarea <- function(
@@ -28,8 +32,10 @@ hr_techreport_plot_survey_byarea <- function(
     SW = 108,
     Other = pax::pax_add_other()
   ),
-  strata_stations = NULL
+  strata_stations = NULL,
+  keep_order = FALSE
 ) {
+  labels <- region_labels(regions)
   # NSE variables
   year <- region <- si_biomass <- mfdb_gear_code <- val <- group <- sampling_type <- NULL
 
@@ -54,13 +60,7 @@ hr_techreport_plot_survey_byarea <- function(
         stratification,
         strata_stations = strata_stations
       ) |>
-      pax::pax_add_regions(
-        regions = regions |>
-          stats::setNames(sapply(
-            c("W", "NW", "NE", "SE", "SW", "other"),
-            hr_label
-          ))
-      ) |>
+      pax::pax_add_regions(regions = stats::setNames(regions, labels)) |>
       dplyr::group_by(year, sampling_type, region) |>
       dplyr::summarize(si_biomass = sum(si_biomass))
   }
@@ -79,6 +79,8 @@ hr_techreport_plot_survey_byarea <- function(
       ),
       val = si_biomass / 1e3
     ) |>
+    dplyr::collect() |>
+    region_order(labels, keep_order) |>
     two_panel_plot(
       y = hr_label("survey_biomass"),
       total.text = '%s',
