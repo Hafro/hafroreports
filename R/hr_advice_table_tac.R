@@ -48,6 +48,13 @@ hr_advice_data_tac <- function(
     ) |>
     # Landings with no country, if any
     dplyr::select(-dplyr::any_of("NA")) |>
+    # No foreign (or Icelandic) landings at all: the column is missing
+    (function(x) {
+      for (col in setdiff(c("icelandic", "foreign"), colnames(x))) {
+        x[[col]] <- NA_real_
+      }
+      x
+    })() |>
     dplyr::mutate(
       # Missing landings of one part (e.g. no foreign landings) count as 0
       total = ifelse(
