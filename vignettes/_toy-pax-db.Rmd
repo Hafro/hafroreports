@@ -33,14 +33,15 @@ add_sample <- function(st, fish, n_aged, maturity) {
   sample_id <<- sample_id + 1
   id <- as.character(sample_id)
   station[[id]] <<- data.frame(sample_id = id, st)
+  fish$sex <- sample(1:2, nrow(fish), replace = TRUE)
   ldist[[id]] <<- dplyr::count(
     data.frame(sample_id = id, species = toy_species, fish),
-    sample_id, species, length, name = "count"
+    sample_id, species, length, sex, name = "count"
   )
   aged <- fish[sample(nrow(fish), min(n_aged, nrow(fish))), ]
   otoliths[[id]] <<- data.frame(
     sample_id = id, species = toy_species, measurement_type = "OTOL",
-    aged, sex = sample(1:2, nrow(aged), TRUE), count = 1,
+    aged, count = 1,
     maturity_stage = if (maturity) ifelse(runif(nrow(aged)) < p_mature(aged$length), 2, 1) else NA
   )
 }
@@ -76,6 +77,7 @@ landings <- tidyr::expand_grid(
 ) |>
   dplyr::mutate(
     species = toy_species, ices_area = "5a", country = "Iceland",
+    boat_id = sample(1:30, dplyr::n(), replace = TRUE),
     catch = round(runif(dplyr::n(), 50e3, 150e3)) # kg
   )
 lw_coeffs <- data.frame(species = toy_species, a = 0.01, b = 3)
