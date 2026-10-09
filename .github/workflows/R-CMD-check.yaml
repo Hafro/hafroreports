@@ -58,8 +58,4 @@ jobs:
         with:
           upload-snapshots: true
           args: 'c("--no-manual")'
-          # The package has known check WARNINGs (purrr used but not in
-          # Imports, rmuppet::line_replace, hr_locale.tsv in data/); fail on
-          # errors only until they are fixed
-          error-on: '"error"'
           build_args: 'c("--no-manual", "--compact-vignettes=gs+qpdf")'
