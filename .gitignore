@@ -14,3 +14,5 @@ core
 /vignettes/*_files/
 
 /marmap*.csv
+/doc
+/Meta

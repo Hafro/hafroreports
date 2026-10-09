@@ -1,0 +1,297 @@
+---
+title: "Input data for SAM and Muppet"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Input data for SAM and Muppet}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", message = FALSE, warning = FALSE)
+```
+
+The age-based assessments (SAM or Muppet) take one table, `input_data`, with a
+row per year and age: catch in numbers and catch weights, the survey indices,
+stock weights, maturity and natural mortality. In a stock repository it is
+built by a chain of targets in `script_assessment_model.R`:
+
+| Target | Function | Gives |
+|---|---|---|
+| `pax_db` | `pax::pax_from_mar()` | the local DuckDB with stations, length and age samples, landings |
+| `input_data_lw_pred` | `hr_input_data_lw()` | weight at length (GAM fit to the survey) |
+| `input_data_maturity_key` | `hr_input_data_maturity_key()` | maturity at length (and age) |
+| `input_data_igfs_index`, `input_data_agfs_index` | `hr_input_data_si_index()` | survey abundance, weight and maturity at age |
+| `input_data_comm_index` | `hr_input_data_si_index()` | catch at age (commercial samples raised to landings) |
+| `input_data_landings` | `hr_input_data_landings()` | landings by year |
+| `input_data` | `hr_input_data_combine()` | the model input table |
+| `sam_dat` | `hr_sam_dat()` | the SAM data object |
+
+`02-had-targets` is the template; `03-sai`, `23-ple`, `08-usk` and `01-cod` show
+how the arguments differ between stocks. This vignette runs the chain on a
+small simulated database, so it builds without the MFRI database.
+
+```{r setup}
+library(hafroreports)
+```
+
+## The pax database
+
+In a stock repository, `pax_db` is built from the MFRI database (Oracle,
+through the `mar` package) once, or opened from a copy:
+
+```{r, eval = FALSE}
+tar_target(
+  pax_db,
+  if (nzchar(Sys.getenv("PAX_SOURCE_DB"))) {
+    pax_connect(Sys.getenv("PAX_SOURCE_DB"))
+  } else {
+    pax_from_mar(species, year_start, year_end)
+  },
+  format = pax_tar_format_duckdb()
+)
+```
+
+Here we build a toy database with the same table names (`station`, `ldist`,
+`aldist`, `measurement`, `landings`, `lw_coeffs`) from simulated fish. The
+code is long only because it simulates the samples; the point is that every
+`hr_input_data_*()` function takes a pax connection and works on these tables.
+
+```{r child = "_toy-pax-db.Rmd"}
+```
+
+```{r}
+dplyr::tbl(pax_db, "station") |> dplyr::count(sampling_type) |> dplyr::collect()
+```
+
+## Weight and maturity keys
+
+The weight-at-length key is a GAM fitted to the survey otoliths:
+
+```{r}
+lw <- hr_input_data_lw(pax_db, sampling_type = 30, prediction_length_range = 1:120)
+lw[lw$length %in% c(20, 40, 60), ]
+```
+
+The maturity key fits a logistic model of maturity at length to the survey
+otoliths. Measured maturity at age is kept, with the model predictions marked
+by `age = NA`:
+
+```{r}
+mat_key <- hr_input_data_maturity_key(pax_db, lgroups = seq(0, 120, 5))
+mat_key |> dplyr::filter(is.na(age), lgroup %in% c(30, 45, 60))
+```
+
+The options the stocks use:
+
+- `by_year = TRUE` fits a length + year model (`03-sai`, `23-ple`), with
+  `copy_years` for years without data.
+- `regions` with more than one region fits `log(lgroup) * region`; with one
+  region the formula has no region term (earlier versions failed with
+  "contrasts can be applied only to factors with 2 or more levels").
+- `sex = 2`, `mature_above`, `immature_below` reproduce the plaice key
+  (`23-ple`).
+- `aged_only = FALSE` also uses otoliths with a maturity stage but no age.
+  pax relabels otoliths without an otolith number as `LEN`, so check where
+  the maturity samples are in your stock's data.
+
+## Survey indices
+
+`hr_input_data_si_index()` raises the length distributions of each tow to the
+tow area, scales them to the strata, splits them into ages with an age-length
+key and sums abundance (`n`, thousands), mean weight (`mw`, g) and maturity
+(`mat`) by year and age.
+
+Strata can be assigned from the tow position (`strata_name` alone,
+`pax::pax_si_scale_by_strata()`), or from a fixed station list
+(`strata_stations`). The old tidypax indices used the station list
+(`biota.strata_stations`, in `pax_db` as the `strata_stations` table), and
+assigning by position changed the saithe spring survey index by -47% to +64%
+in single years. Use the station list to reproduce a published index. Here the
+toy station list carries the stratum areas itself:
+
+```{r}
+smb <- hr_input_data_si_index(
+  pax_db,
+  sampling_type = 30,
+  lw_key = lw,
+  maturity_key = mat_key,
+  regions = list(all = 101:115),
+  strata_stations = toy_strata_stations
+)
+smb |> dplyr::filter(year == 2024) |> dplyr::collect() |> head(4)
+```
+
+In a stock repository the station list comes from `pax_db` and the areas from
+the pax strata table:
+
+```{r, eval = FALSE}
+hr_input_data_si_index(
+  pax_db,
+  sampling_type = 30,
+  tow_number = 0:35,
+  lw_key = input_data_lw_pred,
+  maturity_key = input_data_maturity_key,
+  strata_name = "old_strata",
+  strata_stations = strata_stations |>
+    dplyr::filter(sampling_type == 30, stratification == "old_strata"),
+  regions = list(all = 101:115)
+)
+```
+
+Other survey options: `gear_id_filter` and `tow_number` select the index
+tows; `haul_scalar` down-weights named very large hauls (`03-sai`); `ygroup`
+pools years with few otoliths in the age-length key (`23-ple`), and `alk` or
+`key_year` give a key the function can't build. Use `hr_pool_years()` rather
+than pax's own `ygroup`, which fails in DuckDB.
+
+## Catch at age
+
+The same function gives the catch at age from the commercial samples: an
+age-length key by gear group and half year, raised to the landings with
+`scale_by_landings = TRUE`.
+
+Don't give a `tow_number` filter for commercial samples. For them it is the
+haul number, which can exceed 35; the template's `tow_number = 0:35` dropped
+3–14% of the saithe and haddock samples in recent years and shifted the catch
+at age. In the toy data:
+
+```{r}
+dplyr::tbl(pax_db, "station") |>
+  dplyr::filter(sampling_type == 1) |>
+  dplyr::summarise(samples = dplyr::n(), haul_above_35 = sum(ifelse(tow_number > 35, 1, 0))) |>
+  dplyr::collect()
+```
+
+```{r}
+comm <- hr_input_data_si_index(
+  pax_db,
+  sampling_type = 1,
+  lw_key = lw,
+  tgroup = list(t1 = 1:6, t2 = 7:12),
+  gear_group = list(BMT = "BMT", LLN = "LLN"),
+  scale_by_landings = TRUE
+)
+comm |> dplyr::filter(year == 2024) |> dplyr::collect() |> head(4)
+```
+
+Missing values in the samples or the landings are dropped silently unless
+you say what they are. The function reports how many samples it leaves out:
+
+- `gridcell_na`: samples without a position match no region (plaice lost the
+  whole of 1990 without `gridcell_na = 2741`).
+- `sample_gear_na`, `landings_gear_na`, `landings_month_na`: what unknown
+  gears and months were in the old scripts (saithe: DSE for samples, BMT and
+  month 6 for landings).
+- `pax::pax_add_other()` in `gear_group` gives a default group, for gears
+  outside the listed groups.
+- `sam_use_10_11_first_2_years = TRUE` adds survey otoliths to the commercial
+  key in the first two years. It is a haddock choice; saithe and plaice don't
+  use it.
+
+## Combine
+
+`hr_input_data_combine()` joins the indices and landings, fills gaps and
+scales the catch so that catch × catch weight equals the landings each year.
+With the defaults it only fills weights with the mean for the age; the
+stock's own rules are arguments (maturity cut-offs, values before the survey
+started, running means, M), as in `03-sai`:
+
+```{r, eval = FALSE}
+hr_input_data_combine(
+  year_start, year_end,
+  age_start = 0,
+  input_data_comm_index = input_data_comm_index,
+  input_data_igfs_index = input_data_igfs_index,
+  input_data_agfs_index = input_data_agfs_index,
+  input_data_landings = input_data_landings,
+  M = 0.2,
+  immature_below_age = 4,
+  mature_above_age = 9,
+  maturity_fixed = data.frame(age = 4:9, maturity = c(0.08, 0.185, 0.371, 0.61, 0.79, 0.912), year_before = 1985),
+  maturity_smooth_years = 5,
+  weight_fill_year = 1985,
+  stock_weight_smooth_above = 8,
+  stock_weight_smooth_years = 4
+)
+```
+
+The toy stock has no autumn survey, so we pass an empty table:
+
+```{r}
+input_data <- hr_input_data_combine(
+  year_start = 2015,
+  year_end = 2024,
+  age_start = 1,
+  input_data_comm_index = comm,
+  input_data_igfs_index = smb,
+  input_data_agfs_index = data.frame(year = numeric(), age = numeric(), n = numeric()),
+  input_data_landings = hr_input_data_landings(pax_db),
+  immature_below_age = 2,
+  mature_above_age = 7
+)
+input_data |> dplyr::filter(year == 2024) |> head(5)
+```
+
+Check that catch × catch weight gives the landings (kg):
+
+```{r}
+input_data |>
+  dplyr::group_by(year) |>
+  dplyr::summarise(catch_kg = sum(catch * catch_weight, na.rm = TRUE)) |>
+  dplyr::left_join(dplyr::collect(hr_input_data_landings(pax_db)), by = "year") |>
+  head(3)
+```
+
+Leave `age_end = NULL` (all ages in the data) and let the model form the plus
+group. Cutting ages here drops the old fish, and scaling to landings then
+moves their weight onto the younger ages: saithe SSB was about 30% too low.
+
+## SAM
+
+`hr_sam_dat()` turns `input_data` into a SAM data object, one `hr_sam_*()`
+helper per matrix. The defaults are the spring survey only and no F or M
+before spawning; give the stock's values explicitly (haddock: `pf = 0.4`,
+`pm = 0.3`). The wrong proportions put saithe SSB 14% low while every input
+matched.
+
+```{r, eval = requireNamespace("SAMutils", quietly = TRUE) && requireNamespace("stockassessment", quietly = TRUE)}
+model_dat <- input_data |> dplyr::filter(year <= 2023)
+sam_dat <- hr_sam_dat(model_dat = model_dat, minage = 1, maxage = 10)
+names(sam_dat)[1:5]
+```
+
+The configuration (`hr_sam_conf()`) is the haddock one; each stock keeps its
+own `*_sam_conf()` in `R/sam.R`, written from the old `model_setup.R`. The
+fit itself is `SAMutils::full_sam_fit(sam_dat, sam_conf)`. The SAM chunks
+above run only when SAMutils and stockassessment are installed.
+
+## Muppet
+
+`hr_muppet_input_datafiles()` writes the same table as the Muppet data files
+(`01-cod`). `haddock_fills = FALSE` writes missing weights and maturity as
+missing (-1) instead of haddock values:
+
+```{r}
+files <- hr_muppet_input_datafiles(
+  input_data,
+  year_start = 2015,
+  year_end = 2024,
+  age_end = 10,
+  haddock_fills = FALSE,
+  smb_year_start = 2015,
+  smh_year_start = 2015,
+  survey_ages = 1:10
+)
+names(files)
+cat(head(strsplit(files[["Files/catchandstockdata.dat"]], "\n")[[1]], 4), sep = "\n")
+```
+
+```{r, include = FALSE}
+DBI::dbDisconnect(pax_db)
+```
+
+## AI use
+
+This vignette was drafted with Claude (Anthropic) in October 2026 and has not
+yet been checked by a person (MFRI policy on AI use).
