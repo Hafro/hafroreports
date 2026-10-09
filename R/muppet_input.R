@@ -1,7 +1,8 @@
 #' Prepare a MUPPET option file for a given assessment year
 #'
 #' Takes a template MUPPET option file (as a single character string) and
-#' updates the key year and age settings using \code{rmuppet::line_replace}.
+#' updates the key year and age settings, as \code{rmuppet:::line_replace()}
+#' (but stops with an error when a setting's line is not in the file).
 #' Returns a named list suitable for passing to
 #' \code{\link{hr_muppet_run}} as part of the input file set.
 #'
@@ -32,17 +33,17 @@ hr_muppet_input_optionfile <- function(
     strsplit("\n") |>
     unlist() |>
     stringr::str_remove('../') |>
-    rmuppet::line_replace(age_end, '# Last model age') |>
-    rmuppet::line_replace(plus_group, '# Plus group') |>
-    rmuppet::line_replace(
+    line_replace(age_end, '# Last model age') |>
+    line_replace(plus_group, '# Plus group') |>
+    line_replace(
       year_end - 1,
       '# Last data year, last year with catch at age data'
     ) |>
-    rmuppet::line_replace(
+    line_replace(
       year_end - 1,
       '# Last opt year i.e last year before assyear   <=lastdatayear'
     ) |>
-    rmuppet::line_replace(year_end - 1, '# Last year smh') |>
-    rmuppet::line_replace(year_end, '# Last year smb')
+    line_replace(year_end - 1, '# Last year smh') |>
+    line_replace(year_end, '# Last year smb')
   return(out_files)
 }

@@ -34,7 +34,8 @@ updated option file text.
 }
 \description{
 Takes a template MUPPET option file (as a single character string) and
-updates the key year and age settings using \code{rmuppet::line_replace}.
+updates the key year and age settings, as \code{rmuppet:::line_replace()}
+(but stops with an error when a setting's line is not in the file).
 Returns a named list suitable for passing to
 \code{\link{hr_muppet_run}} as part of the input file set.
 }
