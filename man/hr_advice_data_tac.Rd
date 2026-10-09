@@ -8,7 +8,8 @@ hr_advice_data_tac(
   advice_hist,
   tac_hist,
   landings_by_fishing_year_country,
-  advice_col = "advice"
+  advice_col = "advice",
+  landings_year_end = NULL
 )
 }
 \arguments{
@@ -26,6 +27,13 @@ hr_advice_data_tac(
 stem of a column per language, e.g. \code{"advice_basis"} for text
 advice in \code{advice_basis.en} / \code{advice_basis.is} ("No
 targeted fisheries"). Default \code{"advice"}.}
+
+\item{landings_year_end}{Last fishing year with landings in the table, by
+the year it starts in, or \code{NULL} (default) for all. Landings of
+later fishing years are left out (\code{NA}), e.g.
+\code{assessment_year - 2} for only the fishing years that had ended
+when the advice was given, as the old \code{the_numbers.R}
+(\code{filter(substr(timabil, 1, 4) != tyr - 1)}).}
 }
 \value{
 A tibble with columns \code{advice_period}, \code{advice},

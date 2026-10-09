@@ -120,3 +120,106 @@ advice_ref_lines <- function(ref_points, fishing_pressure, show_lim = FALSE) {
   # Same value (e.g. HR_msy = HR_mgt): one line, one label
   out[!duplicated(out$value), ]
 }
+
+#' Plot the fishing pressure proxy for a category 3 advice sheet
+#'
+#' \code{\link{hr_advice_plot_fpl}} for the length-based fishing pressure
+#' proxy of the rfb rule (L_F=M / L_mean, held as \code{"F"} in the
+#' assessment history), with the F_MSY proxy line and the title
+#' \code{hr_label("fproxy")}. The proxy is close to 1, so the y axis can be
+#' set to a range around it instead of starting at 0.
+#'
+#' @inheritParams hr_advice_plot_fpl
+#' @param ref_points Named list of reference points with \code{F_msy_proxy}
+#'   (the only line drawn).
+#' @param year_start,year_end First and last year of the series shown.
+#' @param y_limits \code{NULL} (default) for the standard axis from 0;
+#'   otherwise \code{c(lower, upper)}, the least range of the y axis (either
+#'   may be \code{NA}): the axis is widened to the values and the F_MSY
+#'   proxy, rounded out to 0.1, with breaks every 0.1.
+#' @param y_pad Also widen the axis by this much below and above the values
+#'   and the F_MSY proxy (rounded out to 0.1), e.g. 0.1. Default 0; with
+#'   \code{y_limits = NULL} and \code{y_pad > 0} the axis is from the data.
+#' @param points Also draw the yearly values as points, so single years of a
+#'   series with gaps show: \code{FALSE} (default), \code{TRUE} (size 0.8) or
+#'   the point size.
+#' @return A \code{ggplot2} / \code{ggiraph} plot object.
+#' @export
+hr_advice_plot_fproxy <- function(
+  data_assessment,
+  assessment_year,
+  ref_points,
+  year_start = -Inf,
+  year_end = Inf,
+  y_limits = NULL,
+  y_pad = 0,
+  points = FALSE
+) {
+  # NSE variables
+  year <- key <- median <- .data <- NULL
+
+  d <- data_assessment |>
+    dplyr::filter(year >= .env$year_start, year <= .env$year_end)
+  p <- hr_advice_plot_fpl(
+    d,
+    assessment_year = assessment_year,
+    ref_points = list(F_msy_proxy = ref_points$F_msy_proxy),
+    fishing_pressure = "F",
+    title = hr_label("fproxy", bold = TRUE)
+  )
+  if (!isFALSE(points)) {
+    p <- p +
+      ggplot2::geom_point(
+        data = d |>
+          dplyr::filter(
+            key == "F",
+            .data$assessment_year == .env$assessment_year,
+            !is.na(median)
+          ),
+        ggplot2::aes(x = year, y = median),
+        colour = "tomato",
+        size = if (isTRUE(points)) 0.8 else points,
+        inherit.aes = FALSE
+      )
+  }
+  if (!is.null(y_limits) || y_pad > 0) {
+    values <- d$median[d$key == "F" & d$assessment_year == assessment_year]
+    limits <- fproxy_axis_limits(
+      c(values, ref_points$F_msy_proxy),
+      y_limits = y_limits,
+      y_pad = y_pad
+    )
+    p <- suppressMessages(
+      p +
+        ggplot2::scale_y_continuous(
+          limits = limits,
+          breaks = seq(limits[1], limits[2], 0.1),
+          expand = c(0, 0)
+        )
+    )
+  }
+  p
+}
+
+#' Axis limits around a fishing pressure proxy
+#'
+#' The range of \code{values}, rounded out to 0.1 and widened by
+#' \code{y_pad}, and at least \code{y_limits}.
+#'
+#' @param values Values to show (with the reference point).
+#' @param y_limits \code{c(lower, upper)} the axis covers at least, or
+#'   \code{NULL}; \code{NA} for none.
+#' @param y_pad Widen by this much beyond the values.
+#' @return Numeric limits \code{c(lower, upper)}.
+#' @noRd
+fproxy_axis_limits <- function(values, y_limits = NULL, y_pad = 0) {
+  # Rounded on a grid of 10 per unit (multiply, round, divide by 10 rather
+  # than by steps of 0.1, so the limits are exact multiples of 0.1)
+  lower <- floor(min(values, na.rm = TRUE) * 10 - y_pad * 10) / 10
+  upper <- ceiling(max(values, na.rm = TRUE) * 10 + y_pad * 10) / 10
+  if (!is.null(y_limits)) {
+    lower <- min(y_limits[1], lower, na.rm = TRUE)
+    upper <- max(y_limits[2], upper, na.rm = TRUE)
+  }
+  c(lower, upper)
+}

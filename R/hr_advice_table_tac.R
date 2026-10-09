@@ -16,6 +16,12 @@
 #'   stem of a column per language, e.g. \code{"advice_basis"} for text
 #'   advice in \code{advice_basis.en} / \code{advice_basis.is} ("No
 #'   targeted fisheries"). Default \code{"advice"}.
+#' @param landings_year_end Last fishing year with landings in the table, by
+#'   the year it starts in, or \code{NULL} (default) for all. Landings of
+#'   later fishing years are left out (\code{NA}), e.g.
+#'   \code{assessment_year - 2} for only the fishing years that had ended
+#'   when the advice was given, as the old \code{the_numbers.R}
+#'   (\code{filter(substr(timabil, 1, 4) != tyr - 1)}).
 #' @return A tibble with columns \code{advice_period}, \code{advice},
 #'   \code{tac}, \code{icelandic} (Icelandic catch in thousands of tonnes),
 #'   \code{foreign}, and \code{total}.
@@ -24,7 +30,8 @@ hr_advice_data_tac <- function(
   advice_hist,
   tac_hist,
   landings_by_fishing_year_country,
-  advice_col = "advice"
+  advice_col = "advice",
+  landings_year_end = NULL
 ) {
   lang <- getOption("hr.lang", "en")
   if (!(advice_col %in% colnames(advice_hist))) {
@@ -38,6 +45,13 @@ hr_advice_data_tac <- function(
   # TODO: 02-had say:, from mar::vessel() mutate(origin = case_when(status == 'Erlent' ~ 'foreign', TRUE ~ 'icelandic'))
   #       I think this is a poor-man's version of our contry column, from mar::landadur_afli():land
   # TODO: Vastly over-reported foreign landings, not filtering areas?
+  landings_by_fishing_year_country <- dplyr::collect(landings_by_fishing_year_country)
+  if (!is.null(landings_year_end)) {
+    landings_by_fishing_year_country <- landings_by_fishing_year_country |>
+      dplyr::filter(
+        as.numeric(substr(fishing_year, 1, 4)) <= .env$landings_year_end
+      )
+  }
   landings <-
     landings_by_fishing_year_country |>
     dplyr::mutate(

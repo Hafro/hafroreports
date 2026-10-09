@@ -10,7 +10,9 @@ hr_advice_plot_index(
   ref_points = NULL,
   key = "SSB",
   title = NULL,
-  index_ab = FALSE
+  index_ab = FALSE,
+  index_ab_span = c("years", "periods"),
+  index_ab_colour = "red3"
 )
 }
 \arguments{
@@ -30,6 +32,17 @@ tonnes, or \code{NULL} for no line.}
 \item{index_ab}{If \code{TRUE}, draw the mean index of the last two years
 to \code{assessment_year} (index A) and of the three years before (index
 B) as red lines, as in the rfb rule (r = A / B). Default \code{FALSE}.}
+
+\item{index_ab_span}{How the index A and B lines span the years:
+\code{"years"} (default) from the first to the last year of each
+period; \code{"periods"} to the half years between the periods, so the
+lines meet (index B from \code{assessment_year - 4.5} to
+\code{assessment_year - 1.5}, index A from there to
+\code{assessment_year}), as the old tidypax \code{three_over_two()}
+figures.}
+
+\item{index_ab_colour}{Colour of the index A and B lines. Default
+\code{"red3"}.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.

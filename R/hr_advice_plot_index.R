@@ -16,6 +16,15 @@
 #' @param index_ab If \code{TRUE}, draw the mean index of the last two years
 #'   to \code{assessment_year} (index A) and of the three years before (index
 #'   B) as red lines, as in the rfb rule (r = A / B). Default \code{FALSE}.
+#' @param index_ab_span How the index A and B lines span the years:
+#'   \code{"years"} (default) from the first to the last year of each
+#'   period; \code{"periods"} to the half years between the periods, so the
+#'   lines meet (index B from \code{assessment_year - 4.5} to
+#'   \code{assessment_year - 1.5}, index A from there to
+#'   \code{assessment_year}), as the old tidypax \code{three_over_two()}
+#'   figures.
+#' @param index_ab_colour Colour of the index A and B lines. Default
+#'   \code{"red3"}.
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
 #' @export
 hr_advice_plot_index <- function(
@@ -24,11 +33,14 @@ hr_advice_plot_index <- function(
   ref_points = NULL,
   key = "SSB",
   title = NULL,
-  index_ab = FALSE
+  index_ab = FALSE,
+  index_ab_span = c("years", "periods"),
+  index_ab_colour = "red3"
 ) {
   # NSE variables
   year <- median <- low <- high <- label <- .data <- group <- avg <- NULL
   lang <- getOption("hr.lang", "en")
+  index_ab_span <- match.arg(index_ab_span)
 
   d <- data_assessment |>
     dplyr::filter(
@@ -81,7 +93,16 @@ hr_advice_plot_index <- function(
         parse = TRUE
       )
   }
-  if (isTRUE(index_ab)) {
+  if (isTRUE(index_ab) && index_ab_span == "periods") {
+    p <- p +
+      ggplot2::geom_line(
+        data = advice_index_ab_periods(d, assessment_year),
+        ggplot2::aes(x = year, y = avg / 1000, group = group),
+        colour = index_ab_colour,
+        linewidth = 0.75,
+        inherit.aes = FALSE
+      )
+  } else if (isTRUE(index_ab)) {
     avg <- d |>
       dplyr::filter(
         year <= .env$assessment_year,
@@ -95,7 +116,7 @@ hr_advice_plot_index <- function(
       ggplot2::geom_line(
         data = avg,
         ggplot2::aes(x = year, y = avg / 1000, group = group),
-        colour = "red3",
+        colour = index_ab_colour,
         linewidth = 0.75,
         inherit.aes = FALSE
       )
@@ -108,4 +129,41 @@ hr_advice_plot_index <- function(
     hr_advice_y_scale() +
     hr_astand_theme(legend.position = "none") +
     hr_astand_x_scale(5, 0)
+}
+
+#' Index A and B lines spanning their periods
+#'
+#' The mean index of the last two years to \code{assessment_year} (index A)
+#' and of the three years before (index B), at the years of each period with
+#' the first and last moved half a year out to where the periods meet
+#' (index B from \code{assessment_year - 4.5} to \code{assessment_year -
+#' 1.5}, index A from there to \code{assessment_year}), as the old tidypax
+#' \code{three_over_two()}.
+#'
+#' @param d The index of one assessment (columns \code{year},
+#'   \code{median}).
+#' @param assessment_year The assessment year.
+#' @return A tibble with columns \code{year}, \code{group} (\code{"A"},
+#'   \code{"B"}) and \code{avg}.
+#' @noRd
+advice_index_ab_periods <- function(d, assessment_year) {
+  # NSE variables
+  year <- median <- group <- avg <- NULL
+
+  tyr <- assessment_year
+  d |>
+    dplyr::filter(year > tyr - 5, year <= tyr) |>
+    dplyr::mutate(group = ifelse(year > tyr - 2, "A", "B")) |>
+    dplyr::group_by(group) |>
+    dplyr::mutate(avg = mean(median, na.rm = TRUE)) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(
+      year = dplyr::case_when(
+        year == tyr - 2 ~ tyr - 2 + 0.5,
+        year == tyr - 1 ~ tyr - 1 - 0.5,
+        year == tyr - 4 ~ tyr - 4 - 0.5,
+        TRUE ~ year
+      )
+    ) |>
+    dplyr::select(year, group, avg)
 }
