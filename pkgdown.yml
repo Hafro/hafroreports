@@ -1,0 +1,13 @@
+pandoc: 3.8.3
+pkgdown: 2.2.1
+pkgdown_sha: ~
+articles:
+  advice-sheets: advice-sheets.html
+  history-tables: history-tables.html
+  input-data: input-data.html
+  stock-repository: stock-repository.html
+  techreport-figures: techreport-figures.html
+last_built: 2026-10-09T14:54Z
+urls:
+  reference: https://hafro.github.io/hafroreports/reference
+  article: https://hafro.github.io/hafroreports/articles

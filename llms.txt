@@ -1,0 +1,308 @@
+# hafroreports: Helpers for building assessment reports
+
+Figures, tables and input data for the MFRI stock assessment reports,
+used by the stock assessment repositories (01-cod, 02-had-targets,
+03-sai, …).
+
+Documentation, with articles on the main workflows, is at
+<https://hafro.github.io/hafroreports/>:
+
+- [Input data for SAM and
+  Muppet](https://hafro.github.io/hafroreports/articles/input-data.html)
+- [History
+  tables](https://hafro.github.io/hafroreports/articles/history-tables.html)
+- [Advice sheet figures and
+  tables](https://hafro.github.io/hafroreports/articles/advice-sheets.html)
+- [Tech report
+  figures](https://hafro.github.io/hafroreports/articles/techreport-figures.html)
+- [The layout of a stock
+  repository](https://hafro.github.io/hafroreports/articles/stock-repository.html)
+
+The badges and the site work once the workflows have run on GitHub and
+GitHub Pages is enabled for the `gh-pages` branch.
+
+## Installation
+
+``` r
+
+remotes::install_github("hafro/hafroreports")
+```
+
+SAMutils, stockassessment and rmuppet (in Enhances) are needed only for
+the SAM and Muppet functions.
+
+## Development
+
+### Code formatting
+
+This projects uses [Air](https://posit-dev.github.io/air/), you may need
+to configure your editor accordingly. See
+<https://posit-dev.github.io/air/editors.html>
+
+### Testing within an assessment model
+
+Assessment models use
+[renv](https://rstudio.github.io/renv/articles/renv.html), and your
+development version will need to be installed before you can test.
+
+`{r} renv::install("local::../hafroreports", dependencies = "never")`
+
+…once your changes are pushed / merged, switch back to the github
+version with:
+
+`{r} renv::install("github::hafro/hafroreports") renv::snapshot()`
+
+# Package index
+
+## Input data
+
+Weight and maturity keys, survey indices and catch at age from a pax
+database, and the model input table.
+
+- [`hr_input_data_lw()`](https://hafro.github.io/hafroreports/reference/hr_input_data_lw.md)
+  : Extract length–weight data from a pax database
+- [`hr_input_data_maturity_key()`](https://hafro.github.io/hafroreports/reference/hr_input_data_maturity_key.md)
+  : Estimate maturity-at-length key from survey data
+- [`hr_input_data_si_index()`](https://hafro.github.io/hafroreports/reference/hr_input_data_si_index.md)
+  : Compute survey index data (abundance and biomass at age)
+- [`hr_si_scale_by_strata_stations()`](https://hafro.github.io/hafroreports/reference/hr_si_scale_by_strata_stations.md)
+  : Scale survey abundance to strata using a station list
+- [`hr_pool_years()`](https://hafro.github.io/hafroreports/reference/hr_pool_years.md)
+  : Pool years for an age-length key
+- [`hr_input_data_landings()`](https://hafro.github.io/hafroreports/reference/hr_input_data_landings.md)
+  : Aggregate total landings by year from a pax database
+- [`hr_input_data_combine()`](https://hafro.github.io/hafroreports/reference/hr_input_data_combine.md)
+  : Combine survey indices into single input_data
+
+## SAM input
+
+- [`hr_sam_cn()`](https://hafro.github.io/hafroreports/reference/hr_sam_cn.md)
+  : Build SAM catch-at-age matrix
+- [`hr_sam_conf()`](https://hafro.github.io/hafroreports/reference/hr_sam_conf.md)
+  : Build SAM configuration for Icelandic haddock (deprecated)
+- [`hr_sam_cw()`](https://hafro.github.io/hafroreports/reference/hr_sam_cw.md)
+  : Build SAM catch mean weight matrix
+- [`hr_sam_dat()`](https://hafro.github.io/hafroreports/reference/hr_sam_dat.md)
+  : Assemble SAM input data
+- [`hr_sam_lf()`](https://hafro.github.io/hafroreports/reference/hr_sam_lf.md)
+  : Build SAM landing fraction matrix
+- [`hr_sam_mo()`](https://hafro.github.io/hafroreports/reference/hr_sam_mo.md)
+  : Build SAM proportion mature matrix
+- [`hr_sam_nm()`](https://hafro.github.io/hafroreports/reference/hr_sam_nm.md)
+  : Build SAM natural mortality matrix
+- [`hr_sam_pf()`](https://hafro.github.io/hafroreports/reference/hr_sam_pf.md)
+  : Build SAM proportion of F before spawning matrix
+- [`hr_sam_pm()`](https://hafro.github.io/hafroreports/reference/hr_sam_pm.md)
+  : Build SAM proportion of M before spawning matrix
+- [`hr_sam_smb()`](https://hafro.github.io/hafroreports/reference/hr_sam_smb.md)
+  : Build SAM spring (SMB) survey index matrix
+- [`hr_sam_smh()`](https://hafro.github.io/hafroreports/reference/hr_sam_smh.md)
+  : Build SAM autumn (SMH) survey index matrix
+- [`hr_sam_sw()`](https://hafro.github.io/hafroreports/reference/hr_sam_sw.md)
+  : Build SAM stock mean weight matrix
+
+## Muppet
+
+- [`hr_muppet_input_datafiles()`](https://hafro.github.io/hafroreports/reference/hr_muppet_input_datafiles.md)
+  : Prepare MUPPET input data files
+- [`hr_muppet_input_optionfile()`](https://hafro.github.io/hafroreports/reference/hr_muppet_input_optionfile.md)
+  : Prepare a MUPPET option file for a given assessment year
+- [`hr_muppet_input_progwts()`](https://hafro.github.io/hafroreports/reference/hr_muppet_input_progwts.md)
+  : Generate MUPPET projection weights file
+- [`hr_muppet_mcmc()`](https://hafro.github.io/hafroreports/reference/hr_muppet_mcmc.md)
+  : Run the MCMC of a MUPPET model
+- [`hr_muppet_run()`](https://hafro.github.io/hafroreports/reference/hr_muppet_run.md)
+  : Run MUPPET model and return results
+
+## History tables and assessment summaries
+
+- [`hr_update_hist()`](https://hafro.github.io/hafroreports/reference/hr_update_hist.md)
+  : Merge and update a historical data series
+- [`hr_assessment_from_fit()`](https://hafro.github.io/hafroreports/reference/hr_assessment_from_fit.md)
+  : Assessment summary from a SAM fit
+- [`hr_assessment_from_sag()`](https://hafro.github.io/hafroreports/reference/hr_assessment_from_sag.md)
+  : Fetch assessment results from ICES SAG
+- [`hr_assessment_template()`](https://hafro.github.io/hafroreports/reference/hr_assessment_template.md)
+  : Create an empty assessment data template
+
+## Advice sheet data
+
+- [`hr_advice_data_assessment()`](https://hafro.github.io/hafroreports/reference/hr_advice_data_assessment.md)
+  : Reshape wide assessment data into long format
+- [`hr_advice_data_landings()`](https://hafro.github.io/hafroreports/reference/hr_advice_data_landings.md)
+  : Prepare landings data for advice plots and tables
+- [`hr_advice_data_prognosis()`](https://hafro.github.io/hafroreports/reference/hr_advice_data_prognosis.md)
+  : Assemble prognosis summary data for advice sheet
+- [`hr_advice_data_tac()`](https://hafro.github.io/hafroreports/reference/hr_advice_data_tac.md)
+  : Assemble TAC and landings history for advice sheet
+
+## Advice sheet figures
+
+- [`hr_advice_banner()`](https://hafro.github.io/hafroreports/reference/hr_advice_banner.md)
+  : Advice sheet banner
+- [`hr_advice_plot_fpl()`](https://hafro.github.io/hafroreports/reference/hr_advice_plot_fpl.md)
+  : Plot fishing pressure for advice sheet
+- [`hr_advice_plot_fproxy()`](https://hafro.github.io/hafroreports/reference/hr_advice_plot_fproxy.md)
+  : Plot the fishing pressure proxy for a category 3 advice sheet
+- [`hr_advice_plot_index()`](https://hafro.github.io/hafroreports/reference/hr_advice_plot_index.md)
+  : Plot a survey biomass index for advice sheet
+- [`hr_advice_plot_landings()`](https://hafro.github.io/hafroreports/reference/hr_advice_plot_landings.md)
+  : Plot landings by gear for advice sheet
+- [`hr_advice_plot_recruitment()`](https://hafro.github.io/hafroreports/reference/hr_advice_plot_recruitment.md)
+  : Plot recruitment for advice sheet
+- [`hr_advice_plot_retro()`](https://hafro.github.io/hafroreports/reference/hr_advice_plot_retro.md)
+  : Plot retrospective comparison of recent assessments for advice sheet
+- [`hr_advice_plot_ssb()`](https://hafro.github.io/hafroreports/reference/hr_advice_plot_ssb.md)
+  : Plot spawning stock biomass for advice sheet
+- [`hr_advice_y_scale()`](https://hafro.github.io/hafroreports/reference/hr_advice_y_scale.md)
+  : Y axis for advice sheet figures
+
+## Advice sheet tables
+
+- [`hr_advice_table_chr()`](https://hafro.github.io/hafroreports/reference/hr_advice_table_chr.md)
+  : Format the constant harvest rate (chr) advice calculation table
+- [`hr_advice_table_prog_input()`](https://hafro.github.io/hafroreports/reference/hr_advice_table_prog_input.md)
+  : Format forecast assumptions table for advice sheet
+- [`hr_advice_table_prognosis()`](https://hafro.github.io/hafroreports/reference/hr_advice_table_prognosis.md)
+  : Format prognosis table for advice sheet
+- [`hr_advice_table_rfb()`](https://hafro.github.io/hafroreports/reference/hr_advice_table_rfb.md)
+  : Format the rfb (ratio, f, b) advice calculation table
+- [`hr_advice_table_tac()`](https://hafro.github.io/hafroreports/reference/hr_advice_table_tac.md)
+  : Format TAC history table for advice sheet
+- [`hr_advice_ref_table()`](https://hafro.github.io/hafroreports/reference/hr_advice_ref_table.md)
+  : Format reference points table for advice sheet
+- [`hr_advice_basis_table()`](https://hafro.github.io/hafroreports/reference/hr_advice_basis_table.md)
+  : Format advice basis table
+- [`hr_ref_points_tonnes()`](https://hafro.github.io/hafroreports/reference/hr_ref_points_tonnes.md)
+  : Biomass reference points in tonnes
+
+## Tech report figures
+
+- [`hr_techreport_plot_catch_age_bubble()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_catch_age_bubble.md)
+  : Plot catch-at-age bar chart coloured by year class
+- [`hr_techreport_plot_catch_age_prop()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_catch_age_prop.md)
+  : Plot catch proportions by year class (total and stacked)
+- [`hr_techreport_plot_catch_region()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_catch_region.md)
+  : Plot catch by geographic region (total and stacked)
+- [`hr_techreport_plot_catch_wgt_growth()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_catch_wgt_growth.md)
+  : Plot catch weight growth by age and year class
+- [`hr_techreport_plot_catchdepth()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_catchdepth.md)
+  : Plot catch by depth class (total and stacked)
+- [`hr_techreport_plot_catchspatial()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_catchspatial.md)
+  : Plot spatial distribution of catch
+- [`hr_techreport_plot_comm_joy_ldist()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_comm_joy_ldist.md)
+  : Plot commercial length-frequency distribution as a joy plot
+- [`hr_techreport_plot_cpue()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_cpue.md)
+  : Plot CPUE time series by gear group
+- [`hr_techreport_plot_discards()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_discards.md)
+  : Plot discard rates by gear for a given species
+- [`hr_techreport_plot_dsl_lc()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_dsl_lc.md)
+  : Length frequency of the catch with the DSL reference points
+- [`hr_techreport_plot_dsl_ml()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_dsl_ml.md)
+  : Mean length of the catch by year with L_F=M
+- [`hr_techreport_plot_landings_country()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_landings_country.md)
+  : Plot landings by country
+- [`hr_techreport_plot_landings_gear()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_landings_gear.md)
+  : Plot Icelandic landings by gear (total and stacked)
+- [`hr_techreport_plot_lbindex()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_lbindex.md)
+  : Plot length-based survey biomass index
+- [`hr_techreport_plot_management()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_management.md)
+  : Plot management history (advice, TAC, and landings)
+- [`hr_techreport_plot_maturity()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_maturity.md)
+  : Plot maturity-at-age by year class
+- [`hr_techreport_plot_maturityweight()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_maturityweight.md)
+  : Plot maturity as a function of stock weight
+- [`hr_techreport_plot_muppetfit_selection()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_muppetfit_selection.md)
+  : Plot MUPPET model selection and fit diagnostics
+- [`hr_techreport_plot_numboats()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_numboats.md)
+  : Plot number of vessels accounting for 95% of catch
+- [`hr_techreport_plot_quotatransfer()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_quotatransfer.md)
+  : Plot quota transfers between years and between species
+- [`hr_techreport_rfb_theme()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_rfb.md)
+  [`hr_techreport_plot_rfb_index()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_rfb.md)
+  [`hr_techreport_plot_rfb_lc()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_rfb.md)
+  [`hr_techreport_plot_rfb_ml()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_rfb.md)
+  [`hr_techreport_plot_rfb_f()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_rfb.md)
+  : Tech report figures of the rfb rule
+- [`hr_techreport_plot_sampling_overview()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_sampling_overview.md)
+  : Plot sampling coverage by month, gear, and sampling type
+- [`hr_techreport_plot_sampling_position()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_sampling_position.md)
+  : Map biological sampling locations overlaid on catch density
+- [`hr_techreport_plot_samres_combfit()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_samres_combfit.md)
+  : Plot SAM combined survey fit
+- [`hr_techreport_plot_samres_resid()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_samres_resid.md)
+  : Plot SAM model residuals by year, age, and fleet
+- [`hr_techreport_plot_survey_age_bubble()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_survey_age_bubble.md)
+  : Plot spring and autumn survey indices at age coloured by year class
+- [`hr_techreport_plot_survey_byarea()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_survey_byarea.md)
+  : Plot survey biomass by geographic region (total and stacked)
+- [`hr_techreport_plot_survey_ldist()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_survey_ldist.md)
+  : Plot survey length distribution by year
+- [`hr_techreport_plot_survey_ldist_joy()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_survey_ldist_joy.md)
+  : Plot survey length distributions as joy plots for both surveys
+- [`hr_techreport_plot_survey_location()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_survey_location.md)
+  : Map survey station locations with catch density
+- [`hr_techreport_plot_wm_center()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_wm_center.md)
+  : Plot catch weight vs. stock weight relationship (centre panel)
+- [`hr_techreport_plot_wm_left()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_wm_left.md)
+  : Plot stock weight growth model (left panel)
+- [`hr_techreport_plot_wm_right()`](https://hafro.github.io/hafroreports/reference/hr_techreport_plot_wm_right.md)
+  : Plot year-effect estimates from stock weight growth model (right
+  panel)
+- [`hr_techreport_dsl_basis()`](https://hafro.github.io/hafroreports/reference/hr_techreport_dsl_basis.md)
+  : Length-based reference point basis of a DSL figure
+
+## Tech report tables
+
+- [`hr_techreport_table_boatsummary()`](https://hafro.github.io/hafroreports/reference/hr_techreport_table_boatsummary.md)
+  : Format vessel and catch summary table by gear
+- [`hr_techreport_table_lengthsamples()`](https://hafro.github.io/hafroreports/reference/hr_techreport_table_lengthsamples.md)
+  : Format length and otolith sampling summary table
+
+## Labels, themes and helpers
+
+- [`hr_label()`](https://hafro.github.io/hafroreports/reference/hr_label.md)
+  : Retrieve a localised label
+- [`hr_astand_theme()`](https://hafro.github.io/hafroreports/reference/hr_astand_theme.md)
+  : The Ástand theme
+- [`hr_astand_x_scale()`](https://hafro.github.io/hafroreports/reference/hr_astand_x_scale.md)
+  : Astand x scale
+- [`hr_theme_crayola_col()`](https://hafro.github.io/hafroreports/reference/hr_theme_crayola_col.md)
+  : crayola colors
+- [`hr_theme_crayola_fill()`](https://hafro.github.io/hafroreports/reference/hr_theme_crayola_fill.md)
+  : crayola fills
+- [`hr_red_dot_number()`](https://hafro.github.io/hafroreports/reference/hr_red_dot_number.md)
+  : Print number with a thousand separator
+- [`hr_glossary_section()`](https://hafro.github.io/hafroreports/reference/hr_glossary_section.md)
+  : Generate a glossary section
+- [`hr_git_revision()`](https://hafro.github.io/hafroreports/reference/hr_git_revision.md)
+  : Get current git revision string
+- [`tbl_formater()`](https://hafro.github.io/hafroreports/reference/tbl_formater.md)
+  : Format a data frame as a styled GT table
+- [`two_panel_plot()`](https://hafro.github.io/hafroreports/reference/two_panel_plot.md)
+  : Two panel plot
+
+## Data
+
+- [`hr_locale`](https://hafro.github.io/hafroreports/reference/hr_locale.md)
+  :
+
+  Locale information for `hr_locale`
+
+- [`hr_discards`](https://hafro.github.io/hafroreports/reference/hr_discards.md)
+  : Stored copy of discards report for cod & haddock
+
+# Articles
+
+### Workflows
+
+- [Input data for SAM and
+  Muppet](https://hafro.github.io/hafroreports/articles/input-data.md):
+- [History tables: advice, TAC and assessment
+  summaries](https://hafro.github.io/hafroreports/articles/history-tables.md):
+- [Advice sheet figures and
+  tables](https://hafro.github.io/hafroreports/articles/advice-sheets.md):
+- [Tech report
+  figures](https://hafro.github.io/hafroreports/articles/techreport-figures.md):
+- [The layout of a stock repository: targets and
+  Quarto](https://hafro.github.io/hafroreports/articles/stock-repository.md):
