@@ -25,9 +25,9 @@ hr_label <- function(key, ..., bold = FALSE) {
   if (key == "recruitment_age") {
     if (lang == "is") {
       out <- sprintf(
-        "Nýliðun (%s %s)",
+        "N\u00fdli\u00f0un (%s %s)",
         as.character(..1),
-        if (..1 == 1) "árs" else "ára"
+        if (..1 == 1) "\u00e1rs" else "\u00e1ra"
       )
     } else {
       out <- sprintf("Recruitment (age %s)", as.character(..1))

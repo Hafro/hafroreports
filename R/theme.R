@@ -57,7 +57,7 @@ hr_red_dot_number <- function(number) {
 
   prettyNum(
     number,
-    big.mark = " ",
+    big.mark = "\u200a",
     decimal.mark = if (lang == "is") "," else ".",
     digits = 10
   )

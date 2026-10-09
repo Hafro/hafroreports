@@ -64,14 +64,14 @@ hr_advice_ref_table <- function(
       j = "approach",
       part = "header",
       value = flextable::as_paragraph(
-        if (lang == 'is') "Nálgun" else 'Approach'
+        if (lang == 'is') "N\u00e1lgun" else 'Approach'
       )
     ) |>
     flextable::mk_par(
       j = "render",
       part = "header",
       value = flextable::as_paragraph(
-        if (lang == 'is') "Viðmiðunarmörk" else 'Reference point'
+        if (lang == 'is') "Vi\u00f0mi\u00f0unarm\u00f6rk" else 'Reference point'
       )
     ) |>
     flextable::mk_par(
@@ -85,7 +85,7 @@ hr_advice_ref_table <- function(
       j = "basis",
       part = "header",
       value = flextable::as_paragraph(
-        if (lang == 'is') "Grundvöllur" else 'Basis'
+        if (lang == 'is') "Grundv\u00f6llur" else 'Basis'
       )
     ) |>
     ftExtra::colformat_md() |>

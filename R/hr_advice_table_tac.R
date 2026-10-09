@@ -147,11 +147,11 @@ hr_advice_table_tac <- function(
 ) {
   lang <- getOption("hr.lang", "en")
   default_headers <- list(
-    advice_period = c(en = 'Fishing year', is = "Fiskveiðiár"),
+    advice_period = c(en = 'Fishing year', is = "Fiskvei\u00f0i\u00e1r"),
     advice = c(en = 'Recommended TAC', is = "Tillaga"),
     tac = c(en = "National TAC", is = "Aflamark"),
-    icelandic = c(en = "Catches Iceland", is = "Afli Íslendinga"),
-    foreign = c(en = "Catches other nations", is = "Afli annarra þjóða"),
+    icelandic = c(en = "Catches Iceland", is = "Afli \u00cdslendinga"),
+    foreign = c(en = "Catches other nations", is = "Afli annarra \u00fej\u00f3\u00f0a"),
     total = c(en = "Total catch", is = "Afli alls")
   )
   headers <- utils::modifyList(default_headers, as.list(headers))
@@ -194,7 +194,7 @@ hr_advice_table_tac <- function(
       i = 1,
       value = flextable::as_paragraph(
         if (lang == 'is') {
-          'Afli annarra þjóð fyrir 2014 er aðeins skráður á almanaksári. Fyrir þann tíma tekur heildarafli á fiskveiðiári því ekki tillit til erlends afla nema að litlu leyti.'
+          'Afli annarra \u00fej\u00f3\u00f0 fyrir 2014 er a\u00f0eins skr\u00e1\u00f0ur \u00e1 almanaks\u00e1ri. Fyrir \u00feann t\u00edma tekur heildarafli \u00e1 fiskvei\u00f0i\u00e1ri \u00fev\u00ed ekki tillit til erlends afla nema a\u00f0 litlu leyti.'
         } else {
           "Landings of other nations before 2014 is only available by calendar year. Before that time total catches within the fishing year mostly excludes foreign landings."
         }

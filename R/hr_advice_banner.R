@@ -21,12 +21,12 @@ hr_advice_banner <- function(
   dict <-
     array(
       c(
-        'Ráðgjöf',
+        'R\u00e1\u00f0gj\u00f6f',
         'tonn',
-        'Breyting á ráðgjöf',
+        'Breyting \u00e1 r\u00e1\u00f0gj\u00f6f',
         'Athugasemd',
-        'Birting ráðgjafar',
-        'Útgefið af Hafrannsóknastofnun.',
+        'Birting r\u00e1\u00f0gjafar',
+        '\u00datgefi\u00f0 af Hafranns\u00f3knastofnun.',
         'Advice',
         'tonnes',
         'Advice change',

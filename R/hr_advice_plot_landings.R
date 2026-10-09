@@ -2,13 +2,13 @@
 # (first at the bottom of the bars)
 advice_gear_groups <- tibble::tribble(
   ~gear_name, ~gear.en, ~gear.is, ~colour,
-  "LLN", "Longline", "Lína", "tomato3",
-  "DSE", "Demersal seine", "Dragnót", "navajowhite3",
+  "LLN", "Longline", "L\u00edna", "tomato3",
+  "DSE", "Demersal seine", "Dragn\u00f3t", "navajowhite3",
   "GIL", "Gillnet", "Net", "tomato3",
-  "HLN", "Handline", "Handfæri", "darkseagreen4",
+  "HLN", "Handline", "Handf\u00e6ri", "darkseagreen4",
   "NPT", "Nephrops trawl", "Humarvarpa", "khaki3",
   "BMT", "Bottom trawl", "Botnvarpa", "steelblue3",
-  "Other", "Other and undefined gear", "Annað og óskilgreint", "black"
+  "Other", "Other and undefined gear", "Anna\u00f0 og \u00f3skilgreint", "black"
 )
 
 #' Prepare landings data for advice plots and tables
@@ -114,7 +114,7 @@ hr_advice_plot_landings <- function(
           round(tonnes * 1e3),
           " t",
           '\n',
-          if (lang == 'is') 'Ár' else 'Year',
+          if (lang == 'is') '\u00c1r' else 'Year',
           ': ',
           year
         ),

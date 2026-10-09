@@ -89,7 +89,7 @@ hr_techreport_plot_numboats <- function(
       x = hr_label("year"),
       y = c(
         en = "Number of vessels accounting for 95% of catch",
-        is = "Fjöldi báta sem veiða 95 % af heildarafla"
+        is = "Fj\u00f6ldi b\u00e1ta sem vei\u00f0a 95 % af heildarafla"
       )[[lang]]
     ) +
     ggplot2::theme_light()

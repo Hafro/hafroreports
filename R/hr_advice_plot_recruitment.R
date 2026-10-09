@@ -28,19 +28,19 @@ hr_advice_data_assessment <- function(assessment, labels = NULL) {
       label.is = ordered(
         forcats::fct_recode(
           key,
-          'Nýliðun' = 'recruitment',
+          'N\u00fdli\u00f0un' = 'recruitment',
           'Hrygningarstofn' = 'SSB',
-          'Viðmiðunarstofn' = 'refbio',
-          'Veiðihlutfall' = 'HR',
+          'Vi\u00f0mi\u00f0unarstofn' = 'refbio',
+          'Vei\u00f0ihlutfall' = 'HR',
           # 'Landaður afli' = 'landings',
-          'Veiðidánartala' = 'F'
+          'Vei\u00f0id\u00e1nartala' = 'F'
         ),
         levels = c(
-          'Nýliðun',
+          'N\u00fdli\u00f0un',
           'Hrygningarstofn',
-          'Viðmiðunarstofn',
-          'Veiðihlutfall',
-          'Veiðidánartala'
+          'Vi\u00f0mi\u00f0unarstofn',
+          'Vei\u00f0ihlutfall',
+          'Vei\u00f0id\u00e1nartala'
         )
       ),
       label.en = ordered(

@@ -23,7 +23,7 @@ hr_glossary_section <- function() {
 
   header_text = list(
     en = "Glossary",
-    is = "Orðalisti"
+    is = "Or\u00f0alisti"
   )
 
   glossary = list(

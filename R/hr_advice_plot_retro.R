@@ -103,7 +103,7 @@ hr_advice_plot_retro <- function(
       linewidth = 0.5,
       ggplot2::aes(
         tooltip = paste(
-          if (lang == 'is') 'Ráðgjafarár' else 'Assessment year',
+          if (lang == 'is') 'R\u00e1\u00f0gjafar\u00e1r' else 'Assessment year',
           ':',
           assessment_year
         ),

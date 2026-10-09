@@ -31,8 +31,8 @@ hr_advice_table_chr <- function(
     base = chr_prognosis_base,
     desc_prefix = "chr_desc",
     advice_formula = list(
-      en = "A~y+1~ = I~y~ × HR~MSY\\ proxy~ × b × m, limited by stability clause",
-      is = "A~y+1~ = I~y~ × HR~MSY\\ proxy~ × b × m, takmarkað með sveiflujöfnun"
+      en = "A~y+1~ = I~y~ \u00d7 HR~MSY\\ proxy~ \u00d7 b \u00d7 m, limited by stability clause",
+      is = "A~y+1~ = I~y~ \u00d7 HR~MSY\\ proxy~ \u00d7 b \u00d7 m, takmarka\u00f0 me\u00f0 sveifluj\u00f6fnun"
     )
   )
 }
@@ -67,7 +67,7 @@ hr_advice_table_rfb <- function(
 ) {
   if (!biannual) {
     advice <- trimws(rfb_prognosis_base$component) == "catch_advice"
-    rfb_prognosis_base$rfb_desc.is[advice] <- "Ráðgjöf fyrir {tyr}/{tyr+1}"
+    rfb_prognosis_base$rfb_desc.is[advice] <- "R\u00e1\u00f0gj\u00f6f fyrir {tyr}/{tyr+1}"
     rfb_prognosis_base$rfb_desc.en[advice] <- "Catch advice for {tyr}/{tyr+1}"
   }
   advice_table_dls(
@@ -75,7 +75,7 @@ hr_advice_table_rfb <- function(
     assessment_year,
     base = rfb_prognosis_base,
     desc_prefix = "rfb_desc",
-    advice_formula = list(en = "A~y~ × r × 1/f × b × m", is = "A~y~ × r × 1/f × b × m")
+    advice_formula = list(en = "A~y~ \u00d7 r \u00d7 1/f \u00d7 b \u00d7 m", is = "A~y~ \u00d7 r \u00d7 1/f \u00d7 b \u00d7 m")
   )
 }
 
@@ -174,7 +174,7 @@ advice_table_dls <- function(prognosis, assessment_year, base, desc_prefix, advi
       i = n,
       value = flextable::as_paragraph(
         if (lang == 'is') {
-          'Tölur í töflu eru námundaðar. Útreikningar eru gerðir með ónámunduðum tölum og því gætu reiknuð gildi ekki stemmt'
+          'T\u00f6lur \u00ed t\u00f6flu eru n\u00e1munda\u00f0ar. \u00datreikningar eru ger\u00f0ir me\u00f0 \u00f3n\u00e1mundu\u00f0um t\u00f6lum og \u00fev\u00ed g\u00e6tu reiknu\u00f0 gildi ekki stemmt'
         } else {
           "The figures in the table are rounded. Calculations were done with unrounded inputs, and compared values may not match exactly when calculated using the rounded figures in the table."
         }

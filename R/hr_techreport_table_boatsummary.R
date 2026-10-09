@@ -28,7 +28,7 @@ hr_techreport_table_boatsummary <- function(
   tlate_cols <- function(col_names) {
     col_names <- gsub(
       '^num_boats_',
-      c(en = 'Nr. ', is = 'Fjöldi báta ')[[lang]],
+      c(en = 'Nr. ', is = 'Fj\u00f6ldi b\u00e1ta ')[[lang]],
       col_names
     )
     col_names <- gsub('^catch_', c(en = '', is = "Afli ")[[lang]], col_names)

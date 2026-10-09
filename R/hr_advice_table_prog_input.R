@@ -28,7 +28,7 @@ hr_advice_table_prog_input <- function(
   # NSE variables
   name <- year <- value <- NULL
   lang <- getOption("hr.lang", "en")
-  rec_is <- if (is.null(recruitment_age)) 'Nýliðun' else sprintf('Nýliðun %s %s', recruitment_age, if (recruitment_age == 1) 'árs' else 'ára')
+  rec_is <- if (is.null(recruitment_age)) 'N\u00fdli\u00f0un' else sprintf('N\u00fdli\u00f0un %s %s', recruitment_age, if (recruitment_age == 1) '\u00e1rs' else '\u00e1ra')
   rec_en <- if (is.null(recruitment_age)) 'Recruitment' else sprintf('Recruitment age %s', recruitment_age)
 
   if (!all(c("variable.is", "variable.en") %in% colnames(data_prog_input))) {
@@ -38,9 +38,9 @@ hr_advice_table_prog_input <- function(
           name == 'ssb' ~ sprintf('Hrygningarstofn (%s)', year),
           name == 'rec' ~ sprintf('%s (%s)', rec_is, year),
           name == 'catch' ~ sprintf('Afli (%s)', year),
-          name == 'HR' ~ sprintf('Veiðihlutfall (%s)', year),
-          name == 'fbar' ~ sprintf('Veiðidánartala (%s)', year),
-          name == 'refbio' ~ sprintf('Viðmiðunarstofn (%s)', year)
+          name == 'HR' ~ sprintf('Vei\u00f0ihlutfall (%s)', year),
+          name == 'fbar' ~ sprintf('Vei\u00f0id\u00e1nartala (%s)', year),
+          name == 'refbio' ~ sprintf('Vi\u00f0mi\u00f0unarstofn (%s)', year)
         ),
         variable.en = dplyr::case_when(
           name == 'ssb' ~ sprintf('SSB (%s)', year),
@@ -98,7 +98,7 @@ hr_advice_table_prog_input <- function(
     flextable::colformat_num(
       i = tonnes_rows,
       j = 2,
-      big.mark = "  ",
+      big.mark = "\u200a\u200a",
       decimal.mark = ".",
       na_str = "",
       suffix = " t"
@@ -106,7 +106,7 @@ hr_advice_table_prog_input <- function(
     flextable::colformat_num(
       i = number_rows,
       j = 2,
-      big.mark = "  ",
+      big.mark = "\u200a\u200a",
       decimal.mark = ".",
       na_str = ""
     ) |>

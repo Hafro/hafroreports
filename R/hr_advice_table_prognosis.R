@@ -152,9 +152,9 @@ hr_advice_table_prognosis <- function(data_prognosis, assessment_year) {
         sprintf(
           '%s (%s)',
           if ("F" %in% colnames(data_prognosis)) {
-            if (lang == 'is') 'Veiðidánartala' else 'Fishing mortality'
+            if (lang == 'is') 'Vei\u00f0id\u00e1nartala' else 'Fishing mortality'
           } else {
-            if (lang == 'is') 'Veiðihlutfall' else 'Harvest rate'
+            if (lang == 'is') 'Vei\u00f0ihlutfall' else 'Harvest rate'
           },
           assessment_year + 1
         )
@@ -175,27 +175,27 @@ hr_advice_table_prognosis <- function(data_prognosis, assessment_year) {
       j = "ssb_change",
       part = "header",
       value = flextable::as_paragraph(
-        if (lang == 'is') "% Breyting á hrygningarstofni" else 'SSB change (%)'
+        if (lang == 'is') "% Breyting \u00e1 hrygningarstofni" else 'SSB change (%)'
       )
     ) |>
     flextable::mk_par(
       j = "tac_change",
       part = "header",
       value = flextable::as_paragraph(
-        if (lang == 'is') "% Breyting á aflamark" else 'TAC change (%)'
+        if (lang == 'is') "% Breyting \u00e1 aflamark" else 'TAC change (%)'
       )
     ) |>
     flextable::mk_par(
       j = "advice_change",
       part = "header",
       value = flextable::as_paragraph(
-        if (lang == 'is') "% Breyting á ráðgjöf" else 'Advice change (%)'
+        if (lang == 'is') "% Breyting \u00e1 r\u00e1\u00f0gj\u00f6f" else 'Advice change (%)'
       )
     ) |>
     flextable::colformat_num(
       i = 1,
       j = c(2, 4),
-      big.mark = "  ",
+      big.mark = "\u200a\u200a",
       decimal.mark = ".",
       na_str = ""
     ) |>
@@ -220,10 +220,10 @@ hr_advice_table_prognosis <- function(data_prognosis, assessment_year) {
       value = flextable::as_paragraph(
         sprintf(
           '%s %s %s %s',
-          if (lang == 'is') "Hrygningarstofn árið" else 'SSB in',
+          if (lang == 'is') "Hrygningarstofn \u00e1ri\u00f0" else 'SSB in',
           assessment_year + 2,
           if (lang == 'is') {
-            "miðað við hrygningarstofn"
+            "mi\u00f0a\u00f0 vi\u00f0 hrygningarstofn"
           } else {
             'relative to SSB in'
           },
@@ -239,10 +239,10 @@ hr_advice_table_prognosis <- function(data_prognosis, assessment_year) {
       value = flextable::as_paragraph(
         sprintf(
           '%s %s %s %s (%s t)',
-          if (lang == 'is') "Ráðlagt aflamark fyrir" else "TAC value for",
+          if (lang == 'is') "R\u00e1\u00f0lagt aflamark fyrir" else "TAC value for",
           paste(assessment_year, assessment_year + 1, sep = '/'),
           if (lang == 'is') {
-            "miðað við ráðlagt aflamark"
+            "mi\u00f0a\u00f0 vi\u00f0 r\u00e1\u00f0lagt aflamark"
           } else {
             'relative to TAC value for'
           },
@@ -259,10 +259,10 @@ hr_advice_table_prognosis <- function(data_prognosis, assessment_year) {
       value = flextable::as_paragraph(
         sprintf(
           '%s %s %s %s (%s t)',
-          if (lang == 'is') "Ráðlagt aflamark fyrir" else "Advice value for",
+          if (lang == 'is') "R\u00e1\u00f0lagt aflamark fyrir" else "Advice value for",
           paste(assessment_year, assessment_year + 1, sep = '/'),
           if (lang == 'is') {
-            "miðað við ráðlagt aflamark"
+            "mi\u00f0a\u00f0 vi\u00f0 r\u00e1\u00f0lagt aflamark"
           } else {
             'relative to advice value for'
           },
