@@ -1,4 +1,3 @@
-```{r toy-pax-db}
 # A toy pax database: a simulated stock ("species 99"), not real data.
 # Ten years of a spring survey at 12 fixed stations in two strata, and 12
 # commercial samples a year from two gears. pax_from_mar() builds the same
@@ -86,4 +85,3 @@ pax_db <- pax::pax_connect(tempfile(fileext = ".duckdb"))
 for (tbl_name in c("station", "ldist", "aldist", "measurement", "landings", "lw_coeffs")) {
   pax::pax_import(pax_db, get(tbl_name), name = tbl_name)
 }
-```

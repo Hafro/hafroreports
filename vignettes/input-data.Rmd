@@ -57,7 +57,7 @@ Here we build a toy database with the same table names (`station`, `ldist`,
 code is long only because it simulates the samples; the point is that every
 `hr_input_data_*()` function takes a pax connection and works on these tables.
 
-```{r child = "_toy-pax-db.Rmd"}
+```{r toy-pax-db, code = readLines("include/toy-pax-db.R")}
 ```
 
 ```{r}

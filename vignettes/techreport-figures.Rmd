@@ -38,7 +38,7 @@ library(hafroreports)
 options(hr.lang = "en")
 ```
 
-```{r child = "_toy-pax-db.Rmd", echo = FALSE}
+```{r toy-pax-db, code = readLines("include/toy-pax-db.R"), echo = FALSE}
 ```
 
 ```{r}
@@ -65,13 +65,13 @@ input_data <- hr_input_data_combine(
 
 Landings by gear group:
 
-```{r}
+```{r, fig.alt = "Toy landings by gear group, in thousand tonnes and as proportions."}
 hr_techreport_plot_landings_gear(pax_db, gear_group = list(BMT = "BMT", LLN = "LLN"))
 ```
 
 Survey length distributions by year:
 
-```{r, fig.height = 6}
+```{r, fig.height = 6, fig.alt = 'Toy survey length distributions by year, with mean length and number measured.'}
 hr_techreport_plot_survey_ldist(pax_db, sampling_type = 30)
 ```
 
@@ -93,13 +93,13 @@ its fill scale with `&`, not `+` (`23-ple`).
 
 Catch at age as bubbles (area proportional to numbers):
 
-```{r}
+```{r, fig.alt = "Toy catch at age by year."}
 hr_techreport_plot_catch_age_bubble(input_data, year_start = 2015, age_start = 2)
 ```
 
 Maturity at age by year:
 
-```{r}
+```{r, fig.alt = "Toy maturity at age by year."}
 hr_techreport_plot_maturity(input_data, year_start = 2015)
 ```
 
@@ -129,7 +129,7 @@ rfb_prognosis <- data.frame(
 )
 ```
 
-```{r, fig.height = 6}
+```{r, fig.height = 6, fig.alt = "The four rfb figures for made-up data: biomass index with I_trigger and I_loss, catch length distribution with L_c and L_F=M, last year's length distribution with mean length, and the fishing pressure proxy."}
 library(patchwork)
 (hr_techreport_plot_rfb_index(survey_index, "smb_harv", rfb_prognosis, ref_points, assessment_year = 2026) +
   hr_techreport_plot_rfb_lc(ldist, ref_points)) /

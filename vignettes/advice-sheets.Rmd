@@ -101,7 +101,7 @@ The four-panel stock development figure. In the sheets it is wrapped in
 `ggiraph::girafe(ggobj = ...)` for the tooltips; here it is drawn as a static
 plot:
 
-```{r, fig.height = 6}
+```{r, fig.height = 6, fig.alt = "Four panels for the toy stock: catches by gear, recruitment, harvest rate with reference points and SSB with reference biomass."}
 hr_advice_plot_landings(data_landings, assessment_year = assessment_year, year_start = 1995) +
   hr_advice_plot_recruitment(data_assessment, assessment_year, recruitment_age = 3) +
   hr_advice_plot_fpl(data_assessment, assessment_year, ref_points, fishing_pressure = "HR") +
@@ -115,7 +115,7 @@ without values are left out of `hr_advice_plot_ssb()`, but drop old empty
 
 The retrospective figure compares the last assessments:
 
-```{r, fig.height = 5}
+```{r, fig.height = 5, fig.alt = "Retrospective panels of the toy stock: harvest rate, recruitment, reference biomass and SSB of the last five assessments."}
 hr_advice_plot_retro(data_assessment, ref_points, assessment_year, fishing_pressure = "HR")
 ```
 
@@ -172,7 +172,7 @@ indicators in the same history columns: the biomass index as `SSB`, a
 juvenile index as `recruitment`, the fishing pressure proxy L~F=M~ / L~mean~
 as `F`. Relabel them with `labels`:
 
-```{r}
+```{r, fig.alt = "Toy biomass index with I_trigger and the index A and B means, and the fishing pressure proxy with F_MSY proxy."}
 index_hist <- do.call(rbind, lapply(2025:2026, function(ay) {
   year <- 1996:ay
   b <- 2500 + 800 * sin((year - 1996) / 4) + 30 * (year - 1996)

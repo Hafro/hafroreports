@@ -44,6 +44,7 @@ Imports:
     tidyr,
     withr
 Suggests:
+    DBI,
     knitr,
     rmarkdown,
     unittest (>= 1.4)
