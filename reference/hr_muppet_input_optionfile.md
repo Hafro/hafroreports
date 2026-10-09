@@ -1,7 +1,8 @@
 # Prepare a MUPPET option file for a given assessment year
 
 Takes a template MUPPET option file (as a single character string) and
-updates the key year and age settings using `rmuppet::line_replace`.
+updates the key year and age settings, as `rmuppet:::line_replace()`
+(but stops with an error when a setting's line is not in the file).
 Returns a named list suitable for passing to
 [`hr_muppet_run`](https://hafro.github.io/hafroreports/reference/hr_muppet_run.md)
 as part of the input file set.
