@@ -32,7 +32,7 @@ hr_muppet_input_optionfile <- function(
   out_files[[out_name]] <- opt_file |>
     strsplit("\n") |>
     unlist() |>
-    stringr::str_remove('../') |>
+    stringr::str_remove(stringr::fixed('../')) |>
     line_replace(age_end, '# Last model age') |>
     line_replace(plus_group, '# Plus group') |>
     line_replace(

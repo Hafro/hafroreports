@@ -4,7 +4,8 @@ library(hafroreports)
 line_replace <- hafroreports:::line_replace
 
 opt <- paste(c(
-  "../Files/catch.dat \t # Catch file",
+  "Files/catch.dat \t # Catch file",
+  "../Files/survey.dat \t # Survey file",
   "2020 \t # Last opt year i.e last year before assyear   <=lastdatayear",
   "2020 \t # Last data year, last year with catch at age data",
   "10 \t # Last model age",
@@ -36,13 +37,14 @@ ok_group("hr_muppet_input_optionfile", {
   ok(ut_cmp_identical(names(out), "params/had.dat.opt"), "Named by out_name")
   ok(ut_cmp_identical(out[[1]], c(
     "Files/catch.dat \t # Catch file",
+    "Files/survey.dat \t # Survey file",
     "2024 \t # Last opt year i.e last year before assyear   <=lastdatayear",
     "2024 \t # Last data year, last year with catch at age data",
     "10 \t # Last model age",
     "1 \t # Plus group",
     "2025 \t # Last year smb",
     "2024 \t # Last year smh"
-  )), "Year and age settings set")
+  )), "Year and age settings set, '../' removed and other paths kept")
   ok(ut_cmp_error(
     hr_muppet_input_optionfile(
       sub("# Last year smh", "# Smh last", opt, fixed = TRUE),
