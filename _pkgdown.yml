@@ -1,0 +1,79 @@
+url: https://hafro.github.io/hafroreports/
+
+template:
+  bootstrap: 5
+
+navbar:
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github]
+
+articles:
+  - title: Workflows
+    navbar: ~
+    contents:
+      - input-data
+      - history-tables
+      - advice-sheets
+      - techreport-figures
+      - stock-repository
+
+reference:
+  - title: Input data
+    desc: >
+      Weight and maturity keys, survey indices and catch at age from a pax
+      database, and the model input table.
+    contents:
+      - hr_input_data_lw
+      - hr_input_data_maturity_key
+      - hr_input_data_si_index
+      - hr_si_scale_by_strata_stations
+      - hr_pool_years
+      - hr_input_data_landings
+      - hr_input_data_combine
+  - title: SAM input
+    contents:
+      - starts_with("hr_sam_")
+  - title: Muppet
+    contents:
+      - starts_with("hr_muppet_")
+  - title: History tables and assessment summaries
+    contents:
+      - hr_update_hist
+      - starts_with("hr_assessment_")
+  - title: Advice sheet data
+    contents:
+      - starts_with("hr_advice_data_")
+  - title: Advice sheet figures
+    contents:
+      - hr_advice_banner
+      - starts_with("hr_advice_plot_")
+      - hr_advice_y_scale
+  - title: Advice sheet tables
+    contents:
+      - starts_with("hr_advice_table_")
+      - hr_advice_ref_table
+      - hr_advice_basis_table
+      - hr_ref_points_tonnes
+  - title: Tech report figures
+    contents:
+      - starts_with("hr_techreport_plot_")
+      - hr_techreport_dsl_basis
+  - title: Tech report tables
+    contents:
+      - starts_with("hr_techreport_table_")
+  - title: Labels, themes and helpers
+    contents:
+      - hr_label
+      - hr_astand_theme
+      - hr_astand_x_scale
+      - starts_with("hr_theme_crayola_")
+      - hr_red_dot_number
+      - hr_glossary_section
+      - hr_git_revision
+      - tbl_formater
+      - two_panel_plot
+  - title: Data
+    contents:
+      - hr_locale
+      - hr_discards
