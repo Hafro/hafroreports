@@ -27,14 +27,17 @@ hr_techreport_plot_rfb_index(
   points = FALSE,
   x_limits = NULL,
   title = NULL,
-  base_size = 3
+  base_size = 3,
+  y_label = NULL
 )
 
 hr_techreport_plot_rfb_lc(
   ldist,
   ref_points,
   x_limits = c(0, 70),
-  base_size = 3
+  base_size = 3,
+  bar_width = 0.5,
+  ref_bar_width = bar_width
 )
 
 hr_techreport_plot_rfb_ml(
@@ -44,7 +47,8 @@ hr_techreport_plot_rfb_ml(
   rfb_prognosis = NULL,
   x_limits = c(0, 70),
   legend_position = c(0.8, 0.8),
-  base_size = 3
+  base_size = 3,
+  bar_width = 0.5
 )
 
 hr_techreport_plot_rfb_f(
@@ -110,8 +114,17 @@ tonnes) or 1 (tonnes).}
 
 \item{title}{Plot title. Default \code{hr_label("rfb_biomass_index")}.}
 
+\item{y_label}{Y axis label of the index figure. Default thousand tonnes
+or tonnes (by \code{unit}); e.g. \code{""} for a relative index.}
+
 \item{ldist}{Length distributions of the catch of the rule, with columns
 \code{year}, \code{length} (cm) and \code{n}.}
+
+\item{bar_width}{Width of the length bars (cm). Default 0.5.}
+
+\item{ref_bar_width}{Width of the red bars of L_c and L_F=M in
+\code{hr_techreport_plot_rfb_lc()}. Default \code{bar_width}; the old
+sea urchin figure had 0.3 and 0.1 for lengths in mm classes.}
 
 \item{data_year}{The catch year of the rule (the year before the
 assessment year).}

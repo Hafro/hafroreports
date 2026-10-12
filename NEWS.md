@@ -18,6 +18,10 @@ to the old behaviour).
   (CPUE or effort by region), `_ldist_ridges()` (length by sex,
   ggridges) and `_series()`.
 * New labels in `hr_locale`; `data-raw/hr_locale.R` stops on duplicate keys.
+* rfb tech report figures: `hr_techreport_plot_rfb_index(y_label =)` (e.g.
+  a relative CPUE index), `hr_techreport_plot_rfb_lc(bar_width =,
+  ref_bar_width =)` and `hr_techreport_plot_rfb_ml(bar_width =)` for
+  lengths in mm classes (sea urchin). Defaults unchanged.
 
 AI use: Claude (Anthropic) wrote these functions, their tests and this entry
 (12 October 2026); nobody has reviewed the code yet.
