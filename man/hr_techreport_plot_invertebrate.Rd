@@ -110,7 +110,7 @@ shrimp reports.}
 }
 \value{
 \subsection{hr_techreport_plot_survey_indices}{A ggplot: one panel
-per index (own y scale), with the 95\\% interval as a band}
+per index (own y scale), with the 95 percent interval as a band}
 
 \subsection{hr_techreport_plot_index_subarea}{A ggplot: stacked
 bars of the index by sub-area and year}

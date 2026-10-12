@@ -16,7 +16,7 @@ NULL
 #' @param ref_lines Named list of horizontal lines by index, e.g.
 #'   \code{list(fishable = 390)} (I_lim).
 #' @return \subsection{hr_techreport_plot_survey_indices}{A ggplot: one panel
-#'   per index (own y scale), with the 95\% interval as a band}
+#'   per index (own y scale), with the 95 percent interval as a band}
 #' @rdname hr_techreport_plot_invertebrate
 #' @export
 hr_techreport_plot_survey_indices <- function(
