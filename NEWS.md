@@ -22,6 +22,15 @@ chr and rfb tables are identical.
   `_catch_cpue()`, `_advice_tac()`, `_survey_temperature()` and
   `_bycatch_index()` (cod and haddock in the shrimp survey).
 * New `hr_locale` keys for these labels.
+* A second survey in the invertebrate figures (the Isafjardardjup February
+  survey, 41-pra-isa): `hr_techreport_plot_survey_indices(survey_index2 =)`
+  and `hr_techreport_plot_ldist_sex(ldist2 =)` draw it dashed over the
+  first; `hr_techreport_plot_station_catch()` and
+  `hr_techreport_plot_bycatch_index()` make one row (or column) per
+  `season` when the data have that column. `_station_catch(size_label =)`
+  (e.g. `hr_label("number_per_nm")` for the haddock map) and
+  `_bycatch_index(sizes =)`. New keys `number_per_nm`, `autumn`, `february`.
+  Defaults unchanged.
 
 AI use: Claude (Anthropic) wrote these functions, their tests and this entry
 (12 October 2026); the figures were looked at in the rendered 41-pra-arn

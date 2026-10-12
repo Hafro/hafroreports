@@ -101,3 +101,36 @@ ok_group("hr_techreport_plot_* (invertebrate)", {
   p <- hr_techreport_plot_bycatch_index(bc)
   ok(ut_cmp_equal(length(unique(ggplot2::ggplot_build(p)$data[[1]]$PANEL)), 4L), "Cod and haddock, two sizes")
 })
+
+ok_group("hr_techreport_plot_* (invertebrate): second survey and seasons", {
+  idx <- expand.grid(index = c("total", "fishable", "juvenile", "female"), year = 2020:2026, stringsAsFactors = FALSE)
+  idx$b <- 100
+  idx$b_lower <- 50
+  idx$b_upper <- 200
+  feb <- idx[idx$year %in% c(2021, 2024), ]
+  p0 <- hr_techreport_plot_survey_indices(idx)
+  p <- hr_techreport_plot_survey_indices(idx, survey_index2 = feb)
+  b <- ggplot2::ggplot_build(p)
+  ok(ut_cmp_equal(length(b$data), length(ggplot2::ggplot_build(p0)$data) + 3L), "Second survey: ribbon, dashed line and points added")
+  ok(ut_cmp_equal(sum(!is.na(b$data[[6]]$y)), 8L), "...two years of four indices")
+  ok(any(is.na(b$data[[5]]$y)), "...with gaps between irregular survey years")
+
+  ld <- expand.grid(year = 2025:2026, length = seq(10, 25, 0.5), sex = 1:2)
+  ld$b <- dnorm(ld$length, 17, 3)
+  ld2 <- ld[ld$year == 2025, ]
+  ld2$b <- ld2$b / 2
+  ok(ut_cmp_equal(length(ggplot2::ggplot_build(hr_techreport_plot_ldist_sex(ld, ldist2 = ld2))$data), 6L), "Length distribution with dashed second survey")
+  ok(ut_cmp_equal(length(ggplot2::ggplot_build(hr_techreport_plot_ldist_sex(ld))$data), 4L), "...default unchanged")
+
+  sc <- data.frame(year = 2020, lat = c(66, 66.1), lon = c(-22.8, -22.9), catch_nm = c(0, 20), season = c("Autumn", "February"))
+  p <- hr_techreport_plot_station_catch(sc, c(-23.3, -22.35), c(65.79, 66.33), size_label = hr_label("number_per_nm"))
+  ok(inherits(p$facet, "FacetGrid"), "Seasons as rows of maps")
+  ok(ut_cmp_equal(p$scales$get_scales("size")$name, "Number per nm"), "Size legend label")
+  p <- hr_techreport_plot_station_catch(sc[, 1:4], c(-23.3, -22.35), c(65.79, 66.33))
+  ok(inherits(p$facet, "FacetWrap") && p$scales$get_scales("size")$name == "Kilograms per nm", "...default unchanged")
+
+  bc <- expand.grid(species = c(1, 2), size = 1:2, year = 2020:2022, season = c("Autumn", "February"))
+  bc$index <- 1e5
+  p <- hr_techreport_plot_bycatch_index(bc, sizes = 2)
+  ok(inherits(p$facet, "FacetGrid") && ut_cmp_equal(nrow(p$data), 12L), "By-catch: 1 year and older, species by season")
+})

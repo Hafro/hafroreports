@@ -15,6 +15,9 @@ NULL
 #'   the indices). Default total, female, fishable and juvenile biomass.
 #' @param ref_lines Named list of horizontal lines by index, e.g.
 #'   \code{list(fishable = 390)} (I_lim).
+#' @param survey_index2 Optional second survey in the same format (e.g. the
+#'   February survey of Isafjardardjup), drawn in grey with a dashed line
+#'   over the first. \code{NULL} (default) for none.
 #' @return \subsection{hr_techreport_plot_survey_indices}{A ggplot: one panel
 #'   per index (own y scale), with the 95 percent interval as a band}
 #' @rdname hr_techreport_plot_invertebrate
@@ -27,19 +30,41 @@ hr_techreport_plot_survey_indices <- function(
     fishable = "fishable_biomass_index",
     juvenile = "juvenile_biomass_index"
   ),
-  ref_lines = NULL
+  ref_lines = NULL,
+  survey_index2 = NULL
 ) {
   # NSE variables
   index <- year <- b <- b_lower <- b_upper <- label <- value <- NULL
 
   labels <- vapply(indices, hr_label, character(1))
-  d <- survey_index |>
-    dplyr::filter(index %in% names(indices)) |>
-    dplyr::mutate(label = factor(labels[index], levels = labels))
+  prep <- function(x) {
+    x |>
+      dplyr::filter(index %in% names(indices)) |>
+      dplyr::mutate(label = factor(labels[index], levels = labels))
+  }
+  d <- prep(survey_index)
   p <- ggplot2::ggplot(d, ggplot2::aes(year, b)) +
     ggplot2::geom_ribbon(ggplot2::aes(ymin = b_lower, ymax = b_upper), alpha = 0.2) +
     ggplot2::geom_line() +
-    ggplot2::geom_point(size = 0.8) +
+    ggplot2::geom_point(size = 0.8)
+  if (!is.null(survey_index2)) {
+    # Gaps between the years of an irregular survey (no line across them)
+    d2 <- prep(survey_index2) |>
+      tidyr::complete(
+        year = seq(min(year), max(year)),
+        tidyr::nesting(index, label)
+      )
+    p <- p +
+      ggplot2::geom_ribbon(
+        data = d2,
+        ggplot2::aes(ymin = b_lower, ymax = b_upper),
+        alpha = 0.2,
+        colour = "grey"
+      ) +
+      ggplot2::geom_line(data = d2, linetype = 2) +
+      ggplot2::geom_point(data = d2, colour = "grey50", size = 0.8)
+  }
+  p <- p +
     ggplot2::facet_wrap(~label, scales = "free_y", ncol = 2) +
     ggplot2::labs(x = NULL, y = NULL) +
     ggplot2::expand_limits(y = 0) +
@@ -90,18 +115,22 @@ hr_techreport_plot_index_subarea <- function(
 #' @param ldist Data frame with \code{year}, \code{length}, \code{sex} (1
 #'   male, 2 female) and \code{b} (biomass index at length).
 #' @param ncol Number of columns of panels.
+#' @param ldist2 Optional second survey in the same format (e.g. the
+#'   February survey, with \code{year} the year of the autumn survey before
+#'   it), drawn with dashed lines in the panels of \code{ldist}.
+#'   \code{NULL} (default) for none.
 #' @return \subsection{hr_techreport_plot_ldist_sex}{A ggplot: the biomass
 #'   index by length for each year, males black and females red, over the
 #'   mean of all years (grey)}
 #' @rdname hr_techreport_plot_invertebrate
 #' @export
-hr_techreport_plot_ldist_sex <- function(ldist, ncol = 5) {
+hr_techreport_plot_ldist_sex <- function(ldist, ncol = 5, ldist2 = NULL) {
   # NSE variables
   year <- length <- sex <- b <- NULL
   mean_all <- ldist |>
     dplyr::group_by(length, sex) |>
     dplyr::summarise(b = mean(b), .groups = "drop")
-  ggplot2::ggplot() +
+  p <- ggplot2::ggplot() +
     ggplot2::geom_area(
       data = mean_all[mean_all$sex == 1, ],
       ggplot2::aes(length, b),
@@ -115,7 +144,14 @@ hr_techreport_plot_ldist_sex <- function(ldist, ncol = 5) {
       fill = "grey80"
     ) +
     ggplot2::geom_line(data = ldist[ldist$sex == 1, ], ggplot2::aes(length, b)) +
-    ggplot2::geom_line(data = ldist[ldist$sex == 2, ], ggplot2::aes(length, b), col = 2) +
+    ggplot2::geom_line(data = ldist[ldist$sex == 2, ], ggplot2::aes(length, b), col = 2)
+  if (!is.null(ldist2)) {
+    ldist2 <- ldist2[ldist2$year %in% ldist$year, ]
+    p <- p +
+      ggplot2::geom_line(data = ldist2[ldist2$sex == 2, ], ggplot2::aes(length, b), col = 2, linetype = 2) +
+      ggplot2::geom_line(data = ldist2[ldist2$sex == 1, ], ggplot2::aes(length, b), linetype = 2)
+  }
+  p +
     ggplot2::facet_wrap(~year, ncol = ncol, scales = "free_y") +
     ggplot2::labs(x = hr_label("carapace_length_mm"), y = hr_label("biomass_index")) +
     ggplot2::theme_bw() +
@@ -130,16 +166,20 @@ hr_techreport_plot_ldist_sex <- function(ldist, ncol = 5) {
 #'   and \code{catch_nm} (catch per nautical mile, kg; 0 where none was
 #'   caught).
 #' @param xlim,ylim Map limits (longitude, latitude).
+#' @param size_label Title of the size legend, default kilograms per nm
+#'   (e.g. \code{hr_label("number_per_nm")} for numbers of fish).
 #' @return \subsection{hr_techreport_plot_station_catch}{A map for each
 #'   year: the catch at the stations as circles, stations without catch as
-#'   x}
+#'   x. If \code{station_catch} has a column \code{season} (e.g. autumn and
+#'   February surveys), one row of maps per season}
 #' @rdname hr_techreport_plot_invertebrate
 #' @export
 hr_techreport_plot_station_catch <- function(
   station_catch,
   xlim,
   ylim,
-  ncol = 5
+  ncol = 5,
+  size_label = hr_label("kg_per_nm")
 ) {
   # NSE variables
   lon <- lat <- catch_nm <- NULL
@@ -153,9 +193,13 @@ hr_techreport_plot_station_catch <- function(
       colour = "red"
     ) +
     ggplot2::geom_point(data = zero, ggplot2::aes(lon, lat), shape = 4, size = 1) +
-    ggplot2::scale_size_area(max_size = 7, name = hr_label("kg_per_nm")) +
+    ggplot2::scale_size_area(max_size = 7, name = size_label) +
     ggplot2::scale_x_continuous(breaks = scales::breaks_pretty(n = 3)) +
-    ggplot2::facet_wrap(~year, ncol = ncol) +
+    (if ("season" %in% names(station_catch)) {
+      ggplot2::facet_grid(season ~ year)
+    } else {
+      ggplot2::facet_wrap(~year, ncol = ncol)
+    }) +
     ggplot2::labs(x = NULL, y = NULL) +
     ggplot2::theme(
       legend.title = ggplot2::element_text(face = "italic", size = 8),
@@ -307,16 +351,19 @@ hr_techreport_plot_survey_temperature <- function(temperature) {
 #' @param species Species to show (codes).
 #' @param scale Divisor of the index on the axis. Default 1e5, as the old
 #'   shrimp reports.
+#' @param sizes Size groups to show (1 0-group, 2 older).
 #' @return \subsection{hr_techreport_plot_bycatch_index}{Bars of the
-#'   abundance index by year, species (columns) and size (rows)}
+#'   abundance index by year, species (columns) and size (rows). If
+#'   \code{bycatch_index} has a column \code{season} (e.g. autumn and
+#'   February surveys), species are the rows and seasons the columns}
 #' @rdname hr_techreport_plot_invertebrate
 #' @export
-hr_techreport_plot_bycatch_index <- function(bycatch_index, species = c(1, 2), scale = 1e5) {
+hr_techreport_plot_bycatch_index <- function(bycatch_index, species = c(1, 2), scale = 1e5, sizes = c(1, 2)) {
   # NSE variables
   year <- index <- species_label <- size_label <- size <- NULL
   sp_keys <- c(`1` = "cod", `2` = "haddock", `4` = "whiting")
   sp <- species
-  d <- bycatch_index[bycatch_index$species %in% sp & !is.na(bycatch_index$size), ]
+  d <- bycatch_index[bycatch_index$species %in% sp & bycatch_index$size %in% sizes, ]
   sp_labels <- vapply(sp_keys[as.character(sp)], hr_label, character(1))
   d$species_label <- factor(
     vapply(sp_keys[as.character(d$species)], hr_label, character(1)),
@@ -328,7 +375,11 @@ hr_techreport_plot_bycatch_index <- function(bycatch_index, species = c(1, 2), s
   )
   ggplot2::ggplot(d, ggplot2::aes(year, index / scale)) +
     ggplot2::geom_col(width = 0.5) +
-    ggplot2::facet_grid(size_label ~ species_label, scales = "free_y") +
+    (if ("season" %in% names(d)) {
+      ggplot2::facet_grid(species_label ~ season, scales = "free_y")
+    } else {
+      ggplot2::facet_grid(size_label ~ species_label, scales = "free_y")
+    }) +
     ggplot2::labs(x = NULL, y = hr_label("index")) +
     ggplot2::theme_bw() +
     ggplot2::theme(

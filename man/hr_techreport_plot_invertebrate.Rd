@@ -17,7 +17,8 @@ hr_techreport_plot_survey_indices(
   survey_index,
   indices = c(total = "total_biomass_index", female = "female_biomass_index", fishable =
     "fishable_biomass_index", juvenile = "juvenile_biomass_index"),
-  ref_lines = NULL
+  ref_lines = NULL,
+  survey_index2 = NULL
 )
 
 hr_techreport_plot_index_subarea(
@@ -26,9 +27,15 @@ hr_techreport_plot_index_subarea(
   title = hr_label("fishable_biomass_index")
 )
 
-hr_techreport_plot_ldist_sex(ldist, ncol = 5)
+hr_techreport_plot_ldist_sex(ldist, ncol = 5, ldist2 = NULL)
 
-hr_techreport_plot_station_catch(station_catch, xlim, ylim, ncol = 5)
+hr_techreport_plot_station_catch(
+  station_catch,
+  xlim,
+  ylim,
+  ncol = 5,
+  size_label = hr_label("kg_per_nm")
+)
 
 hr_techreport_plot_logbook_catch(
   logbook_catch,
@@ -48,7 +55,8 @@ hr_techreport_plot_survey_temperature(temperature)
 hr_techreport_plot_bycatch_index(
   bycatch_index,
   species = c(1, 2),
-  scale = 1e+05
+  scale = 1e+05,
+  sizes = c(1, 2)
 )
 }
 \arguments{
@@ -61,6 +69,10 @@ the indices). Default total, female, fishable and juvenile biomass.}
 
 \item{ref_lines}{Named list of horizontal lines by index, e.g.
 \code{list(fishable = 390)} (I_lim).}
+
+\item{survey_index2}{Optional second survey in the same format (e.g. the
+February survey of Isafjardardjup), drawn in grey with a dashed line
+over the first. \code{NULL} (default) for none.}
 
 \item{index_subarea}{Data frame with \code{year}, \code{stratum}
 (sub-area), \code{index} and \code{b} (the sub-area's part of the
@@ -75,11 +87,19 @@ male, 2 female) and \code{b} (biomass index at length).}
 
 \item{ncol}{Number of columns of panels.}
 
+\item{ldist2}{Optional second survey in the same format (e.g. the
+February survey, with \code{year} the year of the autumn survey before
+it), drawn with dashed lines in the panels of \code{ldist}.
+\code{NULL} (default) for none.}
+
 \item{station_catch}{Data frame with \code{year}, \code{lat}, \code{lon}
 and \code{catch_nm} (catch per nautical mile, kg; 0 where none was
 caught).}
 
 \item{xlim, ylim}{Map limits (longitude, latitude).}
+
+\item{size_label}{Title of the size legend, default kilograms per nm
+(e.g. \code{hr_label("number_per_nm")} for numbers of fish).}
 
 \item{logbook_catch}{Data frame with \code{fishing_year}, \code{x},
 \code{y} (cell centres, longitude and latitude) and \code{catch} (kg),
@@ -107,6 +127,8 @@ whiting), \code{size} (1 0-group, 2 older) and \code{year} and
 
 \item{scale}{Divisor of the index on the axis. Default 1e5, as the old
 shrimp reports.}
+
+\item{sizes}{Size groups to show (1 0-group, 2 older).}
 }
 \value{
 \subsection{hr_techreport_plot_survey_indices}{A ggplot: one panel
@@ -121,7 +143,8 @@ mean of all years (grey)}
 
 \subsection{hr_techreport_plot_station_catch}{A map for each
 year: the catch at the stations as circles, stations without catch as
-x}
+x. If \code{station_catch} has a column \code{season} (e.g. autumn and
+February surveys), one row of maps per season}
 
 \subsection{hr_techreport_plot_logbook_catch}{A map for each
 fishing year of the logbook catch (tonnes) on the grid}
@@ -136,7 +159,9 @@ landings by fishing year (thousand tonnes)}
 (black) and surface (red) temperature by year}
 
 \subsection{hr_techreport_plot_bycatch_index}{Bars of the
-abundance index by year, species (columns) and size (rows)}
+abundance index by year, species (columns) and size (rows). If
+\code{bycatch_index} has a column \code{season} (e.g. autumn and
+February surveys), species are the rows and seasons the columns}
 }
 \description{
 Figures of the inshore and offshore shrimp tech reports, from the pax
