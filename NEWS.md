@@ -31,6 +31,12 @@ chr and rfb tables are identical.
   (e.g. `hr_label("number_per_nm")` for the haddock map) and
   `_bycatch_index(sizes =)`. New keys `number_per_nm`, `autumn`, `february`.
   Defaults unchanged.
+* Offshore shrimp tech report figures (41-pra-off):
+  `hr_techreport_plot_catch_vessels()` (catch and number of vessels by
+  year), `hr_techreport_plot_cpue_effects()` (year, month and trawl size
+  effects of a logbook CPUE model) and `hr_techreport_plot_cpue_index()`
+  (CPUE against the total survey index). New keys `number_of_vessels`,
+  `standardized_cpue`, `trawl_size`.
 
 AI use: Claude (Anthropic) wrote these functions, their tests and this entry
 (12 October 2026); the figures were looked at in the rendered 41-pra-arn

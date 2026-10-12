@@ -134,3 +134,26 @@ ok_group("hr_techreport_plot_* (invertebrate): second survey and seasons", {
   p <- hr_techreport_plot_bycatch_index(bc, sizes = 2)
   ok(inherits(p$facet, "FacetGrid") && ut_cmp_equal(nrow(p$data), 12L), "By-catch: 1 year and older, species by season")
 })
+
+ok_group("hr_techreport_plot_* (invertebrate): catch and vessels, CPUE effects, CPUE and index", {
+  p <- hr_techreport_plot_catch_vessels(
+    data.frame(year = 2020:2025, landings = c(1960, 2994, 1993, 1912, 1352, 1365)),
+    data.frame(year = 2020:2025, vessels = c(6, 6, 5, 5, 4, 4))
+  )
+  ok(inherits(p, "patchwork"), "Catch and number of vessels")
+  eff <- rbind(
+    data.frame(effect = "year", level = 1989:1995, mean = seq(0.9, 1.7, length.out = 7)),
+    data.frame(effect = "month", level = 2:12, mean = 1),
+    data.frame(effect = "trawl_size", level = seq(1500, 5000, 500), mean = 1.2)
+  )
+  eff$lower <- eff$mean * 0.95
+  eff$upper <- eff$mean * 1.05
+  p <- hr_techreport_plot_cpue_effects(eff)
+  ok(inherits(p, "patchwork") && length(p$patches$plots) + 1 == 3, "Three effect panels")
+  ok(ut_cmp_equal(p[[1]]$labels$y, "Standardized CPUE"), "CPUE label on the first panel")
+  idx <- data.frame(year = 1988:1996, b = c(35, 30, 45, 60, 55, 50, 70, 57, 105))
+  p <- hr_techreport_plot_cpue_index(data.frame(year = 1989:1995, mean = seq(0.9, 1.7, length.out = 7)), idx)
+  ok(inherits(p, "patchwork"), "CPUE against the index, and both by year")
+  b <- ggplot2::ggplot_build(p[[2]])
+  ok(ut_cmp_equal(nrow(b$data[[3]]), 7L), "Index points only in the CPUE years")
+})

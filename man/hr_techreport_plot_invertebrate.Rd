@@ -11,6 +11,9 @@
 \alias{hr_techreport_plot_advice_tac}
 \alias{hr_techreport_plot_survey_temperature}
 \alias{hr_techreport_plot_bycatch_index}
+\alias{hr_techreport_plot_catch_vessels}
+\alias{hr_techreport_plot_cpue_effects}
+\alias{hr_techreport_plot_cpue_index}
 \title{Tech report figures of invertebrate (shrimp) survey and fishery stocks}
 \usage{
 hr_techreport_plot_survey_indices(
@@ -58,6 +61,12 @@ hr_techreport_plot_bycatch_index(
   scale = 1e+05,
   sizes = c(1, 2)
 )
+
+hr_techreport_plot_catch_vessels(landings, vessels)
+
+hr_techreport_plot_cpue_effects(effects)
+
+hr_techreport_plot_cpue_index(cpue, index)
 }
 \arguments{
 \item{survey_index}{Long data frame of indices with columns \code{index},
@@ -78,7 +87,8 @@ over the first. \code{NULL} (default) for none.}
 (sub-area), \code{index} and \code{b} (the sub-area's part of the
 index: its mean station biomass times its area).}
 
-\item{index}{The index to show, e.g. \code{"fishable"}.}
+\item{index}{Data frame with \code{year} and \code{b} (the total biomass
+index), e.g. the total index of \code{hr_techreport_plot_survey_indices()}.}
 
 \item{title}{Plot title.}
 
@@ -107,14 +117,13 @@ aggregated on a grid.}
 
 \item{dx, dy}{Cell width and height (degrees), the grid of the data.}
 
-\item{cpue}{Data frame with \code{year} (first year of the fishing year),
-\code{catch} (tonnes) and \code{cpue} (kg/h).}
+\item{cpue}{Data frame with \code{year} and \code{mean} (the standardised
+CPUE by year).}
 
 \item{advice_hist, tac_hist}{Advice and TAC history (\code{assessment_year}
 and \code{advice}, \code{tac}).}
 
-\item{landings}{Data frame with \code{year} (first year of the fishing
-year) and \code{landings} (tonnes).}
+\item{landings}{Data frame with \code{year} and \code{landings} (tonnes).}
 
 \item{temperature}{Data frame with \code{year}, \code{bottom} and
 \code{surface} (mean temperatures of the survey stations).}
@@ -129,6 +138,15 @@ whiting), \code{size} (1 0-group, 2 older) and \code{year} and
 shrimp reports.}
 
 \item{sizes}{Size groups to show (1 0-group, 2 older).}
+
+\item{vessels}{Data frame with \code{year} and \code{vessels} (number of
+vessels in the fishery).}
+
+\item{effects}{Data frame of model effects with \code{effect}
+(\code{"year"}, \code{"month"}, \code{"trawl_size"}), \code{level}
+(numeric), \code{mean}, \code{lower} and \code{upper} (exp of the
+estimate and of the estimate -/+ 2 standard errors), e.g. of a
+logbook CPUE GLM.}
 }
 \value{
 \subsection{hr_techreport_plot_survey_indices}{A ggplot: one panel
@@ -162,6 +180,17 @@ landings by fishing year (thousand tonnes)}
 abundance index by year, species (columns) and size (rows). If
 \code{bycatch_index} has a column \code{season} (e.g. autumn and
 February surveys), species are the rows and seasons the columns}
+
+\subsection{hr_techreport_plot_catch_vessels}{Two panels of bars:
+catch and the number of vessels by year}
+
+\subsection{hr_techreport_plot_cpue_effects}{One panel per effect:
+the standardised CPUE by year, month and trawl size}
+
+\subsection{hr_techreport_plot_cpue_index}{Two panels: the
+standardised CPUE against the total biomass index, a path through the
+years; and both by year, CPUE as a line (left axis) and the index as
+points on a dashed line (right axis)}
 }
 \description{
 Figures of the inshore and offshore shrimp tech reports, from the pax

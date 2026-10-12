@@ -388,3 +388,108 @@ hr_techreport_plot_bycatch_index <- function(bycatch_index, species = c(1, 2), s
       strip.background = ggplot2::element_rect(fill = "white")
     )
 }
+
+#' @param landings Data frame with \code{year} and \code{landings} (tonnes).
+#' @param vessels Data frame with \code{year} and \code{vessels} (number of
+#'   vessels in the fishery).
+#' @return \subsection{hr_techreport_plot_catch_vessels}{Two panels of bars:
+#'   catch and the number of vessels by year}
+#' @rdname hr_techreport_plot_invertebrate
+#' @export
+hr_techreport_plot_catch_vessels <- function(landings, vessels) {
+  # NSE variables
+  year <- NULL
+  th <- ggplot2::theme_bw() +
+    ggplot2::theme(
+      axis.text = ggplot2::element_text(size = 8),
+      text = ggplot2::element_text(size = 8)
+    )
+  p1 <- ggplot2::ggplot(landings[!is.na(landings$landings), ], ggplot2::aes(year, landings)) +
+    ggplot2::geom_col() +
+    ggplot2::labs(x = hr_label("year"), y = NULL, title = hr_label("catches_tonnes")) +
+    th
+  p2 <- ggplot2::ggplot(vessels, ggplot2::aes(year, vessels)) +
+    ggplot2::geom_col() +
+    ggplot2::labs(x = hr_label("year"), y = NULL, title = hr_label("number_of_vessels")) +
+    th
+  patchwork::wrap_plots(p1, p2, nrow = 1)
+}
+
+#' @param effects Data frame of model effects with \code{effect}
+#'   (\code{"year"}, \code{"month"}, \code{"trawl_size"}), \code{level}
+#'   (numeric), \code{mean}, \code{lower} and \code{upper} (exp of the
+#'   estimate and of the estimate -/+ 2 standard errors), e.g. of a
+#'   logbook CPUE GLM.
+#' @return \subsection{hr_techreport_plot_cpue_effects}{One panel per effect:
+#'   the standardised CPUE by year, month and trawl size}
+#' @rdname hr_techreport_plot_invertebrate
+#' @export
+hr_techreport_plot_cpue_effects <- function(effects) {
+  # NSE variables
+  level <- lower <- upper <- NULL
+  keys <- c(year = "year", month = "month", trawl_size = "trawl_size")
+  panel <- function(e, ylab) {
+    d <- effects[effects$effect == e, ]
+    p <- ggplot2::ggplot(d, ggplot2::aes(level, mean)) +
+      ggplot2::geom_point() +
+      ggplot2::geom_line() +
+      ggplot2::geom_linerange(ggplot2::aes(ymin = lower, ymax = upper)) +
+      ggplot2::labs(x = hr_label(keys[[e]]), y = ylab) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(
+        axis.text = ggplot2::element_text(size = 8),
+        text = ggplot2::element_text(size = 8)
+      )
+    if (e == "month") {
+      p <- p + ggplot2::scale_x_continuous(breaks = 1:12)
+    }
+    p
+  }
+  es <- intersect(names(keys), unique(effects$effect))
+  plots <- lapply(seq_along(es), function(k) {
+    panel(es[k], if (k == 1) hr_label("standardized_cpue") else NULL)
+  })
+  patchwork::wrap_plots(plots, nrow = 1)
+}
+
+#' @param cpue Data frame with \code{year} and \code{mean} (the standardised
+#'   CPUE by year).
+#' @param index Data frame with \code{year} and \code{b} (the total biomass
+#'   index), e.g. the total index of \code{hr_techreport_plot_survey_indices()}.
+#' @return \subsection{hr_techreport_plot_cpue_index}{Two panels: the
+#'   standardised CPUE against the total biomass index, a path through the
+#'   years; and both by year, CPUE as a line (left axis) and the index as
+#'   points on a dashed line (right axis)}
+#' @rdname hr_techreport_plot_invertebrate
+#' @export
+hr_techreport_plot_cpue_index <- function(cpue, index) {
+  # NSE variables
+  year <- b <- NULL
+  d <- dplyr::inner_join(cpue, index[, c("year", "b")], by = "year")
+  th <- ggplot2::theme_bw() +
+    ggplot2::theme(
+      axis.text = ggplot2::element_text(size = 8),
+      text = ggplot2::element_text(size = 8)
+    )
+  p1 <- ggplot2::ggplot(d, ggplot2::aes(b, mean, colour = year, label = year)) +
+    ggplot2::geom_path() +
+    ggplot2::geom_point() +
+    ggplot2::geom_text(hjust = 1, vjust = -1, size = 2) +
+    ggplot2::scale_colour_viridis_c(name = hr_label("year")) +
+    ggplot2::labs(x = hr_label("total_biomass_index"), y = hr_label("standardized_cpue")) +
+    th +
+    ggplot2::theme(legend.position = "inside", legend.position.inside = c(0.85, 0.25))
+  k <- max(cpue$mean, na.rm = TRUE) / max(index$b, na.rm = TRUE)
+  idx <- index[index$year >= min(cpue$year) & index$year <= max(cpue$year), ]
+  p2 <- ggplot2::ggplot() +
+    ggplot2::geom_line(data = cpue, ggplot2::aes(year, mean)) +
+    ggplot2::geom_line(data = idx, ggplot2::aes(year, b * k), linetype = 2) +
+    ggplot2::geom_point(data = idx, ggplot2::aes(year, b * k)) +
+    ggplot2::scale_y_continuous(
+      name = hr_label("standardized_cpue"),
+      sec.axis = ggplot2::sec_axis(~ . / k, name = hr_label("total_biomass_index"))
+    ) +
+    ggplot2::labs(x = hr_label("year")) +
+    th
+  patchwork::wrap_plots(p1, p2, nrow = 1)
+}
