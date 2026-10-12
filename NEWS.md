@@ -1,5 +1,18 @@
 # hafroreports (development version)
 
+## SPiCT helpers (October 2026, branch `iag`)
+
+* `hr_spict_input()`, `hr_spict_fit()`, `hr_spict_fit_check()`,
+  `hr_spict_management_start()`, `hr_spict_manage_summary()`,
+  `hr_spict_advice()`, `hr_spict_annual()`, `hr_spict_catch()`,
+  `hr_spict_table()` and `hr_spict_assessment_summary()`, lifted from the
+  starry ray port (`12-rjr`, `rjr_spict_*()`) with the stock choices as
+  arguments (series with gaps, scenario per output). For common whelk
+  (45-whe); 12-rjr keeps its own copies until it is moved over.
+
+AI use: Claude (Anthropic) wrote these functions, their tests and this entry
+(12 October 2026); nobody has reviewed the code yet.
+
 ## Nephrops UWTV survey (October 2026, branch `iag`)
 
 For 40-nep. Existing sheets and reports are unchanged (new arguments default
