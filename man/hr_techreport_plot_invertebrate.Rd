@@ -59,7 +59,8 @@ hr_techreport_plot_bycatch_index(
   bycatch_index,
   species = c(1, 2),
   scale = 1e+05,
-  sizes = c(1, 2)
+  sizes = c(1, 2),
+  size_labels = c("group_0", "group_1plus")
 )
 
 hr_techreport_plot_catch_vessels(landings, vessels)
@@ -138,6 +139,10 @@ whiting), \code{size} (1 0-group, 2 older) and \code{year} and
 shrimp reports.}
 
 \item{sizes}{Size groups to show (1 0-group, 2 older).}
+
+\item{size_labels}{\code{hr_label()} keys of the two size groups, default
+0-group and 1 year and older (autumn surveys); e.g.
+\code{c("group_1", "group_2plus")} for a spring survey.}
 
 \item{vessels}{Data frame with \code{year} and \code{vessels} (number of
 vessels in the fishery).}

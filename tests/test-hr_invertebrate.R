@@ -157,3 +157,12 @@ ok_group("hr_techreport_plot_* (invertebrate): catch and vessels, CPUE effects, 
   b <- ggplot2::ggplot_build(p[[2]])
   ok(ut_cmp_equal(nrow(b$data[[3]]), 7L), "Index points only in the CPUE years")
 })
+
+ok_group("hr_techreport_plot_bycatch_index: size_labels", {
+  bc <- expand.grid(species = c(1, 2), size = 1:2, year = 2020:2022)
+  bc$index <- 1e5
+  p <- hr_techreport_plot_bycatch_index(bc)
+  ok(ut_cmp_equal(levels(p$data$size_label), c("0-group", "1 year and older")), "Default labels unchanged")
+  p <- hr_techreport_plot_bycatch_index(bc, size_labels = c("group_1", "group_2plus"))
+  ok(ut_cmp_equal(levels(p$data$size_label), c("1 year", "2 years and older")), "Spring survey labels")
+})

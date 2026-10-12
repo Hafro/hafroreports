@@ -352,13 +352,22 @@ hr_techreport_plot_survey_temperature <- function(temperature) {
 #' @param scale Divisor of the index on the axis. Default 1e5, as the old
 #'   shrimp reports.
 #' @param sizes Size groups to show (1 0-group, 2 older).
+#' @param size_labels \code{hr_label()} keys of the two size groups, default
+#'   0-group and 1 year and older (autumn surveys); e.g.
+#'   \code{c("group_1", "group_2plus")} for a spring survey.
 #' @return \subsection{hr_techreport_plot_bycatch_index}{Bars of the
 #'   abundance index by year, species (columns) and size (rows). If
 #'   \code{bycatch_index} has a column \code{season} (e.g. autumn and
 #'   February surveys), species are the rows and seasons the columns}
 #' @rdname hr_techreport_plot_invertebrate
 #' @export
-hr_techreport_plot_bycatch_index <- function(bycatch_index, species = c(1, 2), scale = 1e5, sizes = c(1, 2)) {
+hr_techreport_plot_bycatch_index <- function(
+  bycatch_index,
+  species = c(1, 2),
+  scale = 1e5,
+  sizes = c(1, 2),
+  size_labels = c("group_0", "group_1plus")
+) {
   # NSE variables
   year <- index <- species_label <- size_label <- size <- NULL
   sp_keys <- c(`1` = "cod", `2` = "haddock", `4` = "whiting")
@@ -369,10 +378,8 @@ hr_techreport_plot_bycatch_index <- function(bycatch_index, species = c(1, 2), s
     vapply(sp_keys[as.character(d$species)], hr_label, character(1)),
     levels = sp_labels
   )
-  d$size_label <- factor(
-    ifelse(d$size == 1, hr_label("group_0"), hr_label("group_1plus")),
-    levels = c(hr_label("group_0"), hr_label("group_1plus"))
-  )
+  sl <- c(hr_label(size_labels[1]), hr_label(size_labels[2]))
+  d$size_label <- factor(ifelse(d$size == 1, sl[1], sl[2]), levels = sl)
   ggplot2::ggplot(d, ggplot2::aes(year, index / scale)) +
     ggplot2::geom_col(width = 0.5) +
     (if ("season" %in% names(d)) {
