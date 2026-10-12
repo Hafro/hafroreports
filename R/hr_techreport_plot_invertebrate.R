@@ -159,7 +159,10 @@ hr_techreport_plot_station_catch <- function(
     ggplot2::labs(x = NULL, y = NULL) +
     ggplot2::theme(
       legend.title = ggplot2::element_text(face = "italic", size = 8),
+      # pax_map_base() hides the facet labels
       strip.background = ggplot2::element_rect(fill = "white"),
+      strip.text.x = ggplot2::element_text(size = 7),
+      panel.spacing = ggplot2::unit(0.1, "cm"),
       axis.text = ggplot2::element_text(size = 6)
     )
 }
@@ -167,24 +170,46 @@ hr_techreport_plot_station_catch <- function(
 #' @param logbook_catch Data frame with \code{fishing_year}, \code{x},
 #'   \code{y} (cell centres, longitude and latitude) and \code{catch} (kg),
 #'   aggregated on a grid.
+#' @param dx,dy Cell width and height (degrees), the grid of the data.
 #' @return \subsection{hr_techreport_plot_logbook_catch}{A map for each
 #'   fishing year of the logbook catch (tonnes) on the grid}
 #' @rdname hr_techreport_plot_invertebrate
 #' @export
-hr_techreport_plot_logbook_catch <- function(logbook_catch, xlim, ylim, ncol = 5) {
+hr_techreport_plot_logbook_catch <- function(
+  logbook_catch,
+  xlim,
+  ylim,
+  ncol = 5,
+  dx = 0.07,
+  dy = 0.06
+) {
   # NSE variables
-  x <- y <- catch <- NULL
+  x <- y <- catch <- long <- lat <- NULL
+  # Cells of fixed size (a panel with one row of cells would otherwise get
+  # cells 1 degree high), the land drawn over them as in the old figures
   pax::pax_map_base(xlim = xlim, ylim = ylim) +
     ggplot2::geom_tile(
       data = logbook_catch,
-      ggplot2::aes(x, y, fill = catch / 1e3)
+      ggplot2::aes(x, y, fill = catch / 1e3),
+      width = dx,
+      height = dy
+    ) +
+    ggplot2::geom_polygon(
+      data = ggplot2::map_data("mapdata::worldHires", "Iceland"),
+      ggplot2::aes(long, lat),
+      fill = "gray70",
+      colour = "black",
+      linewidth = 0.2
     ) +
     ggplot2::scale_fill_viridis_c(option = "C", direction = -1, name = hr_label("catch_t_map")) +
     ggplot2::scale_x_continuous(breaks = scales::breaks_pretty(n = 3)) +
     ggplot2::facet_wrap(~fishing_year, ncol = ncol) +
     ggplot2::labs(x = NULL, y = NULL) +
     ggplot2::theme(
+      # pax_map_base() hides the facet labels
       strip.background = ggplot2::element_rect(fill = "white"),
+      strip.text.x = ggplot2::element_text(size = 7),
+      panel.spacing = ggplot2::unit(0.1, "cm"),
       axis.text = ggplot2::element_text(size = 6)
     )
 }

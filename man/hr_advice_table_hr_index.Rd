@@ -25,7 +25,7 @@ descriptions.}
 
 \item{hr_proxy_desc}{Optional description of the target HR proxy row by
 language, e.g. \code{list(en = "Mean HR~proxy~ in 2010--2015", is =
-"Meðaltal HR~proxy~ áranna 2010--2015")}.}
+"Me\u00f0altal HR~proxy~ \u00e1ranna 2010--2015")}.}
 
 \item{safeguard_desc}{Optional description of the biomass safeguard
 (\code{b}) row by language. The default describes the binary safeguard

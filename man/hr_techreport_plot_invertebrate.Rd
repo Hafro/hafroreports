@@ -30,7 +30,14 @@ hr_techreport_plot_ldist_sex(ldist, ncol = 5)
 
 hr_techreport_plot_station_catch(station_catch, xlim, ylim, ncol = 5)
 
-hr_techreport_plot_logbook_catch(logbook_catch, xlim, ylim, ncol = 5)
+hr_techreport_plot_logbook_catch(
+  logbook_catch,
+  xlim,
+  ylim,
+  ncol = 5,
+  dx = 0.07,
+  dy = 0.06
+)
 
 hr_techreport_plot_catch_cpue(cpue)
 
@@ -77,6 +84,8 @@ caught).}
 \item{logbook_catch}{Data frame with \code{fishing_year}, \code{x},
 \code{y} (cell centres, longitude and latitude) and \code{catch} (kg),
 aggregated on a grid.}
+
+\item{dx, dy}{Cell width and height (degrees), the grid of the data.}
 
 \item{cpue}{Data frame with \code{year} (first year of the fishing year),
 \code{catch} (tonnes) and \code{cpue} (kg/h).}
