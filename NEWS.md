@@ -1,5 +1,27 @@
 # hafroreports (development version)
 
+## Nephrops UWTV survey (October 2026, branch `iag`)
+
+For 40-nep. Existing sheets and reports are unchanged (new arguments default
+to the old behaviour).
+
+* `hr_advice_plot_index(divisor =, y_label =, point_years =, year_start =)`:
+  an abundance index (e.g. millions of burrows, `divisor = 1`), and the
+  years of a biennial survey drawn as points with error bars instead of the
+  line and band.
+* `hr_advice_table_no_rule()`: the advice table of an advice without a
+  rule (zero catch with a sentinel fishery, category 5 roll-over).
+* Tech report figures of a UWTV survey (`hr_techreport_plot_uwtv`):
+  `_uwtv_index_area()`, `_station_density()`, `_grid_map()` (kriged
+  density or variance), `_polygon_map()`, `_bubble_map()` (e.g. larval
+  densities), `_cpue_area()`, `_landings_region()`, `_region_series()`
+  (CPUE or effort by region), `_ldist_ridges()` (length by sex,
+  ggridges) and `_series()`.
+* New labels in `hr_locale`; `data-raw/hr_locale.R` stops on duplicate keys.
+
+AI use: Claude (Anthropic) wrote these functions, their tests and this entry
+(12 October 2026); nobody has reviewed the code yet.
+
 ## Shrimp (harvest rate x index) stocks (October 2026, branch `iag`)
 
 For the IAG shrimp assessments (41-pra-arn first). Existing sheets and

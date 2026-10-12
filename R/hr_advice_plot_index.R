@@ -29,6 +29,14 @@
 #'   \code{hr_label("Itrigger")}; e.g. \code{hr_label("Itrigger_Ilim")} where
 #'   I_trigger = I_lim (the shrimp stocks).
 #' @param ref_label_year Year (x position) of the label. Default 2005.
+#' @param divisor Divisor of the index on the axis. Default 1000 (tonnes to
+#'   thousand tonnes); e.g. 1 for an abundance index in millions.
+#' @param y_label Axis label. Default thousand tonnes.
+#' @param point_years Years drawn as points with error bars instead of the
+#'   line and band, e.g. the years of a biennial survey after an annual one
+#'   (the Nephrops UWTV index: annual 2016-2021, then 2023, 2025). Default
+#'   none.
+#' @param year_start First year shown. Default all.
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
 #' @export
 hr_advice_plot_index <- function(
@@ -41,7 +49,11 @@ hr_advice_plot_index <- function(
   index_ab_span = c("years", "periods"),
   index_ab_colour = "red3",
   ref_label = NULL,
-  ref_label_year = 2005
+  ref_label_year = 2005,
+  divisor = 1000,
+  y_label = hr_label("thousand_tonnes", bold = TRUE),
+  point_years = NULL,
+  year_start = NULL
 ) {
   # NSE variables
   year <- median <- low <- high <- label <- .data <- group <- avg <- NULL
@@ -57,20 +69,34 @@ hr_advice_plot_index <- function(
       label = as.character(.data[[paste('label', lang, sep = '.')]])
     )
 
-  p <- ggplot2::ggplot(d, ggplot2::aes(x = year, y = median / 1000)) +
+  if (!is.null(year_start)) {
+    d <- dplyr::filter(d, year >= year_start)
+  }
+  d_line <- dplyr::filter(d, !(year %in% point_years))
+  d_point <- dplyr::filter(d, year %in% point_years)
+  p <- ggplot2::ggplot(d, ggplot2::aes(x = year, y = median / divisor)) +
     ggplot2::geom_ribbon(
-      ggplot2::aes(ymin = pmax(0, low / 1000), ymax = high / 1000),
+      data = d_line,
+      ggplot2::aes(ymin = pmax(0, low / divisor), ymax = high / divisor),
       fill = "darkgreen",
       alpha = 0.4
     ) +
-    ggplot2::geom_line(color = "darkgreen", linewidth = 0.5) +
+    ggplot2::geom_line(data = d_line, color = "darkgreen", linewidth = 0.5) +
+    (if (nrow(d_point) > 0) {
+      ggplot2::geom_pointrange(
+        data = d_point,
+        ggplot2::aes(ymin = pmax(0, low / divisor), ymax = high / divisor),
+        colour = "darkgreen",
+        size = 0.3
+      )
+    }) +
     ggiraph::geom_point_interactive(
       ggplot2::aes(
         tooltip = paste(
           label,
           ':',
           round(median),
-          't',
+          if (divisor == 1000) 't' else '',
           '\n',
           hr_label("year"),
           ':',
@@ -86,14 +112,14 @@ hr_advice_plot_index <- function(
   if (!is.null(itrigger)) {
     p <- p +
       ggplot2::geom_hline(
-        yintercept = itrigger / 1000,
+        yintercept = itrigger / divisor,
         linetype = "dashed",
         linewidth = 0.4
       ) +
       ggplot2::annotate(
         "text",
         x = ref_label_year,
-        y = itrigger / 1000 * 2,
+        y = itrigger / divisor * 2,
         label = if (is.null(ref_label)) hr_label("Itrigger") else ref_label,
         size = 2.5,
         parse = TRUE
@@ -103,7 +129,7 @@ hr_advice_plot_index <- function(
     p <- p +
       ggplot2::geom_line(
         data = advice_index_ab_periods(d, assessment_year),
-        ggplot2::aes(x = year, y = avg / 1000, group = group),
+        ggplot2::aes(x = year, y = avg / divisor, group = group),
         colour = index_ab_colour,
         linewidth = 0.75,
         inherit.aes = FALSE
@@ -121,7 +147,7 @@ hr_advice_plot_index <- function(
     p <- p +
       ggplot2::geom_line(
         data = avg,
-        ggplot2::aes(x = year, y = avg / 1000, group = group),
+        ggplot2::aes(x = year, y = avg / divisor, group = group),
         colour = index_ab_colour,
         linewidth = 0.75,
         inherit.aes = FALSE
@@ -130,7 +156,7 @@ hr_advice_plot_index <- function(
   p +
     ggplot2::labs(
       title = if (is.null(title)) hr_label("biomass_index", bold = TRUE) else title,
-      y = hr_label("thousand_tonnes", bold = TRUE)
+      y = y_label
     ) +
     hr_advice_y_scale() +
     hr_astand_theme(legend.position = "none") +

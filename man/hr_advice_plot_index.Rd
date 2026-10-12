@@ -14,7 +14,11 @@ hr_advice_plot_index(
   index_ab_span = c("years", "periods"),
   index_ab_colour = "red3",
   ref_label = NULL,
-  ref_label_year = 2005
+  ref_label_year = 2005,
+  divisor = 1000,
+  y_label = hr_label("thousand_tonnes", bold = TRUE),
+  point_years = NULL,
+  year_start = NULL
 )
 }
 \arguments{
@@ -51,6 +55,18 @@ figures.}
 I_trigger = I_lim (the shrimp stocks).}
 
 \item{ref_label_year}{Year (x position) of the label. Default 2005.}
+
+\item{divisor}{Divisor of the index on the axis. Default 1000 (tonnes to
+thousand tonnes); e.g. 1 for an abundance index in millions.}
+
+\item{y_label}{Axis label. Default thousand tonnes.}
+
+\item{point_years}{Years drawn as points with error bars instead of the
+line and band, e.g. the years of a biennial survey after an annual one
+(the Nephrops UWTV index: annual 2016-2021, then 2023, 2025). Default
+none.}
+
+\item{year_start}{First year shown. Default all.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.
