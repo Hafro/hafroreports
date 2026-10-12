@@ -12,7 +12,9 @@ hr_advice_plot_index(
   title = NULL,
   index_ab = FALSE,
   index_ab_span = c("years", "periods"),
-  index_ab_colour = "red3"
+  index_ab_colour = "red3",
+  ref_label = NULL,
+  ref_label_year = 2005
 )
 }
 \arguments{
@@ -43,6 +45,12 @@ figures.}
 
 \item{index_ab_colour}{Colour of the index A and B lines. Default
 \code{"red3"}.}
+
+\item{ref_label}{Plotmath label of the \code{I_trigger} line. Default
+\code{hr_label("Itrigger")}; e.g. \code{hr_label("Itrigger_Ilim")} where
+I_trigger = I_lim (the shrimp stocks).}
+
+\item{ref_label_year}{Year (x position) of the label. Default 2005.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.

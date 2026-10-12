@@ -25,6 +25,10 @@
 #'   figures.
 #' @param index_ab_colour Colour of the index A and B lines. Default
 #'   \code{"red3"}.
+#' @param ref_label Plotmath label of the \code{I_trigger} line. Default
+#'   \code{hr_label("Itrigger")}; e.g. \code{hr_label("Itrigger_Ilim")} where
+#'   I_trigger = I_lim (the shrimp stocks).
+#' @param ref_label_year Year (x position) of the label. Default 2005.
 #' @return A \code{ggplot2} / \code{ggiraph} plot object.
 #' @export
 hr_advice_plot_index <- function(
@@ -35,7 +39,9 @@ hr_advice_plot_index <- function(
   title = NULL,
   index_ab = FALSE,
   index_ab_span = c("years", "periods"),
-  index_ab_colour = "red3"
+  index_ab_colour = "red3",
+  ref_label = NULL,
+  ref_label_year = 2005
 ) {
   # NSE variables
   year <- median <- low <- high <- label <- .data <- group <- avg <- NULL
@@ -86,9 +92,9 @@ hr_advice_plot_index <- function(
       ) +
       ggplot2::annotate(
         "text",
-        x = 2005,
+        x = ref_label_year,
         y = itrigger / 1000 * 2,
-        label = hr_label("Itrigger"),
+        label = if (is.null(ref_label)) hr_label("Itrigger") else ref_label,
         size = 2.5,
         parse = TRUE
       )

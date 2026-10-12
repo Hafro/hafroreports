@@ -1,5 +1,32 @@
 # hafroreports (development version)
 
+## Shrimp (harvest rate x index) stocks (October 2026, branch `iag`)
+
+For the IAG shrimp assessments (41-pra-arn first). Existing sheets and
+reports are unchanged: new arguments default to the old behaviour, and the
+chr and rfb tables are identical.
+
+* `hr_advice_table_hr_index()`: the advice calculation table of the rule
+  advice = target HR proxy x index x b (`dlsrules::hr_index_advice()`), as
+  the old shrimp sheets, with the stock's HR proxy and safeguard
+  descriptions as arguments, and an optional stability clause row.
+* `hr_advice_plot_index(ref_label = , ref_label_year = )`, e.g.
+  `hr_label("Itrigger_Ilim")` where I_trigger = I_lim;
+  `hr_advice_plot_fpl(ref_labels = )`, e.g. the target HR proxy.
+* `hr_advice_data_landings()` knows the shrimp trawl (`"SHT"`).
+* Tech report figures of invertebrate surveys and fisheries:
+  `hr_techreport_plot_survey_indices()` (total, female, fishable and
+  juvenile indices), `_index_subarea()` (index by fjord sub-area),
+  `_ldist_sex()` (biomass at length by sex and year), `_station_catch()`
+  (survey catch per nm), `_logbook_catch()` (logbook catch map),
+  `_catch_cpue()`, `_advice_tac()`, `_survey_temperature()` and
+  `_bycatch_index()` (cod and haddock in the shrimp survey).
+* New `hr_locale` keys for these labels.
+
+AI use: Claude (Anthropic) wrote these functions, their tests and this entry
+(12 October 2026); the figures were looked at in the rendered 41-pra-arn
+reports, but nobody has reviewed the code yet.
+
 ## Category 3 figures and advice helpers (October 2026)
 
 The figure and data helpers that the category 3 (rfb rule) stock
