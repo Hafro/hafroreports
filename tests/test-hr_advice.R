@@ -180,3 +180,16 @@ ok_group("hr_advice_data_tac / hr_advice_table_tac: text advice, no foreign foot
   ft <- hr_advice_table_tac(d)
   ok(nrow(ft$footer$dataset) == 1, "Default: the foreign landings footnote, as before")
 })
+
+ok_group("hr_advice_banner: period_labels", {
+  out <- utils::capture.output(hr_advice_banner(2025, 460, 375, publication_date = "2025-04-30"))
+  ok(any(grepl("Advice 2025/2026", out)) && any(grepl("Advice 2024/2025", out)), "Default: fishing years")
+  out <- utils::capture.output(hr_advice_banner(2025, 460, 375, publication_date = "2025-04-30",
+    period_labels = list(en = c(this = "1 May 2025 - 15 March 2026", last = "1 May 2024 - 15 March 2025"),
+      is = c(this = "1. maí 2025 - 15. mars 2026", last = "1. maí 2024 - 15. mars 2025"))))
+  ok(any(grepl("Advice 1 May 2025 - 15 March 2026", out)), "Season labels (this)")
+  ok(any(grepl("Advice 1 May 2024 - 15 March 2025", out)), "Season labels (last)")
+  out <- utils::capture.output(hr_advice_banner(2026, 3246, 4537, publication_date = "2026-08-31",
+    period_labels = c(this = "2026/2027 and 2027/2028", last = "2024/2025 and 2025/2026")))
+  ok(any(grepl("2026/2027 and 2027/2028", out)), "Biennial labels")
+})

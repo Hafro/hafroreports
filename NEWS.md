@@ -37,6 +37,9 @@ chr and rfb tables are identical.
   effects of a logbook CPUE model) and `hr_techreport_plot_cpue_index()`
   (CPUE against the total survey index). New keys `number_of_vessels`,
   `standardized_cpue`, `trawl_size`.
+* `hr_advice_banner(period_labels =)`: labels of the two advice periods
+  (by language), for periods `period` doesn't cover: seasons (Snaefellsnes
+  shrimp, 1 May - 15 March) or a biennial advice. Default unchanged.
 
 AI use: Claude (Anthropic) wrote these functions, their tests and this entry
 (12 October 2026); the figures were looked at in the rendered 41-pra-arn
