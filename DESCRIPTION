@@ -45,6 +45,8 @@ Imports:
     tidyr,
     withr
 Suggests:
+    ggridges,
+    spict,
     DBI,
     knitr,
     rmarkdown,

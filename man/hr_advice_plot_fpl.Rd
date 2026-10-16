@@ -12,7 +12,8 @@ hr_advice_plot_fpl(
   title = NULL,
   show_lim = FALSE,
   points = FALSE,
-  y_label = ""
+  y_label = "",
+  ref_labels = NULL
 )
 }
 \arguments{
@@ -36,6 +37,11 @@ Default \code{FALSE}.}
 single years of a series with gaps show. Default \code{FALSE}.}
 
 \item{y_label}{Y axis label. Default none.}
+
+\item{ref_labels}{Named list of plotmath labels replacing those of the
+reference points, by name in \code{ref_points}, e.g.
+\code{list(F_msy_proxy = hr_label("HRtarget_proxy"))} for a harvest rate
+proxy kept as \code{"F"} with a target line. Default none.}
 }
 \value{
 A \code{ggplot2} / \code{ggiraph} plot object.

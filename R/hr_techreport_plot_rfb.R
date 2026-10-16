@@ -51,6 +51,12 @@
 #' @param points Also draw the yearly values as points. Default
 #'   \code{FALSE}.
 #' @param title Plot title. Default \code{hr_label("rfb_biomass_index")}.
+#' @param y_label Y axis label of the index figure. Default thousand tonnes
+#'   or tonnes (by \code{unit}); e.g. \code{""} for a relative index.
+#' @param bar_width Width of the length bars (cm). Default 0.5.
+#' @param ref_bar_width Width of the red bars of L_c and L_F=M in
+#'   \code{hr_techreport_plot_rfb_lc()}. Default \code{bar_width}; the old
+#'   sea urchin figure had 0.3 and 0.1 for lengths in mm classes.
 #' @param base_size Base text size (ggplot2 text size units).
 #' @return A \code{ggplot2} plot object.
 #' @name hr_techreport_plot_rfb
@@ -85,7 +91,8 @@ hr_techreport_plot_rfb_index <- function(
   points = FALSE,
   x_limits = NULL,
   title = NULL,
-  base_size = 3
+  base_size = 3,
+  y_label = NULL
 ) {
   # NSE variables
   year <- b <- b_cv <- lower <- upper <- value <- group <- .data <- NULL
@@ -163,7 +170,7 @@ hr_techreport_plot_rfb_index <- function(
     hr_techreport_rfb_theme(base_size) +
     ggplot2::labs(
       x = hr_label("year"),
-      y = hr_label(if (unit == 1e3) "thousand_tonnes" else "tonnes"),
+      y = if (is.null(y_label)) hr_label(if (unit == 1e3) "thousand_tonnes" else "tonnes") else y_label,
       title = if (is.null(title)) hr_label("rfb_biomass_index") else title
     )
   p
@@ -180,7 +187,9 @@ hr_techreport_plot_rfb_lc <- function(
   ldist,
   ref_points,
   x_limits = c(0, 70),
-  base_size = 3
+  base_size = 3,
+  bar_width = 0.5,
+  ref_bar_width = bar_width
 ) {
   # NSE variables
   n <- NULL
@@ -192,12 +201,12 @@ hr_techreport_plot_rfb_lc <- function(
   trl <- rfb_trl(ref_points)
 
   ggplot2::ggplot(ldist_all, ggplot2::aes(length, n)) +
-    ggplot2::geom_col(width = 0.5) +
+    ggplot2::geom_col(width = bar_width) +
     ggplot2::geom_col(
       data = ldist_all |>
         dplyr::filter(length %in% c(ref_points$Lc, round(trl))),
       fill = "red",
-      width = 0.5
+      width = ref_bar_width
     ) +
     ggplot2::annotate(
       "text",
@@ -252,7 +261,8 @@ hr_techreport_plot_rfb_ml <- function(
   rfb_prognosis = NULL,
   x_limits = c(0, 70),
   legend_position = c(0.8, 0.8),
-  base_size = 3
+  base_size = 3,
+  bar_width = 0.5
 ) {
   # NSE variables
   year <- n <- x <- y <- rp <- NULL
@@ -270,7 +280,7 @@ hr_techreport_plot_rfb_ml <- function(
   )
 
   ggplot2::ggplot(ld, ggplot2::aes(length, n)) +
-    ggplot2::geom_col(width = 0.5) +
+    ggplot2::geom_col(width = bar_width) +
     ggplot2::geom_line(
       data = lines,
       ggplot2::aes(x, y, linetype = rp),

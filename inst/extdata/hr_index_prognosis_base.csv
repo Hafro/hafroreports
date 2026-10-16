@@ -1,0 +1,11 @@
+label,hr_desc.is,hr_desc.en,component
+**A~y~**,Ráðgjöf fyrir {tyr-1}/{tyr},Catch advice for {tyr-1}/{tyr},previous_catch_advice
+,*Lífmassavísitala*,*Biomass index*,
+,Vísitala (I~{tyr}~),Latest index value (I~{tyr}~),biomass_index
+,*Vísitala veiðihlutfalls*,*Fishing pressure proxy*,
+**target HR~proxy~**,Markgildi vísitölu veiðihlutfalls,Target harvest rate proxy,hr_proxy
+,*Gátmörk*,*Biomass safeguard*,
+,Aðgerðarmörk vísitölu (I~trigger~),Index trigger value (I~trigger~),I_trigger
+**b**,"Vísitala í hlutfalli við aðgerðamörk, ef I~{tyr}~/I~trigger~ > 1 þá 1 annars 0","Index relative to trigger value, if I~{tyr}~/I~trigger~ > 1 then 1 otherwise 0",biomass_safeguard
+,Ráðgjöf fyrir {tyr}/{tyr+1},Catch advice for {tyr}/{tyr+1},catch_advice
+,% breyting á ráðgjöf,% advice change,advice_change

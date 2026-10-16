@@ -11,7 +11,8 @@ hr_advice_banner(
   note = "",
   publication_date,
   period = "fishing_year",
-  publication_note = ""
+  publication_note = "",
+  period_labels = NULL
 )
 }
 \arguments{
@@ -28,6 +29,13 @@ hr_advice_banner(
 \item{period}{Advisory period. Default is 'fishing_year', other options: 'annual', '2year', '3year', '5year'}
 
 \item{publication_note}{publication note, if needed}
+
+\item{period_labels}{Optional labels of the two advice periods, overriding
+\code{period}: a character vector \code{c(this = , last = )}, or a list
+of such vectors by language (\code{list(en = c(this = , last = ), is =
+...)}). For periods the other options don't cover, e.g. the two seasons
+(1 May - 15 March) of the Snaefellsnes shrimp advice, or a biennial
+advice. Default \code{NULL}}
 }
 \description{
 Advice sheet banner

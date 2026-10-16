@@ -13,6 +13,7 @@ hr_locale <- utils::read.table(
 )
 stopifnot(
   !anyNA(hr_locale),
+  !anyDuplicated(hr_locale$key),
   identical(hr_locale[hr_locale$key == "NE", "is"], "NA")
 )
 save(hr_locale, file = "data/hr_locale.rda", compress = "xz", version = 2)

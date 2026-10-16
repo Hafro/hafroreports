@@ -1,5 +1,92 @@
 # hafroreports (development version)
 
+## SPiCT helpers (October 2026, branch `iag`)
+
+* `hr_spict_input()`, `hr_spict_fit()`, `hr_spict_fit_check()`,
+  `hr_spict_management_start()`, `hr_spict_manage_summary()`,
+  `hr_spict_advice()`, `hr_spict_annual()`, `hr_spict_catch()`,
+  `hr_spict_table()` and `hr_spict_assessment_summary()`, lifted from the
+  starry ray port (`12-rjr`, `rjr_spict_*()`) with the stock choices as
+  arguments (series with gaps, scenario per output). For common whelk
+  (45-whe); 12-rjr keeps its own copies until it is moved over.
+
+AI use: Claude (Anthropic) wrote these functions, their tests and this entry
+(12 October 2026); nobody has reviewed the code yet.
+
+## Nephrops UWTV survey (October 2026, branch `iag`)
+
+For 40-nep. Existing sheets and reports are unchanged (new arguments default
+to the old behaviour).
+
+* `hr_advice_plot_index(divisor =, y_label =, point_years =, year_start =)`:
+  an abundance index (e.g. millions of burrows, `divisor = 1`), and the
+  years of a biennial survey drawn as points with error bars instead of the
+  line and band.
+* `hr_advice_table_no_rule()`: the advice table of an advice without a
+  rule (zero catch with a sentinel fishery, category 5 roll-over).
+* Tech report figures of a UWTV survey (`hr_techreport_plot_uwtv`):
+  `_uwtv_index_area()`, `_station_density()`, `_grid_map()` (kriged
+  density or variance), `_polygon_map()`, `_bubble_map()` (e.g. larval
+  densities), `_cpue_area()`, `_landings_region()`, `_region_series()`
+  (CPUE or effort by region), `_ldist_ridges()` (length by sex,
+  ggridges) and `_series()`.
+* New labels in `hr_locale`; `data-raw/hr_locale.R` stops on duplicate keys.
+* rfb tech report figures: `hr_techreport_plot_rfb_index(y_label =)` (e.g.
+  a relative CPUE index), `hr_techreport_plot_rfb_lc(bar_width =,
+  ref_bar_width =)` and `hr_techreport_plot_rfb_ml(bar_width =)` for
+  lengths in mm classes (sea urchin). Defaults unchanged.
+
+AI use: Claude (Anthropic) wrote these functions, their tests and this entry
+(12 October 2026); nobody has reviewed the code yet.
+
+## Shrimp (harvest rate x index) stocks (October 2026, branch `iag`)
+
+For the IAG shrimp assessments (41-pra-arn first). Existing sheets and
+reports are unchanged: new arguments default to the old behaviour, and the
+chr and rfb tables are identical.
+
+* `hr_advice_table_hr_index()`: the advice calculation table of the rule
+  advice = target HR proxy x index x b (`dlsrules::hr_index_advice()`), as
+  the old shrimp sheets, with the stock's HR proxy and safeguard
+  descriptions as arguments, and an optional stability clause row.
+* `hr_advice_plot_index(ref_label = , ref_label_year = )`, e.g.
+  `hr_label("Itrigger_Ilim")` where I_trigger = I_lim;
+  `hr_advice_plot_fpl(ref_labels = )`, e.g. the target HR proxy.
+* `hr_advice_data_landings()` knows the shrimp trawl (`"SHT"`).
+* Tech report figures of invertebrate surveys and fisheries:
+  `hr_techreport_plot_survey_indices()` (total, female, fishable and
+  juvenile indices), `_index_subarea()` (index by fjord sub-area),
+  `_ldist_sex()` (biomass at length by sex and year), `_station_catch()`
+  (survey catch per nm), `_logbook_catch()` (logbook catch map),
+  `_catch_cpue()`, `_advice_tac()`, `_survey_temperature()` and
+  `_bycatch_index()` (cod and haddock in the shrimp survey).
+* New `hr_locale` keys for these labels.
+* A second survey in the invertebrate figures (the Isafjardardjup February
+  survey, 41-pra-isa): `hr_techreport_plot_survey_indices(survey_index2 =)`
+  and `hr_techreport_plot_ldist_sex(ldist2 =)` draw it dashed over the
+  first; `hr_techreport_plot_station_catch()` and
+  `hr_techreport_plot_bycatch_index()` make one row (or column) per
+  `season` when the data have that column. `_station_catch(size_label =)`
+  (e.g. `hr_label("number_per_nm")` for the haddock map) and
+  `_bycatch_index(sizes =)`. New keys `number_per_nm`, `autumn`, `february`.
+  Defaults unchanged.
+* Offshore shrimp tech report figures (41-pra-off):
+  `hr_techreport_plot_catch_vessels()` (catch and number of vessels by
+  year), `hr_techreport_plot_cpue_effects()` (year, month and trawl size
+  effects of a logbook CPUE model) and `hr_techreport_plot_cpue_index()`
+  (CPUE against the total survey index). New keys `number_of_vessels`,
+  `standardized_cpue`, `trawl_size`.
+* `hr_techreport_plot_bycatch_index(size_labels =)`, e.g. 1 year and 2 years
+  and older in a spring survey (Snaefellsnes). New keys `group_1`,
+  `group_2plus`. Default unchanged.
+* `hr_advice_banner(period_labels =)`: labels of the two advice periods
+  (by language), for periods `period` doesn't cover: seasons (Snaefellsnes
+  shrimp, 1 May - 15 March) or a biennial advice. Default unchanged.
+
+AI use: Claude (Anthropic) wrote these functions, their tests and this entry
+(12 October 2026); the figures were looked at in the rendered 41-pra-arn
+reports, but nobody has reviewed the code yet.
+
 ## Category 3 figures and advice helpers (October 2026)
 
 The figure and data helpers that the category 3 (rfb rule) stock
