@@ -42,8 +42,11 @@ hr_advice_data_tac <- function(
   fishing_year <- country <- catch <- icelandic <- foreign <- total <- advice_period <- NULL
   advice <- tac <- NULL
 
-  # TODO: 02-had say:, from mar::vessel() mutate(origin = case_when(status == 'Erlent' ~ 'foreign', TRUE ~ 'icelandic'))
-  #       I think this is a poor-man's version of our contry column, from mar::landadur_afli():land
+  # TODO: 02-had say:, from the vessel register (pax vessel table, status ==
+  #       'Erlent' ~ 'foreign', TRUE ~ 'icelandic'). I think this is a
+  #       poor-man's version of the country column of the pax landings table
+  #       (the vessel's country in the landings register, which replaced
+  #       mar's old landadur_afli()).
   # TODO: Vastly over-reported foreign landings, not filtering areas?
   landings_by_fishing_year_country <- dplyr::collect(landings_by_fishing_year_country)
   if (!is.null(landings_year_end)) {
