@@ -60,7 +60,7 @@ License: GPL-2
 LazyData: true
 Remotes:
     github::fishvice/rmuppet,
-    github::hafro/pax@mar-parquet,
+    github::hafro/pax@combined,
     github::hafro/SAMutils@fit-options,
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.0.2
